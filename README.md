@@ -62,24 +62,29 @@ instruction text is delivered on install, not shown here (see below).
 | `quality/architecture-review.md` | Design-level review: visibility, failure containment, access boundaries, operational control |
 | `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers |
 | `quality/docs-sync.md` | Verify doc claims against real code, run the project's real linter |
+| `quality/observability.md` | Instrument a feature so its failures surface before a user reports them |
 | `change-types/refactoring.md` | Behavior-preserving restructuring |
 | `change-types/dependency-upgrades.md` | Bumping a dependency version safely |
 | `change-types/database-migration.md` | Safe schema changes via expand/migrate/contract |
 | `change-types/incident-response.md` | Restore service first, root-cause after |
+| `change-types/release.md` | Decide blast-radius limits and rollback path before a release starts |
+| `change-types/performance.md` | Profile before optimizing, measure the same way after |
 | `autonomy/mission-mode.md` | Standing-objective autonomous operation, with an explicit autonomy dial |
 | `autonomy/roles.md` | Reusable personas (Bug Hunter, Feature Builder, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project Bootstrapper) |
 | `safety/safety-guardrail.md` | A real, enforced block on destructive shell commands |
 | `safety/memory-hygiene.md` | Don't trust a remembered fact once its source code has changed |
+| `safety/sensitive-data.md` | Classify data before deciding how strictly to handle it |
 | `project-bootstrap.md` | Onboard an agent to an unfamiliar repo, and wire the guardrail + personas into it |
 | `demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
 
 ## How this is distributed
 
 This repo ships the installer and this description — not the playbook
-text itself. `install.sh` calls a check-in endpoint with your access token
-and a random local install ID (generated once, never a name, email, or
-machine identifier). The endpoint validates the token, logs the check-in,
-and — if not blocked — returns the current release. The endpoint itself
+text itself. `install.sh` calls a check-in endpoint with a random local
+install ID (generated once on first install, never a name, email, or
+machine identifier — no account or token needed). The endpoint logs the
+check-in and — if that ID isn't blocked — returns the current release.
+The endpoint itself
 holds no credential a client could extract: it forwards to the real
 backend using a key that lives only in the endpoint's own server-side
 environment (`supabase/functions/check-in/index.ts`, schema in
