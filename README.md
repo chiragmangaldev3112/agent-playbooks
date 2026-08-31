@@ -27,16 +27,14 @@ once, not just written and published.
 ## Install
 
 ```bash
-curl -fsSL <install-script-url> -o install.sh && chmod +x install.sh
-AGENT_PLAYBOOKS_ACCESS_TOKEN=<given-to-you> \
-  ./install.sh /path/to/your/project   # or no path, for the current directory
+curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
+chmod +x install.sh
+./install.sh /path/to/your/project   # or no path, for the current directory
 ```
 
 This copies `AGENTS.md` and `agent-playbooks/` into your project — fast, no
-further setup, works the same regardless of which AI tool you use there.
-The access token is a short code the maintainer gives you directly — it's
-not an infrastructure credential of any kind, and the installer never
-handles one; ask the maintainer for a token.
+setup, no account, no token. Works the same regardless of which AI tool
+you use there.
 
 Then open your AI coding tool in that project and ask it to follow
 `agent-playbooks/project-bootstrap.md` once — the smart, context-aware pass
