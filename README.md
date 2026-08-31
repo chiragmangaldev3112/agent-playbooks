@@ -28,16 +28,15 @@ once, not just written and published.
 
 ```bash
 curl -fsSL <install-script-url> -o install.sh && chmod +x install.sh
-AGENT_PLAYBOOKS_SUPABASE_URL=<given-to-you> \
-AGENT_PLAYBOOKS_SUPABASE_ANON_KEY=<given-to-you> \
+AGENT_PLAYBOOKS_ACCESS_TOKEN=<given-to-you> \
   ./install.sh /path/to/your/project   # or no path, for the current directory
 ```
 
 This copies `AGENTS.md` and `agent-playbooks/` into your project — fast, no
 further setup, works the same regardless of which AI tool you use there.
-The two environment variables point the installer at the access-checked
-backend the actual playbook content is served from (see **How this is
-distributed** below) — ask the maintainer for them.
+The access token is a short code the maintainer gives you directly — it's
+not an infrastructure credential of any kind, and the installer never
+handles one; ask the maintainer for a token.
 
 Then open your AI coding tool in that project and ask it to follow
 `agent-playbooks/project-bootstrap.md` once — the smart, context-aware pass
@@ -79,17 +78,17 @@ instruction text is delivered on install, not shown here (see below).
 ## How this is distributed
 
 This repo ships the installer and this description — not the playbook
-text itself. `install.sh` fetches the current release from a backend (its
-schema is in `supabase/schema.sql`, fully readable) that logs a random
-local install ID and can decline to serve a specific one. Full detail on
-what that check does, what it doesn't do, and its known limits — read
-`install.sh`'s own header comment and `supabase/schema.sql`'s comments
-before relying on it for anything sensitive; nothing about the mechanism
-is hidden from you, it's just not bundled inline here.
+text itself. `install.sh` calls a check-in endpoint with your access token
+and a random local install ID (generated once, never a name, email, or
+machine identifier). The endpoint validates the token, logs the check-in,
+and — if not blocked — returns the current release. The endpoint itself
+holds no credential a client could extract: it forwards to the real
+backend using a key that lives only in the endpoint's own server-side
+environment (`supabase/functions/check-in/index.ts`, schema in
+`supabase/schema.sql` — both fully readable, nothing about the mechanism
+is hidden from you).
 
-No email or personal information is collected by the installer. Disable
-the check entirely with `AGENT_PLAYBOOKS_NO_CHECK=1` if your access isn't
-gated (ask the maintainer).
+No email or personal information is collected by the installer itself.
 
 ## License
 

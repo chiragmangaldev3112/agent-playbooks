@@ -1,18 +1,14 @@
 #!/usr/bin/env bash
-# Installs AGENTS.md + agent-playbooks/ into a target project by fetching
-# the current release from the maintainer's backend -- this repo does not
-# carry the playbook content itself. See README.md for what that means and
-# what is/isn't collected in the process (nothing hidden, no email, no
-# machine info -- a random local ID only). Requires curl, jq, tar, base64
-# (all standard on macOS/Linux).
+# Installs AGENTS.md + agent-playbooks/ into a target project. Zero setup:
+# no account, no token, nothing to ask the maintainer for -- just run it.
+# This repo does not carry the playbook content itself; it fetches the
+# current release from a check-in endpoint on each install (see README.md
+# for exactly what that does and doesn't do). Requires curl, jq, tar,
+# base64 (standard on macOS/Linux).
 #
 # Usage:
 #   ./install.sh                # installs into the current directory
 #   ./install.sh /path/to/repo  # installs into that directory instead
-#
-# Configure the backend (both required, or installation cannot fetch anything):
-#   AGENT_PLAYBOOKS_SUPABASE_URL       e.g. https://xxxx.supabase.co
-#   AGENT_PLAYBOOKS_SUPABASE_ANON_KEY  the project's public anon key
 #
 # After this finishes, point your AI coding agent at
 # agent-playbooks/project-bootstrap.md in the target project -- the smart,
@@ -22,20 +18,12 @@
 set -euo pipefail
 
 TARGET_DIR="${1:-.}"
-SUPABASE_URL="${AGENT_PLAYBOOKS_SUPABASE_URL:-}"
-SUPABASE_ANON_KEY="${AGENT_PLAYBOOKS_SUPABASE_ANON_KEY:-}"
+CHECK_IN_URL="${AGENT_PLAYBOOKS_CHECK_IN_URL:-https://REPLACE-ME.functions.supabase.co/check-in}"
 ID_FILE="${AGENT_PLAYBOOKS_ID_FILE:-$HOME/.agent-playbooks-id}"
 
 for cmd in curl jq tar base64; do
   command -v "$cmd" >/dev/null || { echo "Error: '$cmd' is required and was not found." >&2; exit 1; }
 done
-
-if [[ -z "$SUPABASE_URL" || -z "$SUPABASE_ANON_KEY" ]]; then
-  echo "Error: AGENT_PLAYBOOKS_SUPABASE_URL and AGENT_PLAYBOOKS_SUPABASE_ANON_KEY" >&2
-  echo "must both be set -- this installer fetches content, it doesn't carry" >&2
-  echo "any locally. Ask the maintainer for these values." >&2
-  exit 1
-fi
 
 mkdir -p "$TARGET_DIR"
 TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
@@ -60,15 +48,13 @@ if [[ ! -f "$ID_FILE" ]]; then
 fi
 local_id="$(cat "$ID_FILE")"
 
-echo "Checking access and fetching the current release..."
+echo "Fetching the current release..."
 payload="$(jq -n --arg id "$local_id" '{p_id: $id}')"
 response="$(curl -fsSL --max-time 15 -X POST \
-  "$SUPABASE_URL/rest/v1/rpc/check_in" \
-  -H "apikey: $SUPABASE_ANON_KEY" \
-  -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+  "$CHECK_IN_URL" \
   -H "Content-Type: application/json" \
   -d "$payload")" || {
-  echo "Error: could not reach the backend. Check the URL/key, and your network." >&2
+  echo "Error: could not reach the check-in endpoint. Check your network." >&2
   exit 1
 }
 
@@ -80,14 +66,14 @@ echo "$response" | jq -e . >/dev/null 2>&1 || {
 
 is_blocked="$(echo "$response" | jq -r '.[0].blocked // false')"
 if [[ "$is_blocked" == "true" ]]; then
-  message="$(echo "$response" | jq -r '.[0].blocked_message // "Access to this installation has been revoked by the maintainer."')"
+  message="$(echo "$response" | jq -r '.[0].blocked_message // "Access denied."')"
   echo "BLOCKED: $message" >&2
   exit 1
 fi
 
 archive_b64="$(echo "$response" | jq -r '.[0].archive_base64 // empty')"
 if [[ -z "$archive_b64" ]]; then
-  echo "Error: backend did not return a release archive. No published release yet?" >&2
+  echo "Error: no release archive returned. No published release yet?" >&2
   exit 1
 fi
 
