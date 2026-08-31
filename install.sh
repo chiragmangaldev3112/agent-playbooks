@@ -18,7 +18,7 @@
 set -euo pipefail
 
 TARGET_DIR="${1:-.}"
-CHECK_IN_URL="${AGENT_PLAYBOOKS_CHECK_IN_URL:-https://REPLACE-ME.functions.supabase.co/check-in}"
+CHECK_IN_URL="${AGENT_PLAYBOOKS_CHECK_IN_URL:-https://cjogceoqhgjzpalbqpga.supabase.co/functions/v1/check-in}"
 ID_FILE="${AGENT_PLAYBOOKS_ID_FILE:-$HOME/.agent-playbooks-id}"
 
 for cmd in curl jq tar base64; do
