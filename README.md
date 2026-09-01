@@ -71,6 +71,7 @@ instruction text is delivered on install, not shown here (see below).
 | `change-types/performance.md` | Profile before optimizing, measure the same way after |
 | `autonomy/mission-mode.md` | Standing-objective autonomous operation, with an explicit autonomy dial |
 | `autonomy/roles.md` | Reusable personas (Bug Hunter, Feature Builder, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project Bootstrapper) |
+| `autonomy/standing-permission.md` | A written, bounded grant letting the agent skip per-action confirmation for explicitly named actions only |
 | `safety/safety-guardrail.md` | A real, enforced block on destructive shell commands |
 | `safety/memory-hygiene.md` | Don't trust a remembered fact once its source code has changed |
 | `safety/sensitive-data.md` | Classify data before deciding how strictly to handle it |
