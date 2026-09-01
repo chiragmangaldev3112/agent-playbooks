@@ -12,11 +12,13 @@
 # token, nothing to ask the maintainer for -- just run it. This repo does
 # not carry the playbook content itself; it fetches the current release
 # from a check-in endpoint on each install (see README.md for exactly
-# what that does and doesn't do). Requires curl, jq, tar, base64
-# (standard on macOS/Linux) and a shell that can run bash. macOS and
-# Linux have this natively; Windows does not -- run this via WSL or Git
-# Bash, not from a plain Command Prompt/PowerShell session (same
-# constraint as this repo's other bash scripts, e.g. demo-video.md's).
+# what that does and doesn't do -- including a per-install watermark
+# woven into AGENTS.md's own content, invisible in normal rendering).
+# Requires curl, jq, base64 (standard on macOS/Linux) and a shell that
+# can run bash. macOS and Linux have this natively; Windows does not --
+# run this via WSL or Git Bash, not from a plain Command
+# Prompt/PowerShell session (same constraint as this repo's other bash
+# scripts, e.g. demo-video.md's).
 #
 # Usage:
 #   ./install.sh                # installs into the current directory
@@ -36,7 +38,7 @@ TARGET_DIR="${1:-.}"
 CHECK_IN_URL="${AGENT_PLAYBOOKS_CHECK_IN_URL:-https://cjogceoqhgjzpalbqpga.supabase.co/functions/v1/check-in}"
 ID_FILE="${AGENT_PLAYBOOKS_ID_FILE:-$HOME/.agent-playbooks-id}"
 
-for cmd in curl jq tar base64; do
+for cmd in curl jq base64; do
   command -v "$cmd" >/dev/null || { echo "Error: '$cmd' is required and was not found." >&2; exit 1; }
 done
 
@@ -86,8 +88,8 @@ if [[ "$is_blocked" == "true" ]]; then
   exit 1
 fi
 
-archive_b64="$(echo "$response" | jq -r '.[0].archive_base64 // empty')"
-if [[ -z "$archive_b64" ]]; then
+archive_json="$(echo "$response" | jq -r '.[0].archive_base64 // empty')"
+if [[ -z "$archive_json" ]]; then
   echo "Error: no release archive returned. No published release yet?" >&2
   exit 1
 fi
@@ -95,16 +97,24 @@ fi
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
 
-echo "$archive_b64" | base64 -d > "$WORKDIR/release.tar.gz" || {
-  echo "Error: could not decode the fetched archive." >&2
+# The release is a JSON object mapping each relative file path to its
+# base64 content (not a tar.gz) -- reconstruct the real file tree from it.
+echo "$archive_json" | jq -e . >/dev/null 2>&1 || {
+  echo "Error: fetched release archive isn't valid JSON." >&2
   exit 1
 }
-tar -xzf "$WORKDIR/release.tar.gz" -C "$WORKDIR" || {
-  echo "Error: could not extract the fetched archive." >&2
-  exit 1
-}
+while IFS=$'\t' read -r relpath content_b64; do
+  [[ -z "$relpath" ]] && continue
+  outpath="$WORKDIR/$relpath"
+  mkdir -p "$(dirname "$outpath")"
+  printf '%s' "$content_b64" | base64 -d > "$outpath" || {
+    echo "Error: could not decode file '$relpath' from the fetched release." >&2
+    exit 1
+  }
+done < <(echo "$archive_json" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
+
 if [[ ! -f "$WORKDIR/AGENTS.md" || ! -d "$WORKDIR/agent-playbooks" ]]; then
-  echo "Error: extracted archive doesn't contain AGENTS.md / agent-playbooks/." >&2
+  echo "Error: fetched release doesn't contain AGENTS.md / agent-playbooks/." >&2
   exit 1
 fi
 
