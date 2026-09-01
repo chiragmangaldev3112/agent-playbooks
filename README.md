@@ -76,6 +76,9 @@ instruction text is delivered on install, not shown here (see below).
 | `safety/memory-hygiene.md` | Don't trust a remembered fact once its source code has changed |
 | `safety/sensitive-data.md` | Classify data before deciding how strictly to handle it |
 | `project-bootstrap.md` | Onboard an agent to an unfamiliar repo, and wire the guardrail + personas into it |
+| `codebase-mapping.md` | Document a codebase module by module from real dependency structure, then optionally generate a skill/agent per module |
+| `database-mapping.md` | Document a database table by table from the real schema and code usage, then optionally generate a skill/agent per table |
+| `third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
 | `demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
 
 ## How this is distributed
