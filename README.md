@@ -39,10 +39,26 @@ Prompt/PowerShell session.
 This copies `AGENTS.md` and `agent-playbooks/` into your project — fast, no
 setup, no account, no token. It also drops in a one-line `CLAUDE.md`
 (only if you don't already have one) that just imports `AGENTS.md`,
-because Claude Code only auto-loads `CLAUDE.md`, never `AGENTS.md` — every
-other supported tool (Codex CLI, Cursor, Antigravity, GitHub Copilot)
-reads `AGENTS.md` at the project root natively and needs nothing extra.
-Works the same regardless of which AI tool you use there.
+because Claude Code only auto-loads `CLAUDE.md`, never `AGENTS.md`.
+
+If you run it at a real terminal, it also asks which AI tool you're
+using and generates real native artifacts for it — not just a copy of
+the same text everywhere:
+
+| Tool | What gets generated | Why |
+|---|---|---|
+| Claude Code | `.claude/skills/*/SKILL.md` (one per playbook, invocable via `/name`) + `.claude/agents/*.md` (the 6 personas) | Discoverable/invocable, not just background text |
+| Cursor | `.cursor/rules/*.mdc` (Agent Requested mode) | Explicit `@name` mention, on top of the `AGENTS.md` it already reads natively |
+| Antigravity | `.agents/skills/*/SKILL.md` | Its own docs never confirm it reads `AGENTS.md` automatically, unlike Cursor/Codex CLI — so this is the reliable path, not an assumption |
+| Codex CLI | nothing extra | Reads `AGENTS.md` at the root natively — confirmed, this is the tool the convention originated from |
+| GitHub Copilot | one `.github/copilot-instructions.md` pointer | Copilot has no semantic per-file matching, so one blanket file beats 30 always-on ones |
+| Anything else / skip | nothing extra | Falls back to `AGENTS.md` alone — paste it into your tool's context manually if it doesn't read project files |
+
+Every generated file is a **thin pointer** back to the real playbook in
+`agent-playbooks/` — never a content copy — so nothing drifts out of sync
+between the two if playbooks get updated later. Skip the prompt (or pipe
+input, or set `AGENT_PLAYBOOKS_TOOL=none`) and you just get `AGENTS.md` +
+`CLAUDE.md`, same as before.
 
 Then open your AI coding tool in that project and ask it to follow
 `agent-playbooks/project-bootstrap.md` once — the smart, context-aware pass
