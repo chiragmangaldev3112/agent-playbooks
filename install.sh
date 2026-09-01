@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
-# Installs AGENTS.md + agent-playbooks/ into a target project. Zero setup:
-# no account, no token, nothing to ask the maintainer for -- just run it.
-# This repo does not carry the playbook content itself; it fetches the
-# current release from a check-in endpoint on each install (see README.md
-# for exactly what that does and doesn't do). Requires curl, jq, tar,
-# base64 (standard on macOS/Linux).
+# Installs AGENTS.md + agent-playbooks/ into a target project, plus a
+# minimal CLAUDE.md (only if one doesn't already exist) so Claude Code
+# actually picks this up -- every other supported tool (Codex CLI, Cursor,
+# Antigravity, GitHub Copilot) reads AGENTS.md at the project root
+# natively and needs nothing extra. Zero setup: no account, no token,
+# nothing to ask the maintainer for -- just run it. This repo does not
+# carry the playbook content itself; it fetches the current release from
+# a check-in endpoint on each install (see README.md for exactly what
+# that does and doesn't do). Requires curl, jq, tar, base64 (standard on
+# macOS/Linux) and a shell that can run bash. macOS and Linux have this
+# natively; Windows does not -- run this via WSL or Git Bash, not from a
+# plain Command Prompt/PowerShell session (same constraint as this repo's
+# other bash scripts, e.g. demo-video.md's).
 #
 # Usage:
 #   ./install.sh                # installs into the current directory
@@ -97,12 +104,32 @@ cp "$WORKDIR/AGENTS.md" "$TARGET_DIR/AGENTS.md"
 cp -R "$WORKDIR/agent-playbooks" "$TARGET_DIR/agent-playbooks"
 chmod +x "$TARGET_DIR"/agent-playbooks/scripts/*.sh 2>/dev/null || true
 
+# Codex CLI, Cursor, Antigravity, and GitHub Copilot all read AGENTS.md at
+# the project root natively -- nothing more to do for them. Claude Code is
+# the one exception: it only auto-loads CLAUDE.md, never AGENTS.md. A
+# CLAUDE.md containing just an import line is invisible/inert to every
+# other tool, so it's safe to create unconditionally rather than trying to
+# detect which tool is actually in use.
+claude_md_status="created"
+if [[ -e "$TARGET_DIR/CLAUDE.md" ]]; then
+  claude_md_status="skipped (already exists)"
+  if ! grep -q '@AGENTS.md' "$TARGET_DIR/CLAUDE.md" 2>/dev/null; then
+    echo "Note: $TARGET_DIR/CLAUDE.md already exists and doesn't import" >&2
+    echo "AGENTS.md -- if you're using Claude Code, add a line containing" >&2
+    echo "'@AGENTS.md' to it yourself so Claude Code actually loads this." >&2
+  fi
+else
+  echo "@AGENTS.md" > "$TARGET_DIR/CLAUDE.md"
+fi
+
 notice="$(echo "$response" | jq -r '.[0].notice // empty')"
 [[ -n "$notice" ]] && echo "Notice: $notice"
 
 echo "Installed:"
 echo "  $TARGET_DIR/AGENTS.md"
 echo "  $TARGET_DIR/agent-playbooks/"
+echo "  $TARGET_DIR/CLAUDE.md ($claude_md_status -- Claude Code only; every"
+echo "  other supported tool reads AGENTS.md directly and needs no extra file)"
 echo
 echo "Next step: open your AI coding tool in that project and ask it to"
 echo "follow agent-playbooks/project-bootstrap.md. That pass grounds"
