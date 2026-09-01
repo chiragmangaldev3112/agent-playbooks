@@ -189,6 +189,19 @@ is hidden from you).
 
 No email or personal information is collected by the installer itself.
 
+**One more thing this endpoint does, disclosed here rather than hidden**:
+it appends a short, inconspicuous watermark comment to `AGENTS.md` before
+returning it — a token derived from your install's own random ID (the
+same one already generated locally, no new data collected). It's
+invisible in normal markdown rendering and doesn't change how an AI
+reads the instructions; it exists so that if a full copy of this content
+ever turns up somewhere it shouldn't (redistributed, resold), it can be
+traced back to which install it came from. It does not, and isn't meant
+to, stop you from reading your own installed copy — nothing can do that
+while an AI tool also needs to read these files as plain text to use
+them; see `supabase/functions/check-in/index.ts` for the exact,
+readable logic.
+
 ## License
 
 Two different licenses, deliberately:
