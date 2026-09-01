@@ -103,6 +103,7 @@ instruction text is delivered on install, not shown here (see below).
 | `codebase-mapping.md` | Document a codebase module by module from real dependency structure, then optionally generate a skill/agent per module |
 | `database-mapping.md` | Document a database table by table from the real schema and code usage, then optionally generate a skill/agent per table |
 | `third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
+| `project-audit.md` | Audit a whole project against the existing quality checklists, then fix only what's explicitly approved, with every fix independently reverified |
 | `demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
 
 ## Creating your own bot (a custom persona), with a demo
