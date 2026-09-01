@@ -45,6 +45,30 @@ From then on, every actual task routes through
 `agent-playbooks/core/engineering-loop.md` — it classifies the request
 (bug, feature, review, test...) and sends it to the matching playbook.
 
+## Day to day: how you'll actually use this
+
+There's no command to learn and no skill name to memorize. You describe
+what you want the way you already do, and the router
+(`core/engineering-loop.md`) sends it to the matching playbook on its
+own:
+
+| You say | What actually happens |
+|---|---|
+| "Fix this bug where..." | Reproduces the failure first, fixes, re-confirms — never a fix based on a guess |
+| "Add a feature that..." | Writes a failing test from the spec before any implementation code |
+| "Review this PR" | Reviews the real diff, checks security separately, tells you what's confirmed vs. only assumed |
+| "This endpoint is slow" | Profiles before touching anything, instead of guessing at "the slow part" |
+| "Ship this to production" | Decides a staged rollout and rollback plan first, checks in before widening exposure |
+| "This feature stores user data" | Classifies what's sensitive before deciding how to handle it, keeps it out of logs |
+| "Document this codebase / database" | Maps real module or table boundaries from actual code/schema, not folder or column names |
+| "Integrate with X's API" | Tests the real API behavior for real, never handles your credential directly |
+| Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
+
+That's the whole interface. You don't need to read all ~30 files before
+getting value from any one of them — the router finds the right one, and
+each file is self-contained if you ever want to read the one that just
+fired.
+
 ## What's in the box
 
 Grouped by kind of concern. This describes what each does — the actual
@@ -80,6 +104,46 @@ instruction text is delivered on install, not shown here (see below).
 | `database-mapping.md` | Document a database table by table from the real schema and code usage, then optionally generate a skill/agent per table |
 | `third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
 | `demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
+
+## Creating your own bot (a custom persona), with a demo
+
+The six built-in personas in `autonomy/roles.md` (Bug Hunter, Feature
+Builder, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project
+Bootstrapper) cover the common cases. A new one is four things written
+down:
+
+1. **Name** — the job, not a person ("Dependency Auditor," not "Dave").
+2. **One-line remit** — what it does, when it's used.
+3. **What it follows** — an existing playbook if one fits, or its own
+   numbered process if nothing covers it yet.
+4. **Access level** — read/run only, or read/write, with a one-line
+   reason.
+
+Worked example, already in the box:
+
+> ## Dependency Auditor
+>
+> Checks dependencies for newly-disclosed vulnerabilities and whether a
+> fixed, compatible version exists. Recurring cadence, not just on ask.
+>
+> Follow `change-types/dependency-upgrades.md` for the upgrade itself.
+> First: cross-check the lockfile against a vulnerability database, and
+> for anything flagged, confirm the advisory is reachable in how this
+> codebase actually uses the package — not just present in the tree.
+>
+> Read/run only for the audit; upgrading is a separate step needing write
+> access, per the linked playbook.
+
+Before trusting a new persona, prove it: give it a real, answerable task
+and check whether the answer is actually right, not just plausible —
+`autonomy/roles.md`'s own rule for when delegating to one is worth it at
+all.
+
+Once it's proven, `demo-video.md` turns it into a shareable, narrated
+screen-recording — write the scenes as plain `SAY:`/`SHOW:` lines,
+generate the voice-over and screen capture with the included scripts
+(free/local tools, no cloud TTS account needed), and you have a demo of
+your new bot actually doing its job, not just a description of it.
 
 ## How this is distributed
 
