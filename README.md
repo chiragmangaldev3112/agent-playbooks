@@ -72,7 +72,10 @@ fired.
 ## What's in the box
 
 Grouped by kind of concern. This describes what each does — the actual
-instruction text is delivered on install, not shown here (see below).
+instruction text is delivered on install, not shown here (see below). For
+a visual map of every playbook's actual process, see
+**[FLOWS.md](FLOWS.md)** — a flowchart per playbook, matching its real
+numbered steps.
 
 | Playbook | What it's for |
 |---|---|
