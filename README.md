@@ -32,9 +32,17 @@ chmod +x install.sh
 ./install.sh /path/to/your/project   # or no path, for the current directory
 ```
 
+Needs a shell that can run bash — macOS and Linux have this natively.
+**On Windows**, run it via WSL or Git Bash, not a plain Command
+Prompt/PowerShell session.
+
 This copies `AGENTS.md` and `agent-playbooks/` into your project — fast, no
-setup, no account, no token. Works the same regardless of which AI tool
-you use there.
+setup, no account, no token. It also drops in a one-line `CLAUDE.md`
+(only if you don't already have one) that just imports `AGENTS.md`,
+because Claude Code only auto-loads `CLAUDE.md`, never `AGENTS.md` — every
+other supported tool (Codex CLI, Cursor, Antigravity, GitHub Copilot)
+reads `AGENTS.md` at the project root natively and needs nothing extra.
+Works the same regardless of which AI tool you use there.
 
 Then open your AI coding tool in that project and ask it to follow
 `agent-playbooks/project-bootstrap.md` once — the smart, context-aware pass
