@@ -510,8 +510,9 @@ Generate a narrated screen-recording demo from a script
 ```mermaid
 flowchart TD
     A[Write script:\nSAY/SHOW lines] --> B[Generate voice-over\nnarrate.sh]
-    B --> C[Record screen\nrecord-screen.sh]
-    C --> D[Assemble video +\nnarration assemble.sh]
-    D --> E[Watch it—confirm timing\nactually lines up]
+    B --> C[Generate captions\ncaptions.sh]
+    C --> D[Record screen\nrecord-screen.sh]
+    D --> E[Assemble video + narration\n+ captions assemble.sh]
+    E --> F[Watch it—confirm timing\nactually lines up]
 ```
 
