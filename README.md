@@ -99,7 +99,8 @@ Grouped by kind of concern. This describes what each does — the actual
 instruction text is delivered on install, not shown here (see below). For
 a visual map of every playbook's actual process, see
 **[FLOWS.md](FLOWS.md)** — a flowchart per playbook, matching its real
-numbered steps.
+numbered steps. For a concrete "here's what you'd say, here's what
+happens" example for every single one, see **[EXAMPLES.md](EXAMPLES.md)**.
 
 | Playbook | What it's for |
 |---|---|
