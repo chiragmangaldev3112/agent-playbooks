@@ -195,7 +195,7 @@ generate_claude_artifacts() {
     printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$skills_dir/$slug/SKILL.md"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -path "*/examples/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -path "*/examples/*" -print0)
 
   local personas='bug-hunter|Reproduces a reported bug with a real, runnable failing test before proposing any fix.
 feature-builder|Implements a feature test-first: failing test from the spec, implement until it passes.
@@ -224,7 +224,7 @@ generate_cursor_artifacts() {
     printf -- '---\ndescription: "%s"\nalwaysApply: false\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$rules_dir/$slug.mdc"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -path "*/examples/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -path "*/examples/*" -print0)
   echo "Generated $count Cursor rules (.cursor/rules/*.mdc, Agent Requested mode --" >&2
   echo "Cursor semantically matches on 'description' the same way Claude Skills do)." >&2
   echo "AGENTS.md is also read natively by Cursor on its own, confirmed in its docs." >&2
@@ -242,7 +242,7 @@ generate_antigravity_artifacts() {
     printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$skills_dir/$slug/SKILL.md"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -path "*/examples/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -path "*/examples/*" -print0)
   echo "Generated $count Antigravity Skills (.agents/skills/*/SKILL.md)." >&2
   echo "Unlike Cursor/Codex CLI, Antigravity's own docs never confirm it reads" >&2
   echo "AGENTS.md automatically -- these generated Skills are the reliable path." >&2
