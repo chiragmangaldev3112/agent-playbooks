@@ -115,6 +115,7 @@ happens" example for every single one, see **[EXAMPLES.md](EXAMPLES.md)**.
 | `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers |
 | `quality/docs-sync.md` | Verify doc claims against real code, run the project's real linter |
 | `quality/observability.md` | Instrument a feature so its failures surface before a user reports them |
+| `quality/writing-style.md` | Commit messages, PR descriptions, and reports that read like someone who understands the change |
 | `change-types/refactoring.md` | Behavior-preserving restructuring |
 | `change-types/dependency-upgrades.md` | Bumping a dependency version safely |
 | `change-types/database-migration.md` | Safe schema changes via expand/migrate/contract |
