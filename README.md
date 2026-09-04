@@ -217,6 +217,17 @@ while an AI tool also needs to read these files as plain text to use
 them; see `supabase/functions/check-in/index.ts` for the exact,
 readable logic.
 
+## Two different version numbers
+
+`CHANGELOG.md` tracks the *content* version (`agent-playbooks/`) — the one
+`--version`/`AGENT_PLAYBOOKS_VERSION` lets you pin to. `VERSION` and
+`INSTALLER_CHANGELOG.md` in this repo track a separate thing: `install.sh`'s
+own version. You'll basically never need the second one — `curl
+.../install.sh` always fetches current `main` regardless, there's no "pin
+to an old installer" use case the way there's a real one for old content —
+it's tracked mainly so this repo's own release history reflects real,
+distinct states of the installer.
+
 ## License
 
 Two different licenses, deliberately:
