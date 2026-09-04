@@ -21,11 +21,18 @@
 # scripts, e.g. demo-video.md's).
 #
 # Usage:
-#   ./install.sh                # installs into the current directory
-#   ./install.sh /path/to/repo  # installs into that directory instead
+#   ./install.sh                       # installs into the current directory
+#   ./install.sh /path/to/repo         # installs into that directory instead
+#   ./install.sh --version 1.0.5       # pins to that release instead of latest
+#   ./install.sh --version=1.0.5 /path # flag and target dir together, any order
 #
 # Set AGENT_PLAYBOOKS_TOOL=claude|cursor|antigravity|codex|copilot|none to
 # skip the interactive tool prompt (e.g. for a non-interactive/CI install).
+#
+# Set AGENT_PLAYBOOKS_VERSION=1.0.5 (or --version 1.0.5) to install a
+# specific past release instead of whatever's currently latest. See
+# CHANGELOG.md in this repo for the list of released versions and what
+# changed in each. Omit this and you get latest, same as always.
 #
 # After this finishes, point your AI coding agent at
 # agent-playbooks/project-bootstrap.md in the target project -- the smart,
@@ -33,6 +40,17 @@
 # wires the safety guardrail + personas into whichever tool you use there.
 
 set -euo pipefail
+
+requested_version="${AGENT_PLAYBOOKS_VERSION:-}"
+positional=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --version) requested_version="${2:?--version needs a value, e.g. --version 1.0.5}"; shift 2 ;;
+    --version=*) requested_version="${1#--version=}"; shift ;;
+    *) positional+=("$1"); shift ;;
+  esac
+done
+set -- "${positional[@]:-}"
 
 TARGET_DIR="${1:-.}"
 CHECK_IN_URL="${AGENT_PLAYBOOKS_CHECK_IN_URL:-https://cjogceoqhgjzpalbqpga.supabase.co/functions/v1/check-in}"
@@ -66,7 +84,8 @@ fi
 local_id="$(cat "$ID_FILE")"
 
 echo "Fetching the current release..."
-payload="$(jq -n --arg id "$local_id" '{p_id: $id}')"
+payload="$(jq -n --arg id "$local_id" --arg rv "$requested_version" \
+  'if $rv == "" then {p_id: $id} else {p_id: $id, p_requested_version: $rv} end')"
 response="$(curl -fsSL --max-time 15 -X POST \
   "$CHECK_IN_URL" \
   -H "Content-Type: application/json" \
