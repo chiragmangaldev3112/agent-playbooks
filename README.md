@@ -98,7 +98,7 @@ own:
 | "Integrate with X's API" | Tests the real API behavior for real, never handles your credential directly |
 | Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all ~30 files before
+That's the whole interface. You don't need to read all 32 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.

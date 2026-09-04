@@ -57,9 +57,10 @@ Added `EXAMPLES.md` — one real, worked example per playbook.
 a recorded past decision before flagging a fresh gap.
 
 ## 1.1.8 — 2026-09-02
-Removed the Graft reference; closed the same token-efficient-context problem
-with three playbook-native improvements to `codebase-mapping.md`/
-`engineering-loop.md` instead.
+Replaced an external tool reference with three playbook-native
+improvements to `codebase-mapping.md`/`engineering-loop.md`, closing the
+same token-efficient-repeated-context problem without depending on
+anything outside this project.
 
 ## 1.1.7 — 2026-09-01
 Published, but no changelog entry was recorded at the time and the
