@@ -36,9 +36,17 @@ Needs a shell that can run bash — macOS and Linux have this natively.
 **On Windows**, run it via WSL or Git Bash, not a plain Command
 Prompt/PowerShell session.
 
+By default you get the current latest release. To install a specific past
+version instead — see **[CHANGELOG.md](CHANGELOG.md)** for the full list
+and what changed in each:
+
+```bash
+./install.sh --version 1.3.0 /path/to/your/project
+# or: AGENT_PLAYBOOKS_VERSION=1.3.0 ./install.sh /path/to/your/project
+```
+
 This copies `AGENTS.md` and `agent-playbooks/` into your project — fast, no
-setup, no account, no token — and prints the version it installed
-(`agent-playbooks/CHANGELOG.md` has what changed in each one). It also
+setup, no account, no token — and prints the version it installed. It also
 drops in a one-line `CLAUDE.md` (only if you don't already have one) that
 just imports `AGENTS.md`, because Claude Code only auto-loads `CLAUDE.md`,
 never `AGENTS.md`.
@@ -103,6 +111,8 @@ a visual map of every playbook's actual process, see
 **[FLOWS.md](FLOWS.md)** — a flowchart per playbook, matching its real
 numbered steps. For a concrete "here's what you'd say, here's what
 happens" example for every single one, see **[EXAMPLES.md](EXAMPLES.md)**.
+For what changed in each released version (and to install an older one on
+purpose), see **[CHANGELOG.md](CHANGELOG.md)**.
 
 | Playbook | What it's for |
 |---|---|
