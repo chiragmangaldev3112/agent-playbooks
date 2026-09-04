@@ -384,6 +384,18 @@ flowchart TD
     C --> E[Hard block\nin the tool]
 ```
 
+### `safety/secret-scan.md`
+
+A real, enforced block on committing real secrets/credentials
+
+```mermaid
+flowchart TD
+    A[Content about to be\nwritten or committed] --> B[detect-secrets.sh checks\nagainst known token formats]
+    B -->|Matches a known secret format| C[Exit 2: blocked,\nreason on stderr]
+    B -->|Clean| D[Exit 0: proceeds normally]
+    C --> E[Hard block:\ncommit rejected or\nwrite refused]
+```
+
 ### `safety/memory-hygiene.md`
 
 Don't trust a remembered fact once its source code has changed

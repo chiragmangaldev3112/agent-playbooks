@@ -192,6 +192,14 @@ pre-execution hook, then actually tests it — one known-safe command runs
 normally, one known-dangerous one (like `git push --force`) gets hard
 blocked, not just logged.
 
+### `safety/secret-scan.md`
+**Scenario:** wiring up a hard block against committing real credentials.
+**You say:** "Set up the secret-scan guardrail for this project."
+**What happens:** installs the git pre-commit hook (works regardless of
+which tool is used, since it fires on the commit itself), then actually
+tests it — a fake-but-real-shaped secret gets a commit genuinely
+rejected, and an ordinary code change still commits normally afterward.
+
 ### `safety/memory-hygiene.md`
 **Scenario:** an agent recalls "this function handles retries" from an
 earlier session.
