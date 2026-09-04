@@ -104,6 +104,14 @@ for hours (seconds-since-last-success, emitted every run, not just on
 success), logs at the actual failure points, and sets the alert
 threshold well before "quietly broken all day" territory.
 
+### `quality/writing-style.md`
+**Scenario:** writing the PR description for a moderately involved change.
+**You say:** "Write the PR description for this."
+**What happens:** cuts the sentence that just restates the diff, names the
+actual thing that was checked instead of "this should work now," and
+turns three disconnected one-line bullets into the two connected
+sentences they actually were.
+
 ## Change types
 
 ### `change-types/refactoring.md`

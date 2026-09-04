@@ -205,6 +205,18 @@ flowchart TD
     F --> G
 ```
 
+### `quality/writing-style.md`
+
+Prose that reads like someone who understands the change
+
+```mermaid
+flowchart TD
+    A[Prose to write] --> B[Cut padding,\nhedges, stock phrases]
+    B --> C[Concrete nouns;\nname the actor when it matters]
+    C --> D[Bullet only genuine lists;\nvary sentence length]
+    D --> E[Back claims with what\nwas actually checked]
+    E --> F[Read it aloud—cut what\nyou wouldn't actually say]
+```
 
 ## Change types
 
