@@ -139,7 +139,8 @@ Test layering for UI code
 
 ```mermaid
 flowchart TD
-    A[UI code to test] --> B{Pick the layer}
+    A[UI code to test] --> A2{Every spec case\naccounted for?}
+    A2 --> B{Pick the layer}
     B --> C[Component/unit]
     B --> D[Integration]
     B --> E[End-to-end/browser]
@@ -150,6 +151,7 @@ flowchart TD
     G --> H[Check accessibility]
     H --> I[Run suite: fails without\nchange, passes with it]
     I --> J[Capture video/screenshot\nevidence for E2E]
+    J --> K[If it fails later:\ndiagnose vs behavior,\nfix, re-verify, revert if not fixed]
 ```
 
 ### `quality/backend-testing.md`
@@ -168,6 +170,7 @@ flowchart TD
     F --> G
     G --> H[Manage test\ndata deliberately]
     H --> I[Run suite: new test\nfails, then passes]
+    I --> J[If it fails later:\ndiagnose vs contract,\nfix, re-verify, revert if not fixed]
 ```
 
 ### `quality/docs-sync.md`
