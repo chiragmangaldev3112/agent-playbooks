@@ -37,9 +37,11 @@ Needs a shell that can run bash — macOS and Linux have this natively.
 Prompt/PowerShell session.
 
 This copies `AGENTS.md` and `agent-playbooks/` into your project — fast, no
-setup, no account, no token. It also drops in a one-line `CLAUDE.md`
-(only if you don't already have one) that just imports `AGENTS.md`,
-because Claude Code only auto-loads `CLAUDE.md`, never `AGENTS.md`.
+setup, no account, no token — and prints the version it installed
+(`agent-playbooks/CHANGELOG.md` has what changed in each one). It also
+drops in a one-line `CLAUDE.md` (only if you don't already have one) that
+just imports `AGENTS.md`, because Claude Code only auto-loads `CLAUDE.md`,
+never `AGENTS.md`.
 
 If you run it at a real terminal, it also asks which AI tool you're
 using and generates real native artifacts for it — not just a copy of
