@@ -113,6 +113,9 @@ while IFS=$'\t' read -r relpath content_b64; do
   }
 done < <(echo "$archive_json" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
 
+installed_version="$(cat "$WORKDIR/agent-playbooks/VERSION" 2>/dev/null | tr -d '[:space:]')"
+[[ -z "$installed_version" ]] && installed_version="unknown"
+
 if [[ ! -f "$WORKDIR/AGENTS.md" || ! -d "$WORKDIR/agent-playbooks" ]]; then
   echo "Error: fetched release doesn't contain AGENTS.md / agent-playbooks/." >&2
   exit 1
@@ -301,7 +304,7 @@ esac
 notice="$(echo "$response" | jq -r '.[0].notice // empty')"
 [[ -n "$notice" ]] && echo "Notice: $notice"
 
-echo "Installed:"
+echo "Installed agent-playbooks v$installed_version:"
 echo "  $TARGET_DIR/AGENTS.md"
 echo "  $TARGET_DIR/agent-playbooks/"
 echo "  $TARGET_DIR/CLAUDE.md ($claude_md_status -- Claude Code only; every"
