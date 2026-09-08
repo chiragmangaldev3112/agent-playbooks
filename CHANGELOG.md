@@ -5,6 +5,26 @@ content — not a version bump for its own sake. See `agent-playbooks/VERSION`
 for the currently-installed version; a fresh `install.sh` run always fetches
 the latest, and now prints the version it installed.
 
+## 1.6.2 — 2026-09-08
+Sharpened `doc-review.md`'s page-image guidance from real production use,
+not synthetic testing: reviewing a real 146-page third-party QA report
+against a real codebase surfaced two real gaps in the previous guidance.
+First, the `sparse` page-image heuristic (average non-space characters
+per page) can't catch a screenshot with no adjacent caption text —
+common in QA reports where some screenshots are auto-captured rather
+than produced by a scripted step. Fixed the guidance, not the scripts
+(both were already correct): once investigating one specific finding in
+depth, render every page across its full range explicitly rather than
+trusting the heuristic alone. Second, found immediately after on the
+same document: a test case reported overall status "ERROR" while every
+one of its visible steps read "PASSED," with no reason given in the
+text. Following the new guidance above surfaced the real cause in two
+uncaptioned screenshots (a voucher redeemed, then the same voucher
+redeemed again and correctly refused by the app). Added a specific
+trigger: a section's overall status not matching what its visible steps
+show is itself the signal to render that section's full page range, not
+a dead end.
+
 ## 1.6.0 — 2026-09-08
 Added `doc-review.md` + `scripts/extract-doc-text.sh`,
 `scripts/render-doc-pages.sh`, `scripts/doc-page-index.sh` — the same
