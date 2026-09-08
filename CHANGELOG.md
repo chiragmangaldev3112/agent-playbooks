@@ -5,6 +5,20 @@ content — not a version bump for its own sake. See `agent-playbooks/VERSION`
 for the currently-installed version; a fresh `install.sh` run always fetches
 the latest, and now prints the version it installed.
 
+## 1.6.3 — 2026-09-08
+Fixed `scripts/record-screen.sh` (`demo-video.md`'s screen-recording
+step): `-pix_fmt yuv420p` placed before the output path is read by
+avfoundation's demuxer as an *input* capture-format request on some
+hardware, and can fail outright there since avfoundation only offers a
+handful of raw formats — found on real hardware by actually running it
+and getting a silently-empty output file, not assumed from the docs.
+Moved it to an explicit output-side `-vf format=yuv420p` filter instead,
+which can't be misread as an input request, in both the `start` and
+`timed` code paths. Verified: run for real on macOS, producing a valid
+recording with real, non-blank screen content — though the specific
+failure this fixes is hardware/ffmpeg-build-dependent and did not
+reproduce on the machine used to verify it here.
+
 ## 1.6.2 — 2026-09-08
 Sharpened `doc-review.md`'s page-image guidance from real production use,
 not synthetic testing: reviewing a real 146-page third-party QA report
