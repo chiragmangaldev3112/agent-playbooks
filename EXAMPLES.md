@@ -278,3 +278,17 @@ because it found something.
 narrated audio and a screen recording using free local tools, then
 actually plays back the result to confirm timing lines up before calling
 it done — not just assembling files and assuming it works.
+
+### `video-review.md`
+**Scenario:** a tester hands over a screen recording of a bug instead of
+writing it up.
+**You say:** "Here's a video of the checkout bug, tell me what's wrong and
+fix it."
+**What happens:** extracts the audio and periodic frames locally, gets a
+transcript if a speech-to-text engine is available (or says plainly if
+one isn't, and reviews the frames alone instead), drafts a summary/key
+points/bugs/asks from what was actually said and shown, then re-checks
+every one of those findings against that same transcript/frame evidence
+before reporting them — not just repeating an initial guess. If a real
+codebase is present, each fix/build ask is then handed to
+`core/engineering-loop.md` one at a time, never bundled together.

@@ -96,6 +96,7 @@ own:
 | "This feature stores user data" | Classifies what's sensitive before deciding how to handle it, keeps it out of logs |
 | "Document this codebase / database" | Maps real module or table boundaries from actual code/schema, not folder or column names |
 | "Integrate with X's API" | Tests the real API behavior for real, never handles your credential directly |
+| "Here's a recording of the bug" (any video/audio file) | Extracts audio + frames, transcribes locally, re-verifies every finding against that evidence, then routes each one through the engineering loop if you want it fixed |
 | Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
 That's the whole interface. You don't need to read all 32 files before
@@ -147,6 +148,7 @@ purpose), see **[CHANGELOG.md](CHANGELOG.md)**.
 | `third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
 | `project-audit.md` | Audit a whole project against the existing quality checklists, then fix only what's explicitly approved, with every fix independently reverified |
 | `demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
+| `video-review.md` | Turn an existing recording (bug repro, feedback video, any format ffmpeg reads) into a verified report — summary, key points, bugs/gaps, fix-vs-build asks — then optionally route each ask through `core/engineering-loop.md` |
 
 ## Creating your own bot (a custom persona), with a demo
 

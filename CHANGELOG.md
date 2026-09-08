@@ -5,6 +5,62 @@ content — not a version bump for its own sake. See `agent-playbooks/VERSION`
 for the currently-installed version; a fresh `install.sh` run always fetches
 the latest, and now prints the version it installed.
 
+## 1.5.0 — 2026-09-08
+Added `video-review.md` + `scripts/extract-media.sh`, `scripts/transcribe.sh`
+— the reverse pipeline of `demo-video.md`: extract audio/frames from any
+recording ffmpeg can read, transcribe locally (whisper/whisper.cpp, with a
+documented graceful degrade when neither is installed), draft findings
+(summary/key points/bugs/asks), then re-verify each one against the actual
+transcript/frame evidence before handing it to the user, with asks
+optionally routed to `core/engineering-loop.md` one at a time.
+
+Tested directly on macOS, including a full synthetic run through
+`core/engineering-loop.md`: built a real bug-report video (genuine spoken
+narration via `say` describing a defect, plus rendered on-screen frames
+showing the buggy code and a failing test), ran it through
+`extract-media.sh` → `transcribe.sh` (no STT engine installed, degraded
+exactly as documented) → read the extracted frames directly → drafted and
+re-verified findings from that frame evidence alone → handed the resulting
+"fix" ask to `core/bug-fix.md`'s reproduce → fix → verify sequence in a
+throwaway repo, independently re-reproducing the failing test before
+touching code, then confirming both the targeted test and the full suite
+passed after the fix. A re-verification pass over the scripts themselves
+also caught and fixed two real bugs before any of this shipped:
+`extract-media.sh` didn't clear `frames/` before re-extracting, so a
+re-run with a different interval (or a swapped-in audio-only input) left
+stale frames from the previous run mixed in silently; `transcribe.sh`'s
+`whisper` (openai-whisper) branch swallowed both stdout and stderr, so a
+real failure there (bad audio, a failed model download) would have died
+with zero explanation, contradicting this repo's own no-silent-failure
+convention. Both are fixed and re-tested (including a forced-failure case
+proving the error now surfaces, and a stand-in success case proving the
+output-file move logic still matches the real CLI's documented naming).
+
+The real `openai-whisper` transcription output has since been confirmed
+too. The first pip install attempt failed building `llvmlite` from source
+(no wheel for the version pip picked); forcing wheel-only resolution
+(`pip install --only-binary=llvmlite,numba -U openai-whisper`) got past
+it, and a follow-on NumPy 1.x/2.x ABI crash on first run was fixed with
+`pip install 'numpy<2'` — both now documented as Prerequisites in
+`video-review.md`. With a working install, `transcribe.sh` was run
+unmodified against real spoken narration (macOS `say`, not a synthetic
+tone) both directly and through the full `extract-media.sh` →
+`transcribe.sh` chain, with both the `tiny` and default `base` models, and
+produced an accurate transcript each time. `whisper.cpp` remains
+genuinely unverified (no local build available) — same caveat this repo
+already gives Piper in `demo-video.md`. Not run on Linux/Windows directly
+(no such environment available); same ffmpeg-only POSIX-bash design as
+the already-multi-OS `demo-video.md` scripts.
+
+A second re-verification pass found one more real bug: `extract-media.sh`
+extracted audio unconditionally, so a video with no audio stream at all
+(mic off, a muted screen capture — a realistic input, not a corrupt one)
+made the whole script die on that step with a cryptic ffmpeg error, never
+reaching frame extraction. Fixed the same way as the earlier audio-only
+case (check for the stream first, skip and say so if it's missing, keep
+going) and re-tested against a real silent clip alongside the existing
+normal/audio-only/missing-file cases to confirm no regression.
+
 ## 1.4.2 — 2026-09-04
 `install.sh` can now install a specific past release instead of always
 latest: `--version 1.3.0` or `AGENT_PLAYBOOKS_VERSION=1.3.0`. The check-in

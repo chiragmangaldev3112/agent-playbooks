@@ -543,3 +543,20 @@ flowchart TD
     E --> F[Watch it—confirm timing\nactually lines up]
 ```
 
+### `video-review.md`
+
+Turn an existing recording into a verified report, then optionally route it into the engineering loop
+
+```mermaid
+flowchart TD
+    A[Video or audio file] --> B[Extract audio + frames\nextract-media.sh]
+    B --> C[Transcribe audio\ntranscribe.sh]
+    C --> D[Read transcript + frames\ndirectly]
+    D --> E[Draft findings:\nsummary, key points,\nbugs/gaps, asks]
+    E --> F[Re-verify each finding\nagainst the actual evidence]
+    F --> G[Report to user,\nevidence cited inline]
+    G --> H{Codebase present\nand user wants to act?}
+    H -->|Yes, one ask at a time| I[Hand off to\ncore/engineering-loop.md]
+    H -->|No| J[Done — findings\nare the deliverable]
+```
+
