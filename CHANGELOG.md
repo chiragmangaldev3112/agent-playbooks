@@ -5,6 +5,23 @@ content — not a version bump for its own sake. See `agent-playbooks/VERSION`
 for the currently-installed version; a fresh `install.sh` run always fetches
 the latest, and now prints the version it installed.
 
+## 1.7.0 — 2026-09-08
+Extended `quality/frontend-testing.md` and `quality/backend-testing.md`
+with tech/platform-agnostic testing discipline drawn from a real QA
+report review earlier in this project (via `doc-review.md` against a
+real mobile app and its real Katalon test suite), generalized beyond
+that specific framework. `frontend-testing.md`: wait for the real
+interactable state (not just presence), prefer stable purpose-built
+locators over positional ones on web or native mobile, don't assume
+screen/list state survives an action unchanged, and one-action-per-step
+discipline to catch duplicated steps — also fixed a pre-existing stale
+step-number cross-reference in the file's own "Who uses this" section.
+`backend-testing.md`: test the second call of an idempotent operation
+explicitly (not just the first), wait on the real async completion
+condition instead of a fixed sleep, and treat "passes standalone, fails
+in the full suite" as the concrete symptom of test-order/state
+dependency.
+
 ## 1.6.3 — 2026-09-08
 Fixed `scripts/record-screen.sh` (`demo-video.md`'s screen-recording
 step): `-pix_fmt yuv420p` placed before the output path is read by
