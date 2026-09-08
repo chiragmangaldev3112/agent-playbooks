@@ -292,3 +292,20 @@ every one of those findings against that same transcript/frame evidence
 before reporting them — not just repeating an initial guess. If a real
 codebase is present, each fix/build ask is then handed to
 `core/engineering-loop.md` one at a time, never bundled together.
+
+### `doc-review.md`
+**Scenario:** a stakeholder emails a requirements doc instead of filing a
+ticket.
+**You say:** "Here's the spec PDF, tell me what it's asking for and
+what's still open."
+**What happens:** extracts the text (`pdftotext`/`pandoc` depending on
+format), renders pages as images instead only where the text comes back
+suspiciously sparse (a scanned page, not just any page with a picture on
+it), reads a 600-page document in ~20-page chunks rather than all at once
+so it costs the same to review as a 6-page one, drafts a summary/key
+points/the document's own raised questions/action items split into
+fix-vs-build, then re-checks every finding against that same text/page
+evidence before reporting them. If a real codebase is present, each
+action item is handed to `core/engineering-loop.md` one at a time; a
+raised question gets surfaced back to you instead of being answered on
+the document's behalf.

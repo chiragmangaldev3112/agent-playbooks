@@ -97,9 +97,10 @@ own:
 | "Document this codebase / database" | Maps real module or table boundaries from actual code/schema, not folder or column names |
 | "Integrate with X's API" | Tests the real API behavior for real, never handles your credential directly |
 | "Here's a recording of the bug" (any video/audio file) | Extracts audio + frames, transcribes locally, re-verifies every finding against that evidence, then routes each one through the engineering loop if you want it fixed |
+| "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
 | Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all 32 files before
+That's the whole interface. You don't need to read all 33 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
@@ -149,6 +150,7 @@ purpose), see **[CHANGELOG.md](CHANGELOG.md)**.
 | `project-audit.md` | Audit a whole project against the existing quality checklists, then fix only what's explicitly approved, with every fix independently reverified |
 | `demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
 | `video-review.md` | Turn an existing recording (bug repro, feedback video, any format ffmpeg reads) into a verified report — summary, key points, bugs/gaps, fix-vs-build asks — then optionally route each ask through `core/engineering-loop.md` |
+| `doc-review.md` | Turn a document (PDF/DOCX/ODT/RTF/etc.) into a verified report — summary, key points, queries it raises, fix-vs-build action items — reads even a several-hundred-page document in bounded chunks, then optionally routes each item through `core/engineering-loop.md` |
 
 ## Creating your own bot (a custom persona), with a demo
 

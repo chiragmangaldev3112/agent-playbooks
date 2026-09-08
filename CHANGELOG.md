@@ -5,6 +5,52 @@ content — not a version bump for its own sake. See `agent-playbooks/VERSION`
 for the currently-installed version; a fresh `install.sh` run always fetches
 the latest, and now prints the version it installed.
 
+## 1.6.0 — 2026-09-08
+Added `doc-review.md` + `scripts/extract-doc-text.sh`,
+`scripts/render-doc-pages.sh`, `scripts/doc-page-index.sh` — the same
+pipeline as `video-review.md` applied to a document instead of a
+recording: extract text (`pdftotext` for PDF, `pandoc` for DOCX/ODT/RTF/
+HTML/etc.), optionally render scanned/visual pages as images, draft
+findings (summary/key points/queries raised/action items split fix-vs-
+build), re-verify each one against the actual text/page evidence, then
+optionally route each action item to `core/engineering-loop.md` one at a
+time. Also added token-bounded processing for large inputs, on both
+playbooks: `extract-media.sh`'s frame interval now defaults to `auto`
+(duration ÷ 120 frames, floored at 3s) instead of a fixed 5s, so a 4-hour
+recording and a 12-second one both land around ~120 frames; and
+`doc-page-index.sh` gives line-number-per-page boundaries so a
+several-hundred-page document can be read in ~20-page chunks instead of
+loading it whole.
+
+Tested directly on macOS, including against a real 146-page, 10MB
+third-party PDF (a Katalon mobile-app test report, not synthetic) —
+extracted cleanly, chunked-read for real (not just designed), and cross-
+checked page-to-line mapping directly against the file's real content.
+Two real bugs were found and fixed during this pass: a page-count
+off-by-one in the sparse-page-warning math, and `render-doc-pages.sh`
+producing double-suffixed filenames because `pdftoppm` appends its own
+page number even for a single-page render (fixed with `-singlefile`). A
+full run through `core/engineering-loop.md` was also done, real not
+simulated — the same throwaway-repo bug-fix scenario from
+`video-review.md`'s own verification, this time driven by a synthetic
+PDF. `extract-media.sh`'s new `auto` interval was verified against a
+genuinely 4-hour-long synthetic video: correctly computed a 120s interval
+and extracted exactly 120 frames. Not run on Linux/Windows directly (no
+such environment available); same plain POSIX-bash + real-CLI-tool shape
+already exercised cross-platform-honestly elsewhere in this repo.
+
+A further re-verification pass found two more real bugs, fixed before
+release. `extract-media.sh`: `frame_last.png` could silently fail to be
+written at all while the script still reported success (`ffmpeg` seeking
+too close to EOF can produce zero output while still exiting 0) — fixed
+with a bounded retry at increasing margins plus an explicit
+file-existence check instead of trusting the exit code.
+`extract-doc-text.sh`: the file extension was detected from the full path
+instead of the filename, so a dotted parent directory (e.g. a `v2.0/`
+folder) corrupted detection for an extensionless file inside it — fixed
+by extracting from `basename` instead. Both re-confirmed against the
+exact cases that exposed them.
+
 ## 1.5.0 — 2026-09-08
 Added `video-review.md` + `scripts/extract-media.sh`, `scripts/transcribe.sh`
 — the reverse pipeline of `demo-video.md`: extract audio/frames from any

@@ -560,3 +560,22 @@ flowchart TD
     H -->|No| J[Done — findings\nare the deliverable]
 ```
 
+### `doc-review.md`
+
+Turn a document into a verified report, then optionally route it into the engineering loop
+
+```mermaid
+flowchart TD
+    A[Document: PDF/DOCX/etc] --> B[Extract text\nextract-doc-text.sh]
+    B --> C{Text came back\nsparse? scanned/image PDF}
+    C -->|Yes| D[Render pages as images\nrender-doc-pages.sh]
+    C -->|No| E[Read text in\nbounded chunks]
+    D --> E
+    E --> F[Draft findings:\nsummary, key points,\nqueries raised, action items]
+    F --> G[Re-verify each finding\nagainst the actual evidence]
+    G --> H[Report to user,\nevidence cited inline]
+    H --> I{Codebase present\nand user wants to act?}
+    I -->|Yes, one item at a time| J[Hand off to\ncore/engineering-loop.md]
+    I -->|No| K[Done — findings\nare the deliverable]
+```
+
