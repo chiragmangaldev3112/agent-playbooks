@@ -25,6 +25,8 @@
 #   ./install.sh /path/to/repo         # installs into that directory instead
 #   ./install.sh --version 1.0.5       # pins to that release instead of latest
 #   ./install.sh --version=1.0.5 /path # flag and target dir together, any order
+#   ./install.sh --only bug-fix        # just that playbook (+ what it needs)
+#   ./install.sh --only bug-fix,code-review,core/engineering-loop.md
 #
 # Set AGENT_PLAYBOOKS_TOOL=claude|cursor|antigravity|codex|copilot|none to
 # skip the interactive tool prompt (e.g. for a non-interactive/CI install).
@@ -33,6 +35,22 @@
 # specific past release instead of whatever's currently latest. See
 # CHANGELOG.md in this repo for the list of released versions and what
 # changed in each. Omit this and you get latest, same as always.
+#
+# Set AGENT_PLAYBOOKS_ONLY=bug-fix,code-review (or --only bug-fix,code-review)
+# to install just those playbook(s) instead of the full set -- a bare name
+# (with or without .md) is resolved by searching agent-playbooks/ for a
+# matching filename, or give a path relative to agent-playbooks/ directly
+# (core/bug-fix.md) if two playbooks happen to share a basename. This still
+# fetches the whole release from the server (there's no partial-fetch API),
+# but only writes the requested file(s) to disk -- PLUS, recursively,
+# anything any of them actually references (a backtick-quoted, slash-
+# containing path to another .md or .sh file, the same convention checked
+# against this repo's real cross-references before this feature was built).
+# AGENTS.md/VERSION/LICENSE are always included regardless, since every
+# install needs an entry point and the license that governs the content.
+# The tool-artifact generators below (Claude Skills, Cursor rules, etc.)
+# already scan whatever's actually on disk, so a reduced install
+# automatically gets a reduced, still-correct set of generated artifacts.
 #
 # Claude Code only: each generated sub-agent (.claude/agents/*.md) is
 # tagged in autonomy/roles.md as "verify" (Code Reviewer, Manual/
@@ -56,11 +74,14 @@
 set -euo pipefail
 
 requested_version="${AGENT_PLAYBOOKS_VERSION:-}"
+only_requested="${AGENT_PLAYBOOKS_ONLY:-}"
 positional=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --version) requested_version="${2:?--version needs a value, e.g. --version 1.0.5}"; shift 2 ;;
     --version=*) requested_version="${1#--version=}"; shift ;;
+    --only) only_requested="${2:?--only needs a value, e.g. --only bug-fix}"; shift 2 ;;
+    --only=*) only_requested="${1#--only=}"; shift ;;
     *) positional+=("$1"); shift ;;
   esac
 done
@@ -155,7 +176,161 @@ if [[ ! -f "$WORKDIR/AGENTS.md" || ! -d "$WORKDIR/agent-playbooks" ]]; then
 fi
 
 cp "$WORKDIR/AGENTS.md" "$TARGET_DIR/AGENTS.md"
-cp -R "$WORKDIR/agent-playbooks" "$TARGET_DIR/agent-playbooks"
+mkdir -p "$TARGET_DIR/agent-playbooks"
+
+if [[ -z "$only_requested" ]]; then
+  cp -R "$WORKDIR/agent-playbooks/." "$TARGET_DIR/agent-playbooks/"
+else
+  # --only mode: resolve each requested name to a real file under
+  # agent-playbooks/, then bring along what it actually needs to work --
+  # bounded two ways, both found by testing this against the real repo
+  # before settling on the design:
+  #   1. Following .md references fully transitively explodes to nearly
+  #      the whole repo the moment core/engineering-loop.md is reached (it's
+  #      the router -- referencing almost every other playbook by design,
+  #      not a real dependency chain). So a requested playbook's own DIRECT
+  #      .md references are included, but references-of-references are not
+  #      followed further -- a "see also" pointer two hops away isn't a
+  #      real requirement to install.
+  #   2. A .sh script reference is a genuine functional need (a playbook
+  #      that says "run ../scripts/x.sh" doesn't work without it), so those
+  #      ARE followed fully transitively, from the requested file(s) and
+  #      from whatever direct .md dependency got pulled in above.
+  # Canonicalized (symlinks resolved) up front, not left as whatever form
+  # $WORKDIR happened to be in -- macOS's mktemp -d returns a path under
+  # /var/folders/..., but /var is itself a symlink to /private/var, so a
+  # later `cd ... && pwd -P` (used to resolve a "../x" reference) returns
+  # the /private/var/... form. Comparing one against the other silently
+  # failed every "is this still inside pb_root" check below; confirmed by
+  # tracing the actual mismatch on a real Mac before this fix.
+  pb_root="$(cd "$WORKDIR/agent-playbooks" && pwd -P)"
+  # Plain indexed array + linear-search dedup, not an associative array --
+  # macOS ships bash 3.2 by default (associative arrays need bash 4+), and
+  # this script explicitly targets "macOS and Linux natively," confirmed by
+  # actually invoking /bin/bash on a real Mac before settling on this,
+  # not assumed portable from reading bash's changelog.
+  included=()
+  contains() {
+    local needle="$1" x
+    # Guard against expanding an empty array under `set -u` -- bash < 4.4
+    # (macOS's default /bin/bash is 3.2) treats "${arr[@]}" on a truly
+    # empty array as an unbound variable, not an empty expansion. Confirmed
+    # by actually hitting this exact error on a real Mac before the guard.
+    [[ ${#included[@]} -eq 0 ]] && return 1
+    for x in "${included[@]}"; do
+      [[ "$x" == "$needle" ]] && return 0
+    done
+    return 1
+  }
+  # Resolves a reference string (e.g. "../quality/writing-style.md") found
+  # inside $1 (a path relative to pb_root) to a path relative to pb_root,
+  # or prints nothing if it doesn't resolve to a real file inside the tree.
+  resolve_ref() {
+    local from_relpath="$1" ref="$2" from_dir ref_dir ref_base resolved_dir resolved_abs
+    from_dir="$(dirname "$pb_root/$from_relpath")"
+    ref_dir="$(dirname "$ref")"
+    ref_base="$(basename "$ref")"
+    resolved_dir="$(cd "$from_dir" 2>/dev/null && cd "$ref_dir" 2>/dev/null && pwd -P)" || return 0
+    resolved_abs="$resolved_dir/$ref_base"
+    [[ "$resolved_abs" != "$pb_root/"* ]] && return 0
+    [[ -f "$resolved_abs" ]] || return 0
+    echo "${resolved_abs#"$pb_root"/}"
+  }
+  queue=()
+
+  IFS=',' read -r -a requested_names <<< "$only_requested"
+  for raw_name in "${requested_names[@]}"; do
+    name="$(echo "$raw_name" | xargs)"
+    [[ -z "$name" ]] && continue
+    if [[ "$name" == */* ]]; then
+      candidate="$name"
+      [[ "$candidate" != *.md ]] && candidate="${candidate}.md"
+      if [[ ! -f "$pb_root/$candidate" ]]; then
+        echo "Error: --only requested '$name' -- no file at agent-playbooks/$candidate" >&2
+        exit 1
+      fi
+      queue+=("$candidate")
+    else
+      base="${name%.md}.md"
+      matches=()
+      while IFS= read -r -d '' f; do
+        matches+=("${f#"$pb_root"/}")
+      done < <(find "$pb_root" -name "$base" -print0)
+      if [[ ${#matches[@]} -eq 0 ]]; then
+        echo "Error: --only requested '$name' -- no playbook matching '$base' found under agent-playbooks/" >&2
+        exit 1
+      elif [[ ${#matches[@]} -gt 1 ]]; then
+        echo "Error: --only '$name' matches more than one file, be specific with a path: ${matches[*]}" >&2
+        exit 1
+      fi
+      queue+=("${matches[0]}")
+    fi
+  done
+  directly_requested=("${queue[@]}")
+  for relpath in "${directly_requested[@]}"; do
+    included+=("$relpath")
+  done
+
+  # Phase 1: each directly-requested file's own DIRECT references (.md and
+  # .sh both) -- one hop only, no further recursion into what those
+  # references themselves mention.
+  direct_deps=()
+  for seed in "${directly_requested[@]}"; do
+    while IFS= read -r ref; do
+      [[ -z "$ref" ]] && continue
+      resolved="$(resolve_ref "$seed" "$ref")"
+      if [[ -n "$resolved" ]] && ! contains "$resolved"; then
+        included+=("$resolved")
+        direct_deps+=("$resolved")
+      fi
+    done < <(grep -oE '`[./]*[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)+\.(md|sh)`' "$pb_root/$seed" 2>/dev/null | tr -d '`')
+  done
+
+  # Phase 2: from every file gathered so far, follow .sh references only,
+  # fully transitively -- a real functional need, not a routing pointer.
+  # Built via explicit append, not "arrA[@] arrB[@]" concatenation -- the
+  # same empty-array-under-set-u trap applies there too on bash 3.2 when
+  # direct_deps has zero elements, confirmed by hitting it for real.
+  sh_queue=()
+  for x in "${directly_requested[@]}"; do sh_queue+=("$x"); done
+  if [[ ${#direct_deps[@]} -gt 0 ]]; then
+    for x in "${direct_deps[@]}"; do sh_queue+=("$x"); done
+  fi
+  idx=0
+  while [[ $idx -lt ${#sh_queue[@]} ]]; do
+    current="${sh_queue[$idx]}"
+    idx=$((idx + 1))
+    while IFS= read -r ref; do
+      [[ -z "$ref" ]] && continue
+      resolved="$(resolve_ref "$current" "$ref")"
+      if [[ -n "$resolved" ]] && ! contains "$resolved"; then
+        included+=("$resolved")
+        sh_queue+=("$resolved")
+      fi
+    done < <(grep -oE '`[./]*[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)+\.sh`' "$pb_root/$current" 2>/dev/null | tr -d '`')
+  done
+
+  for relpath in "${included[@]}"; do
+    mkdir -p "$TARGET_DIR/agent-playbooks/$(dirname "$relpath")"
+    cp "$pb_root/$relpath" "$TARGET_DIR/agent-playbooks/$relpath"
+  done
+  cp "$pb_root/VERSION" "$TARGET_DIR/agent-playbooks/VERSION" 2>/dev/null || true
+  cp "$pb_root/LICENSE" "$TARGET_DIR/agent-playbooks/LICENSE" 2>/dev/null || true
+  chmod +x "$TARGET_DIR"/agent-playbooks/scripts/*.sh 2>/dev/null || true
+
+  echo "--only: requested ${directly_requested[*]}" >&2
+  pulled_in=()
+  for relpath in "${included[@]}"; do
+    is_direct=0
+    for d in "${directly_requested[@]}"; do
+      [[ "$d" == "$relpath" ]] && is_direct=1 && break
+    done
+    [[ $is_direct -eq 0 ]] && pulled_in+=("$relpath")
+  done
+  if [[ ${#pulled_in[@]} -gt 0 ]]; then
+    echo "--only: pulled in as real dependencies: ${pulled_in[*]}" >&2
+  fi
+fi
 chmod +x "$TARGET_DIR"/agent-playbooks/scripts/*.sh 2>/dev/null || true
 
 # Codex CLI and Cursor both read AGENTS.md at the project root natively,

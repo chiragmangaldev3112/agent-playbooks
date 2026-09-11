@@ -8,6 +8,49 @@ installer script the way `--version` lets you pin to old content — the tool
 just gets bug fixes forward. This file exists mainly so the repo's Releases
 reflect real, distinct states of the installer rather than being empty.
 
+## 1.3.0 — 2026-09-11
+New `--only <name>[,<name>...]` / `AGENT_PLAYBOOKS_ONLY` flag: install one
+playbook (or a few) instead of the full 34-file set, plus whatever it
+actually needs — a playbook's own direct references to another playbook
+(one hop only, not followed further: `core/engineering-loop.md` links to
+nearly every other playbook by design as the router, so a full transitive
+follow explodes to almost the whole repo the moment anything references
+it — confirmed by hitting exactly that explosion before bounding it), and
+any script reference followed fully (a genuine functional need, not a "see
+also" pointer — `--only safety-guardrail` correctly pulls in
+`scripts/block-dangerous.sh`). `AGENTS.md`/`VERSION`/`LICENSE` always
+included. The existing tool-artifact generators (Claude Skills, Cursor
+rules) needed no changes — they already scan whatever's actually on disk,
+so a reduced install produces a correctly-reduced set of generated
+artifacts for free.
+
+Three real bugs found building this, all by actually running it rather
+than reading the code:
+- macOS ships bash 3.2 by default (associative arrays need bash 4+) —
+  `declare -A` crashed immediately on a real Mac. Rewritten with a plain
+  array and a linear-search `contains()` helper.
+- bash before 4.4 treats `"${arr[@]}"` on a truly empty array as an
+  unbound variable under `set -u`, not an empty expansion — hit twice
+  (once inside `contains()`, once building the phase-2 queue via
+  `"${a[@]}" "${b[@]}"` concatenation) before guarding both.
+- The actual blocker: `mktemp -d`'s path (under `/var/folders/...`) and
+  the same directory resolved via `cd .. && pwd -P` (`/private/var/
+  folders/...`, since `/var` is itself a symlink) never string-matched,
+  so every "is this still inside the tree" check silently failed and
+  nothing was ever pulled in as a dependency. Fixed by canonicalizing the
+  playbooks root once via `pwd -P` before any comparison, found by adding
+  real trace output and watching the exact path mismatch, not by
+  inspection.
+
+**Verified for real:** `--only bug-fix` (pulls in `writing-style.md` +
+`engineering-loop.md`, stops there), `--only safety-guardrail` (pulls in
+its script plus a cascaded dependency's scripts), multiple comma-separated
+names, a nonexistent name (errors, doesn't silently succeed), the
+full-path disambiguation form, Claude Code Skill generation against the
+reduced set (exactly 3 Skills for a 3-file install, not 34), and the
+default full install (still exactly 34 files, unaffected) — all run
+against the live endpoint, not simulated.
+
 ## 1.2.2 — 2026-09-11
 `install.sh`'s own header comment and `README.md`'s model-tiering section
 still described Bug Hunter as "implement" tier — stale prose left behind

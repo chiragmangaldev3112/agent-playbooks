@@ -45,6 +45,28 @@ and what changed in each:
 # or: AGENT_PLAYBOOKS_VERSION=1.3.0 ./install.sh /path/to/your/project
 ```
 
+**Installing just one playbook instead of the full set:**
+
+```bash
+./install.sh --only bug-fix /path/to/your/project
+./install.sh --only bug-fix,code-review /path/to/your/project   # comma-separated, more than one
+```
+
+A bare name (with or without `.md`) is matched by filename anywhere under
+`agent-playbooks/`; give a path relative to `agent-playbooks/` instead
+(`core/bug-fix.md`) if two playbooks ever share a basename. This still
+fetches the full release from the server — there's no partial-fetch API —
+but only writes the requested file(s) to disk, plus, automatically,
+whatever they actually need: a playbook's own direct references to another
+playbook (one hop only — `core/engineering-loop.md` links to nearly every
+other playbook by design, so following references-of-references would
+pull in almost the whole set, defeating the point) and any script
+reference, followed fully (a script is a real functional need, not a "see
+also" pointer — requesting `safety-guardrail.md` correctly pulls in
+`scripts/block-dangerous.sh`). `AGENTS.md`, `VERSION`, and `LICENSE` are
+always included. Prints exactly what was requested versus what was pulled
+in as a dependency, so it's never a silent surprise.
+
 This copies `AGENTS.md` and `agent-playbooks/` into your project — fast, no
 setup, no account, no token — and prints the version it installed. It also
 drops in a one-line `CLAUDE.md` (only if you don't already have one) that
