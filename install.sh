@@ -36,8 +36,10 @@
 #
 # Claude Code only: each generated sub-agent (.claude/agents/*.md) is
 # tagged in autonomy/roles.md as "verify" (Code Reviewer, Manual/
-# Exploratory Tester -- catches what someone else got wrong, so it
-# defaults to the strongest model) or "implement" (Bug Hunter, Feature
+# Exploratory Tester, and Bug Hunter -- Bug Hunter also fixes, but
+# engineering-loop.md names it as the independent-verification pass for a
+# bug fix, so it takes the stricter tier -- catches what someone else got
+# wrong, so it defaults to the strongest model) or "implement" (Feature
 # Builder, Test Writer, Project Bootstrapper -- does work a verify pass
 # independently re-checks, so a lighter/faster model is fine). Override
 # per persona with AGENT_PLAYBOOKS_MODEL_<PERSONA_NAME> (e.g.

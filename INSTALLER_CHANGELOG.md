@@ -8,6 +8,13 @@ installer script the way `--version` lets you pin to old content — the tool
 just gets bug fixes forward. This file exists mainly so the repo's Releases
 reflect real, distinct states of the installer rather than being empty.
 
+## 1.2.2 — 2026-09-11
+`install.sh`'s own header comment and `README.md`'s model-tiering section
+still described Bug Hunter as "implement" tier — stale prose left behind
+when 1.2.1 fixed the actual generation code to tag it "verify." The code
+was already correct (confirmed again: `bug-hunter.md` resolves to `opus`
+with no overrides), only the documentation around it wasn't. Fixed both.
+
 ## 1.2.1 — 2026-09-11
 Bug Hunter's generated Claude Code sub-agent now defaults to `opus`
 instead of `sonnet`, matching content v1.14.1's model-tier correction:

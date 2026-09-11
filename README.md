@@ -85,11 +85,14 @@ AGENT_PLAYBOOKS_TOOL=none        ./install.sh /path/to/your/project   # AGENTS.m
 **Claude Code only — choosing which model each generated sub-agent uses:**
 by default, the six personas in `.claude/agents/*.md` (see
 `autonomy/roles.md`) are split by what they actually do — a role that
-*checks* someone else's work (Code Reviewer, Manual/Exploratory Tester)
-gets the strongest model, a role that *does* the work a check will
-independently catch mistakes in (Bug Hunter, Feature Builder, Test
-Writer, Project Bootstrapper) gets a lighter/faster one. Override any of
-that — one persona, one whole tier, or "just use one model for
+*checks* someone else's work (Code Reviewer, Manual/Exploratory Tester,
+and Bug Hunter — it also fixes, but it's also the persona named for
+independently re-running a repro to confirm someone else's fix, so it
+takes the stricter tier) gets the strongest model, a role that only
+*does* work a check will independently catch mistakes in (Feature
+Builder, Test Writer, Project Bootstrapper) gets a lighter/faster one.
+Override any of that — one persona, one whole tier, or "just use one
+model for
 everything":
 
 ```bash
