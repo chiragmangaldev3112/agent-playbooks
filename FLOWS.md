@@ -365,6 +365,21 @@ flowchart TD
     E --> F
 ```
 
+**Claude Code only — which model a generated persona uses:**
+
+```mermaid
+flowchart TD
+    A[Generating a persona's\nsub-agent at install] --> B{Persona-specific env var set?\nAGENT_PLAYBOOKS_MODEL_-PERSONA-}
+    B -->|Yes| C[Use that model—\nwins over everything below]
+    B -->|No| D{Persona tagged\nverify or implement?}
+    D -->|verify: Code Reviewer,\nManual/Exploratory Tester,\nBug Hunter| E{AGENT_PLAYBOOKS_MODEL_VERIFY set?}
+    D -->|implement: Feature Builder,\nTest Writer, Project Bootstrapper| F{AGENT_PLAYBOOKS_MODEL_IMPLEMENT set?}
+    E -->|Yes| C
+    E -->|No| G[Default: opus]
+    F -->|Yes| C
+    F -->|No| H[Default: sonnet]
+```
+
 ### `autonomy/standing-permission.md`
 
 A written, bounded grant letting the agent skip per-action confirmation for explicitly named actions only

@@ -110,7 +110,11 @@ threshold well before "quietly broken all day" territory.
 **What happens:** cuts the sentence that just restates the diff, names the
 actual thing that was checked instead of "this should work now," and
 turns three disconnected one-line bullets into the two connected
-sentences they actually were.
+sentences they actually were. For a harder case (writing meant for a wider
+audience, where subtler AI-sounding patterns matter more), a follow-up
+pass through [github.com/blader/humanizer](https://github.com/blader/humanizer)
+catches what this playbook's own checklist doesn't name explicitly — used
+after, not instead of, the checks above.
 
 ## Change types
 
@@ -180,6 +184,22 @@ dependencies."
 one gets defined in four lines (name, remit, which playbook it follows,
 access level) — a "Dependency Auditor" that's read-only for the audit
 itself, matching the existing template rather than inventing a new format.
+
+**Scenario (Claude Code only):** wanting to spend less on routine
+build/fix work without dulling review.
+**You say:** "Use a cheaper model for anything that just builds or fixes,
+keep review on the strongest one" — or nothing at all, since that's
+already the installed default.
+**What happens:** each persona is tagged *verify* or *implement* — Code
+Reviewer, Manual/Exploratory Tester, and Bug Hunter (it also fixes, but
+it's the persona named for independently re-confirming someone else's fix)
+default to the strongest model; Feature Builder, Test Writer, and Project
+Bootstrapper default to a lighter one, since a verify-tagged pass
+independently re-checks their work anyway. Override one persona
+(`AGENT_PLAYBOOKS_MODEL_CODE_REVIEWER=haiku`), a whole tier
+(`AGENT_PLAYBOOKS_MODEL_VERIFY`/`AGENT_PLAYBOOKS_MODEL_IMPLEMENT`), or set
+both tier variables to the same value for one model everywhere — set at
+install time, not something to configure after the fact.
 
 ### `autonomy/standing-permission.md`
 **Scenario:** tired of re-approving test runs and feature-branch commits.

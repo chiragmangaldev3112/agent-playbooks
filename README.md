@@ -176,7 +176,7 @@ purpose), see **[CHANGELOG.md](CHANGELOG.md)**.
 | `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers |
 | `quality/docs-sync.md` | Verify doc claims against real code, run the project's real linter |
 | `quality/observability.md` | Instrument a feature so its failures surface before a user reports them |
-| `quality/writing-style.md` | Commit messages, PR descriptions, and reports that read like someone who understands the change |
+| `quality/writing-style.md` | Commit messages, PR descriptions, and reports that read like someone who understands the change; links to [github.com/blader/humanizer](https://github.com/blader/humanizer) for a deeper catalog of the same patterns, as an optional follow-up, not a dependency |
 | `change-types/refactoring.md` | Behavior-preserving restructuring |
 | `change-types/dependency-upgrades.md` | Bumping a dependency version safely |
 | `change-types/database-migration.md` | Safe schema changes via expand/migrate/contract |
