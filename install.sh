@@ -34,6 +34,18 @@
 # CHANGELOG.md in this repo for the list of released versions and what
 # changed in each. Omit this and you get latest, same as always.
 #
+# Claude Code only: each generated sub-agent (.claude/agents/*.md) is
+# tagged in autonomy/roles.md as "verify" (Code Reviewer, Manual/
+# Exploratory Tester -- catches what someone else got wrong, so it
+# defaults to the strongest model) or "implement" (Bug Hunter, Feature
+# Builder, Test Writer, Project Bootstrapper -- does work a verify pass
+# independently re-checks, so a lighter/faster model is fine). Override
+# per persona with AGENT_PLAYBOOKS_MODEL_<PERSONA_NAME> (e.g.
+# AGENT_PLAYBOOKS_MODEL_CODE_REVIEWER=haiku), or per tier with
+# AGENT_PLAYBOOKS_MODEL_VERIFY / AGENT_PLAYBOOKS_MODEL_IMPLEMENT (set both
+# to the same value for "one model for every persona"). Checked most-
+# specific first; unset means the opus/sonnet default.
+#
 # After this finishes, point your AI coding agent at
 # agent-playbooks/project/project-bootstrap.md in the target project -- the smart,
 # context-aware pass that grounds AGENTS.md in the target's real stack and
@@ -219,20 +231,36 @@ generate_claude_artifacts() {
     count=$((count + 1))
   done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -path "*/examples/*" -print0)
 
-  local personas='bug-hunter|Reproduces a reported bug with a real, runnable failing test before proposing any fix.
-feature-builder|Implements a feature test-first: failing test from the spec, implement until it passes.
-code-reviewer|Reviews a diff for correctness, security, and convention adherence.
-test-writer|Adds test coverage for existing, untested code.
-manual-exploratory-tester|Explores a running app or change the way a human tester would.
-project-bootstrapper|Onboards an agent to an unfamiliar repo, grounding every claim in real files.'
-  local n=0 pslug pdesc
-  while IFS='|' read -r pslug pdesc; do
+  local personas='bug-hunter|implement|Reproduces a reported bug with a real, runnable failing test before proposing any fix.
+feature-builder|implement|Implements a feature test-first: failing test from the spec, implement until it passes.
+code-reviewer|verify|Reviews a diff for correctness, security, and convention adherence.
+test-writer|implement|Adds test coverage for existing, untested code.
+manual-exploratory-tester|verify|Explores a running app or change the way a human tester would.
+project-bootstrapper|implement|Onboards an agent to an unfamiliar repo, grounding every claim in real files.'
+  local n=0 pslug ptier pdesc model env_name
+  while IFS='|' read -r pslug ptier pdesc; do
     [[ -z "$pslug" ]] && continue
-    printf -- '---\nname: %s\ndescription: "%s"\ntools: Read, Grep, Glob, Bash\n---\n\nFollow the persona defined in `agent-playbooks/autonomy/roles.md` exactly (the section matching this agent'"'"'s name).\n' \
-      "$pslug" "$pdesc" > "$agents_dir/$pslug.md"
+    # Most-specific override wins: this exact persona, then its tier, then
+    # the opus(verify)/sonnet(implement) built-in default. Same override
+    # covers "pin one persona," "one model for everything" (set both tier
+    # vars the same), and "leave it at the sane default" (set nothing).
+    env_name="AGENT_PLAYBOOKS_MODEL_$(echo "$pslug" | tr '[:lower:]-' '[:upper:]_')"
+    if [[ -n "${!env_name:-}" ]]; then
+      model="${!env_name}"
+    elif [[ "$ptier" == "verify" && -n "${AGENT_PLAYBOOKS_MODEL_VERIFY:-}" ]]; then
+      model="$AGENT_PLAYBOOKS_MODEL_VERIFY"
+    elif [[ "$ptier" == "implement" && -n "${AGENT_PLAYBOOKS_MODEL_IMPLEMENT:-}" ]]; then
+      model="$AGENT_PLAYBOOKS_MODEL_IMPLEMENT"
+    elif [[ "$ptier" == "verify" ]]; then
+      model="opus"
+    else
+      model="sonnet"
+    fi
+    printf -- '---\nname: %s\ndescription: "%s"\nmodel: %s\ntools: Read, Grep, Glob, Bash\n---\n\nFollow the persona defined in `agent-playbooks/autonomy/roles.md` exactly (the section matching this agent'"'"'s name).\n' \
+      "$pslug" "$pdesc" "$model" > "$agents_dir/$pslug.md"
     n=$((n + 1))
   done <<< "$personas"
-  echo "Generated $count Claude Code Skills (.claude/skills/) and $n sub-agents (.claude/agents/)." >&2
+  echo "Generated $count Claude Code Skills (.claude/skills/) and $n sub-agents (.claude/agents/, model-tiered per autonomy/roles.md)." >&2
 }
 
 generate_cursor_artifacts() {

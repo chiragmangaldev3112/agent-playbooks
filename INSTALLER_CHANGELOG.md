@@ -8,6 +8,28 @@ installer script the way `--version` lets you pin to old content — the tool
 just gets bug fixes forward. This file exists mainly so the repo's Releases
 reflect real, distinct states of the installer rather than being empty.
 
+## 1.2.0 — 2026-09-11
+Claude Code's generated sub-agents (`.claude/agents/*.md`) now get a real
+`model:` field per persona instead of an unset/default one, matching
+content v1.14.0's new verify/implement tagging in `autonomy/roles.md`:
+Code Reviewer and Manual/Exploratory Tester (roles that catch someone
+else's mistakes) default to `opus`; Bug Hunter, Feature Builder, Test
+Writer, and Project Bootstrapper (roles whose output gets independently
+re-checked anyway) default to `sonnet`. Overridable three ways, checked
+most-specific first: `AGENT_PLAYBOOKS_MODEL_<PERSONA>` for one persona,
+`AGENT_PLAYBOOKS_MODEL_VERIFY`/`AGENT_PLAYBOOKS_MODEL_IMPLEMENT` for a
+whole tier (set both the same for "one model for everything"), or leave
+both unset for the default split. README.md now documents concrete
+install commands for each supported tool plus this override, non-
+interactively.
+
+**Verified for real:** the generation logic was extracted into a
+standalone harness and run with no overrides (confirmed opus/sonnet
+split), both tier vars set to the same value (confirmed uniform), and one
+persona-specific override (confirmed it wins over the tier default) —
+not assumed correct from reading the script. `bash -n install.sh` also
+confirms no syntax errors from the edit.
+
 ## 1.1.1 — 2026-09-11
 Fixed the script's own final "Next step" message (plus two maintainer-
 facing comments near the top) still pointing at

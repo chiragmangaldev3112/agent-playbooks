@@ -70,6 +70,50 @@ between the two if playbooks get updated later. Skip the prompt (or pipe
 input, or set `AGENT_PLAYBOOKS_TOOL=none`) and you just get `AGENTS.md` +
 `CLAUDE.md`, same as before.
 
+**Installing for a specific tool without the interactive prompt** (e.g. in
+CI, or if you already know which one you want):
+
+```bash
+AGENT_PLAYBOOKS_TOOL=claude      ./install.sh /path/to/your/project   # Claude Code
+AGENT_PLAYBOOKS_TOOL=cursor      ./install.sh /path/to/your/project   # Cursor
+AGENT_PLAYBOOKS_TOOL=antigravity ./install.sh /path/to/your/project   # Antigravity
+AGENT_PLAYBOOKS_TOOL=codex       ./install.sh /path/to/your/project   # Codex CLI (nothing extra generated)
+AGENT_PLAYBOOKS_TOOL=copilot     ./install.sh /path/to/your/project   # GitHub Copilot
+AGENT_PLAYBOOKS_TOOL=none        ./install.sh /path/to/your/project   # AGENTS.md + CLAUDE.md only
+```
+
+**Claude Code only — choosing which model each generated sub-agent uses:**
+by default, the six personas in `.claude/agents/*.md` (see
+`autonomy/roles.md`) are split by what they actually do — a role that
+*checks* someone else's work (Code Reviewer, Manual/Exploratory Tester)
+gets the strongest model, a role that *does* the work a check will
+independently catch mistakes in (Bug Hunter, Feature Builder, Test
+Writer, Project Bootstrapper) gets a lighter/faster one. Override any of
+that — one persona, one whole tier, or "just use one model for
+everything":
+
+```bash
+# Everything on the strongest model
+AGENT_PLAYBOOKS_TOOL=claude AGENT_PLAYBOOKS_MODEL_VERIFY=opus AGENT_PLAYBOOKS_MODEL_IMPLEMENT=opus \
+  ./install.sh /path/to/your/project
+
+# Everything on the lightest/fastest model
+AGENT_PLAYBOOKS_TOOL=claude AGENT_PLAYBOOKS_MODEL_VERIFY=haiku AGENT_PLAYBOOKS_MODEL_IMPLEMENT=haiku \
+  ./install.sh /path/to/your/project
+
+# Just the default tiering, but pin one persona differently
+AGENT_PLAYBOOKS_TOOL=claude AGENT_PLAYBOOKS_MODEL_CODE_REVIEWER=haiku \
+  ./install.sh /path/to/your/project
+
+# Leave it alone entirely -- the sane opus(verify)/sonnet(implement) default
+AGENT_PLAYBOOKS_TOOL=claude ./install.sh /path/to/your/project
+```
+
+Cursor, Antigravity, Codex CLI, and Copilot have no equivalent
+per-sub-agent model setting to wire this into today, so these variables
+are silently no-ops for them — not a broken promise, there's just nothing
+on their side to point it at yet.
+
 Then open your AI coding tool in that project and ask it to follow
 `agent-playbooks/project/project-bootstrap.md` once — the smart, context-aware pass
 that grounds `AGENTS.md` in your project's real stack and wires the safety
