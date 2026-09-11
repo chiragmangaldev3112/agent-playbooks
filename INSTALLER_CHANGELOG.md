@@ -8,6 +8,19 @@ installer script the way `--version` lets you pin to old content — the tool
 just gets bug fixes forward. This file exists mainly so the repo's Releases
 reflect real, distinct states of the installer rather than being empty.
 
+## 1.1.1 — 2026-09-11
+Fixed the script's own final "Next step" message (plus two maintainer-
+facing comments near the top) still pointing at
+`agent-playbooks/project-bootstrap.md` — the flat, pre-v1.12.0 content
+path. The content itself moved to `agent-playbooks/project/project-
+bootstrap.md` back in content v1.12.0, and `README.md`/`FLOWS.md`/
+`EXAMPLES.md` were corrected for it already, but `install.sh` wasn't
+part of that grep (it's a script, not a `.md` cross-reference) and got
+missed. Caught by actually running the real installer end to end against
+the live v1.13.1 content release, not by re-reading the script — every
+real install since v1.12.0's content release until now printed a next
+step pointing at a path that no longer exists.
+
 ## 1.1.0 — 2026-09-04
 Fixed a real bug in all three per-tool artifact generators (Claude Code
 Skills, Cursor rules, Antigravity Skills): `CHANGELOG.md` was being picked

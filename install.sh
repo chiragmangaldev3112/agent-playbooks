@@ -18,7 +18,7 @@
 # can run bash. macOS and Linux have this natively; Windows does not --
 # run this via WSL or Git Bash, not from a plain Command
 # Prompt/PowerShell session (same constraint as this repo's other bash
-# scripts, e.g. demo-video.md's).
+# scripts, e.g. media/demo-video.md's).
 #
 # Usage:
 #   ./install.sh                       # installs into the current directory
@@ -35,7 +35,7 @@
 # changed in each. Omit this and you get latest, same as always.
 #
 # After this finishes, point your AI coding agent at
-# agent-playbooks/project-bootstrap.md in the target project -- the smart,
+# agent-playbooks/project/project-bootstrap.md in the target project -- the smart,
 # context-aware pass that grounds AGENTS.md in the target's real stack and
 # wires the safety guardrail + personas into whichever tool you use there.
 
@@ -338,6 +338,6 @@ case "$tool_choice" in
 esac
 echo
 echo "Next step: open your AI coding tool in that project and ask it to"
-echo "follow agent-playbooks/project-bootstrap.md. That pass grounds"
+echo "follow agent-playbooks/project/project-bootstrap.md. That pass grounds"
 echo "AGENTS.md in the real stack it finds there, and wires the safety"
 echo "guardrail + roles.md personas into whichever tool you're using."
