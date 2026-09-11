@@ -8,6 +8,16 @@ installer script the way `--version` lets you pin to old content — the tool
 just gets bug fixes forward. This file exists mainly so the repo's Releases
 reflect real, distinct states of the installer rather than being empty.
 
+## 1.2.1 — 2026-09-11
+Bug Hunter's generated Claude Code sub-agent now defaults to `opus`
+instead of `sonnet`, matching content v1.14.1's model-tier correction:
+`core/engineering-loop.md` names "Bug Hunter re-running the repro" as
+the independent-verification pass for a bug fix, so it needed the
+*verify* tier's default, not *implement*'s — a fresh audit caught this
+persona had been tagged the wrong tier when 1.2.0 first wired the
+tagging through. Re-tested the generation logic standalone after the
+change: `bug-hunter.md` now resolves to `opus` with no overrides set.
+
 ## 1.2.0 — 2026-09-11
 Claude Code's generated sub-agents (`.claude/agents/*.md`) now get a real
 `model:` field per persona instead of an unset/default one, matching

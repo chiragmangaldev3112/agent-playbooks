@@ -231,7 +231,7 @@ generate_claude_artifacts() {
     count=$((count + 1))
   done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -path "*/examples/*" -print0)
 
-  local personas='bug-hunter|implement|Reproduces a reported bug with a real, runnable failing test before proposing any fix.
+  local personas='bug-hunter|verify|Reproduces a reported bug with a real, runnable failing test before proposing any fix.
 feature-builder|implement|Implements a feature test-first: failing test from the spec, implement until it passes.
 code-reviewer|verify|Reviews a diff for correctness, security, and convention adherence.
 test-writer|implement|Adds test coverage for existing, untested code.
