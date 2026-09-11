@@ -440,7 +440,7 @@ flowchart TD
 
 ## Top level
 
-### `project-bootstrap.md`
+### `project/project-bootstrap.md`
 
 Onboard an agent to an unfamiliar repo, and wire the guardrail + personas into it
 
@@ -461,7 +461,7 @@ flowchart TD
     K --> L[Report summary]
 ```
 
-### `codebase-mapping.md`
+### `mapping/codebase-mapping.md`
 
 Document a codebase module by module from real dependency structure
 
@@ -476,7 +476,7 @@ flowchart TD
     G --> H[Verify generated\nskill with a real question]
 ```
 
-### `database-mapping.md`
+### `mapping/database-mapping.md`
 
 Document a database table by table from the real schema and code usage
 
@@ -495,7 +495,7 @@ flowchart TD
     I -->|No| K[Done]
 ```
 
-### `third-party-api-integration.md`
+### `mapping/third-party-api-integration.md`
 
 Analyze and test a third-party API for real, credentials never handled or logged
 
@@ -511,11 +511,11 @@ flowchart TD
     G --> H[Call real API,\ncompare vs docs]
     H --> I{Asked to link\nto the schema?}
     I -->|No| J[Done—tested\nand understood]
-    I -->|Yes| K[Phase 3: map fields\nvs database-mapping.md]
+    I -->|Yes| K[Phase 3: map fields\nvs mapping/database-mapping.md]
     K --> L[Propose migration—\nnever apply directly]
 ```
 
-### `project-audit.md`
+### `project/project-audit.md`
 
 Audit a whole project, then fix only what's explicitly approved
 
@@ -530,7 +530,7 @@ flowchart TD
     G --> H[Report fixed /\ndeferred / open]
 ```
 
-### `demo-video.md`
+### `media/demo-video.md`
 
 Generate a narrated screen-recording demo from a script
 
@@ -543,7 +543,7 @@ flowchart TD
     E --> F[Watch it—confirm timing\nactually lines up]
 ```
 
-### `video-review.md`
+### `media/video-review.md`
 
 Turn an existing recording into a verified report, then optionally route it into the engineering loop
 
@@ -560,7 +560,7 @@ flowchart TD
     H -->|No| J[Done — findings\nare the deliverable]
 ```
 
-### `doc-review.md`
+### `media/doc-review.md`
 
 Turn a document into a verified report, then optionally route it into the engineering loop
 

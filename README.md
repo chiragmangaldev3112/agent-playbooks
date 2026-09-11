@@ -71,7 +71,7 @@ input, or set `AGENT_PLAYBOOKS_TOOL=none`) and you just get `AGENTS.md` +
 `CLAUDE.md`, same as before.
 
 Then open your AI coding tool in that project and ask it to follow
-`agent-playbooks/project-bootstrap.md` once — the smart, context-aware pass
+`agent-playbooks/project/project-bootstrap.md` once — the smart, context-aware pass
 that grounds `AGENTS.md` in your project's real stack and wires the safety
 guardrail + personas into whichever tool you're using there.
 
@@ -143,14 +143,14 @@ purpose), see **[CHANGELOG.md](CHANGELOG.md)**.
 | `safety/secret-scan.md` | A real, enforced block on committing real secrets/credentials |
 | `safety/memory-hygiene.md` | Don't trust a remembered fact once its source code has changed |
 | `safety/sensitive-data.md` | Classify data before deciding how strictly to handle it |
-| `project-bootstrap.md` | Onboard an agent to an unfamiliar repo, and wire the guardrail + personas into it |
-| `codebase-mapping.md` | Document a codebase module by module from real dependency structure, then optionally generate a skill/agent per module |
-| `database-mapping.md` | Document a database table by table from the real schema and code usage, then optionally generate a skill/agent per table |
-| `third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
-| `project-audit.md` | Audit a whole project against the existing quality checklists, then fix only what's explicitly approved, with every fix independently reverified |
-| `demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
-| `video-review.md` | Turn an existing recording (bug repro, feedback video, any format ffmpeg reads) into a verified report — summary, key points, bugs/gaps, fix-vs-build asks — then optionally route each ask through `core/engineering-loop.md` |
-| `doc-review.md` | Turn a document (PDF/DOCX/ODT/RTF/etc.) into a verified report — summary, key points, queries it raises, fix-vs-build action items — reads even a several-hundred-page document in bounded chunks, then optionally routes each item through `core/engineering-loop.md` |
+| `project/project-bootstrap.md` | Onboard an agent to an unfamiliar repo, and wire the guardrail + personas into it |
+| `mapping/codebase-mapping.md` | Document a codebase module by module from real dependency structure, then optionally generate a skill/agent per module |
+| `mapping/database-mapping.md` | Document a database table by table from the real schema and code usage, then optionally generate a skill/agent per table |
+| `mapping/third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
+| `project/project-audit.md` | Audit a whole project against the existing quality checklists, then fix only what's explicitly approved, with every fix independently reverified |
+| `media/demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
+| `media/video-review.md` | Turn an existing recording (bug repro, feedback video, any format ffmpeg reads) into a verified report — summary, key points, bugs/gaps, fix-vs-build asks — then optionally route each ask through `core/engineering-loop.md` |
+| `media/doc-review.md` | Turn a document (PDF/DOCX/ODT/RTF/etc.) into a verified report — summary, key points, queries it raises, fix-vs-build action items — reads even a several-hundred-page document in bounded chunks, then optionally routes each item through `core/engineering-loop.md` |
 
 ## Creating your own bot (a custom persona), with a demo
 
@@ -186,7 +186,7 @@ and check whether the answer is actually right, not just plausible —
 `autonomy/roles.md`'s own rule for when delegating to one is worth it at
 all.
 
-Once it's proven, `demo-video.md` turns it into a shareable, narrated
+Once it's proven, `media/demo-video.md` turns it into a shareable, narrated
 screen-recording — write the scenes as plain `SAY:`/`SHOW:` lines,
 generate the voice-over and screen capture with the included scripts
 (free/local tools, no cloud TTS account needed), and you have a demo of

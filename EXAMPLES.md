@@ -227,7 +227,7 @@ window before shipping instead of "we'll figure out deletion later."
 
 ## Top level
 
-### `project-bootstrap.md`
+### `project/project-bootstrap.md`
 **Scenario:** pointing an agent at a repo it's never seen before.
 **You say:** "Onboard yourself to this codebase."
 **What happens:** detects the real test/lint commands from the actual
@@ -236,7 +236,7 @@ config (never invents one that "should" work), writes a grounded
 actually runs the detected commands to confirm they work before
 reporting done.
 
-### `codebase-mapping.md`
+### `mapping/codebase-mapping.md`
 **Scenario:** inheriting a codebase with zero documentation.
 **You say:** "Document this codebase module by module."
 **What happens:** finds real module boundaries from the dependency
@@ -245,7 +245,7 @@ freely import each other's internals and are really one coupled unit),
 writes a verified doc per module, and only generates a matching skill
 per module if you ask for it afterward.
 
-### `database-mapping.md`
+### `mapping/database-mapping.md`
 **Scenario:** a schema with no reliable documentation.
 **You say:** "Document the database."
 **What happens:** documents each column from its real constraints and
@@ -254,7 +254,7 @@ column that the app only ever uses to mean "email confirmed," not
 "account enabled" — and flags a foreign key that was dropped in a past
 migration but is still relied on by a live query.
 
-### `third-party-api-integration.md`
+### `mapping/third-party-api-integration.md`
 **Scenario:** integrating with a partner API whose docs are behind a login.
 **You say:** "Analyze this partner API and help us integrate with it."
 **What happens:** inspects the actual login form to find the real auth
@@ -263,7 +263,7 @@ one batch, asks once (not per-endpoint) before touching anything that
 creates or charges something real, and writes the verified findings to
 a doc you can actually implement against.
 
-### `project-audit.md`
+### `project/project-audit.md`
 **Scenario:** inheriting a project with an unknown amount of technical debt.
 **You say:** "Audit this project and tell me what's wrong."
 **What happens:** runs the existing quality checklists across the whole
@@ -271,7 +271,7 @@ project, reports findings ranked by real impact, and stops to wait for
 explicit approval on what to fix — it doesn't start changing code just
 because it found something.
 
-### `demo-video.md`
+### `media/demo-video.md`
 **Scenario:** wanting a narrated walkthrough of a new feature.
 **You say:** "Make a demo video showing off the new export feature."
 **What happens:** turns a plain-text script (`SAY:`/`SHOW:` lines) into
@@ -279,7 +279,7 @@ narrated audio and a screen recording using free local tools, then
 actually plays back the result to confirm timing lines up before calling
 it done — not just assembling files and assuming it works.
 
-### `video-review.md`
+### `media/video-review.md`
 **Scenario:** a tester hands over a screen recording of a bug instead of
 writing it up.
 **You say:** "Here's a video of the checkout bug, tell me what's wrong and
@@ -293,7 +293,7 @@ before reporting them — not just repeating an initial guess. If a real
 codebase is present, each fix/build ask is then handed to
 `core/engineering-loop.md` one at a time, never bundled together.
 
-### `doc-review.md`
+### `media/doc-review.md`
 **Scenario:** a stakeholder emails a requirements doc instead of filing a
 ticket.
 **You say:** "Here's the spec PDF, tell me what it's asking for and
