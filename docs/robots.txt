@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chiragmangaldev3112.github.io/agent-playbooks/sitemap.xml

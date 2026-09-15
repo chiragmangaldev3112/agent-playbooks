@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>agent-playbooks — portable AGENTS.md instructions for AI coding agents</title>
+<meta name="description" content="One portable rulebook for AI coding agents — Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, GitHub Copilot, and more. 35 playbooks for bug fixes, feature development, code review, and testing, built on the AGENTS.md standard. Free, open source, install in one command.">
+<link rel="canonical" href="https://chiragmangaldev3112.github.io/agent-playbooks/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="agent-playbooks — portable AGENTS.md instructions for AI coding agents">
+<meta property="og:description" content="One portable rulebook for AI coding agents across every major tool — 35 playbooks for bug fixes, features, review, and testing. Free, open source.">
+<meta property="og:url" content="https://chiragmangaldev3112.github.io/agent-playbooks/">
+<meta property="og:site_name" content="agent-playbooks">
+<meta property="og:video" content="https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4">
+<meta property="og:video:type" content="video/mp4">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="agent-playbooks — portable AGENTS.md instructions for AI coding agents">
+<meta name="twitter:description" content="One portable rulebook for AI coding agents across every major tool — 35 playbooks for bug fixes, features, review, and testing.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "agent-playbooks",
+  "description": "Portable, tool-agnostic instructions for AI coding agents, built on the AGENTS.md standard. 35 playbooks covering bug fixes, feature development, code review, testing, security, and autonomous operation, usable with Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, Factory Droid, Grok Build, Kimi Code, OpenCode, Pi, Hermes Agent, and GitHub Copilot.",
+  "codeRepository": "https://github.com/chiragmangaldev3112/agent-playbooks",
+  "programmingLanguage": "Markdown",
+  "license": "https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/LICENSE",
+  "author": { "@type": "Person", "name": "chiragmangaldev3112" },
+  "video": {
+    "@type": "VideoObject",
+    "name": "agent-playbooks full demo — all 35 playbooks",
+    "description": "A narrated, real-terminal demo of all 35 agent-playbooks playbooks.",
+    "contentUrl": "https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4",
+    "uploadDate": "2026-09-15"
+  }
+}
+</script>
+
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; padding: 0 16px 60px; background: #0d1117; color: #e6edf3;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 30px; margin: 40px 0 8px; line-height: 1.25; }
+  h2 { font-size: 20px; margin: 40px 0 12px; }
+  p.lede { font-size: 18px; color: #c9d1d9; margin: 0 0 28px; }
+  p, li { color: #c9d1d9; }
+  code { background: #161b22; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+  pre { background: #161b22; padding: 14px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  a { color: #58a6ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .cta { display: inline-block; margin: 8px 12px 8px 0; padding: 10px 18px; background: #238636; color: #fff; border-radius: 6px; font-weight: 600; }
+  .cta.secondary { background: #21262d; border: 1px solid #30363d; }
+  ul { padding-left: 20px; }
+  video { width: 100%; border-radius: 8px; margin-top: 12px; background: #000; }
+  footer { margin-top: 60px; color: #8b949e; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>agent-playbooks</h1>
+  <p class="lede">One portable rulebook for AI coding agents — built on the
+  <a href="https://agents.md">AGENTS.md</a> standard, works with Claude Code,
+  Cursor, Antigravity, Gemini CLI, Devin CLI, Factory Droid, Grok Build,
+  Kimi Code, OpenCode, Pi, Hermes Agent, and GitHub Copilot.</p>
+
+  <a class="cta" href="https://github.com/chiragmangaldev3112/agent-playbooks">View on GitHub</a>
+  <a class="cta secondary" href="demo.html">▶ Watch the demo</a>
+
+  <h2>Why</h2>
+  <p>Every AI coding tool wants instructions in its own format and location.
+  agent-playbooks is one generic instruction set instead — write the rules
+  once, point every tool at the same source of truth. 35 playbooks cover
+  reproducing and fixing bugs, test-first feature development, code review,
+  security review, frontend/backend testing, safe database migrations,
+  incident response, and running an agent against a standing autonomous
+  mission — each one independently verified against a real test case, not
+  just written and published.</p>
+
+  <h2>Install</h2>
+  <pre><code>curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
+chmod +x install.sh
+./install.sh /path/to/your/project</code></pre>
+  <p>No account, no token, no cloud dependency — see the
+  <a href="https://github.com/chiragmangaldev3112/agent-playbooks#readme">full README</a>
+  for per-tool setup and every playbook's index.</p>
+
+  <h2>Watch it work</h2>
+  <p>Every one of the 35 playbooks, narrated, each with a real terminal run:</p>
+  <video controls preload="metadata"
+    src="https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4">
+  </video>
+
+  <footer>
+    <a href="https://github.com/chiragmangaldev3112/agent-playbooks">github.com/chiragmangaldev3112/agent-playbooks</a>
+    · MIT-licensed installer, separately licensed playbook content (see repo)
+  </footer>
+</div>
+</body>
+</html>
