@@ -1,5 +1,9 @@
 # Agent Playbooks
 
+[![GitHub release](https://img.shields.io/github/v/release/chiragmangaldev3112/agent-playbooks)](https://github.com/chiragmangaldev3112/agent-playbooks/releases)
+[![License](https://img.shields.io/badge/installer-MIT-blue)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social)](https://github.com/chiragmangaldev3112/agent-playbooks/stargazers)
+
 A portable rulebook for AI coding agents — how to fix bugs, build features,
 review code, test frontend/backend work, run security reviews, and (if you
 want it) operate autonomously against a standing mission. Works with Claude
