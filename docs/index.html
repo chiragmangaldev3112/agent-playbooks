@@ -40,6 +40,40 @@
 }
 </script>
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is agent-playbooks?",
+      "acceptedAnswer": { "@type": "Answer", "text": "agent-playbooks is a portable, tool-agnostic instruction set for AI coding agents, built on the AGENTS.md standard. It provides 35 playbooks covering bug fixes, feature development, code review, security review, testing, and autonomous operation, so you write the rules once instead of configuring every AI coding tool separately." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which AI coding tools does agent-playbooks support?",
+      "acceptedAnswer": { "@type": "Answer", "text": "15 tools: Claude Code, Antigravity, Cursor, GitHub Copilot, GitHub Copilot CLI, OpenAI Codex CLI, Codex App, Gemini CLI, Devin CLI, Factory Droid, Grok Build, Kimi Code, OpenCode, Pi, and Hermes Agent. Most of these read AGENTS.md automatically; the README documents the exact mechanism for each." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I install agent-playbooks?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Run: curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project. No account, token, or cloud dependency is required." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is agent-playbooks free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. The installer is MIT-licensed. The playbook content itself is free to use in your own projects under a separate license included with every install; see the repository for the exact terms." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is AGENTS.md?",
+      "acceptedAnswer": { "@type": "Answer", "text": "AGENTS.md is a cross-vendor open standard for giving AI coding agents project-level instructions in a single, tool-agnostic file, read automatically by most major AI coding tools. agent-playbooks builds its entire instruction set on top of this standard rather than inventing a proprietary format." }
+    }
+  ]
+}
+</script>
+
 <style>
   :root { color-scheme: light dark; }
   body {
@@ -97,6 +131,37 @@ chmod +x install.sh
   <video controls preload="metadata"
     src="https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4">
   </video>
+
+  <h2>FAQ</h2>
+  <p><strong>What is agent-playbooks?</strong><br>
+  A portable, tool-agnostic instruction set for AI coding agents, built on
+  the AGENTS.md standard. 35 playbooks covering bug fixes, feature
+  development, code review, security review, testing, and autonomous
+  operation, so you write the rules once instead of configuring every AI
+  coding tool separately.</p>
+
+  <p><strong>Which AI coding tools does it support?</strong><br>
+  15 tools: Claude Code, Antigravity, Cursor, GitHub Copilot, GitHub
+  Copilot CLI, OpenAI Codex CLI, Codex App, Gemini CLI, Devin CLI, Factory
+  Droid, Grok Build, Kimi Code, OpenCode, Pi, and Hermes Agent. Most read
+  AGENTS.md automatically; the README documents the exact mechanism for
+  each.</p>
+
+  <p><strong>How do I install it?</strong><br>
+  <code>curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh
+  -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project</code>
+  — no account, token, or cloud dependency required.</p>
+
+  <p><strong>Is it free?</strong><br>
+  Yes. The installer is MIT-licensed; the playbook content is free to use
+  in your own projects under a separate license included with every
+  install — see the repository for exact terms.</p>
+
+  <p><strong>What is AGENTS.md?</strong><br>
+  A cross-vendor open standard for giving AI coding agents project-level
+  instructions in a single, tool-agnostic file, read automatically by most
+  major AI coding tools. agent-playbooks builds its entire instruction set
+  on top of this standard rather than inventing a proprietary format.</p>
 
   <footer>
     <a href="https://github.com/chiragmangaldev3112/agent-playbooks">github.com/chiragmangaldev3112/agent-playbooks</a>
