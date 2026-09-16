@@ -13,12 +13,14 @@
 <meta property="og:description" content="One portable rulebook for AI coding agents across every major tool — 35 playbooks for bug fixes, features, review, and testing. Free, open source.">
 <meta property="og:url" content="https://chiragmangaldev3112.github.io/agent-playbooks/">
 <meta property="og:site_name" content="agent-playbooks">
+<meta property="og:image" content="https://chiragmangaldev3112.github.io/agent-playbooks/social-preview.png">
 <meta property="og:video" content="https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4">
 <meta property="og:video:type" content="video/mp4">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="agent-playbooks — portable AGENTS.md instructions for AI coding agents">
 <meta name="twitter:description" content="One portable rulebook for AI coding agents across every major tool — 35 playbooks for bug fixes, features, review, and testing.">
+<meta name="twitter:image" content="https://chiragmangaldev3112.github.io/agent-playbooks/social-preview.png">
 
 <script type="application/ld+json">
 {
@@ -63,7 +65,7 @@
     {
       "@type": "Question",
       "name": "Is agent-playbooks free?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. The installer is MIT-licensed. The playbook content itself is free to use in your own projects under a separate license included with every install; see the repository for the exact terms." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Both the installer and the playbook content are MIT-licensed -- free to use, fork, modify, and redistribute, commercially or otherwise." }
     },
     {
       "@type": "Question",
@@ -75,101 +77,372 @@
 </script>
 
 <style>
-  :root { color-scheme: light dark; }
-  body {
-    margin: 0; padding: 0 16px 60px; background: #0d1117; color: #e6edf3;
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  :root {
+    --bg: #0d1117; --bg-alt: #010409; --panel: #161b22; --border: #30363d;
+    --text: #e6edf3; --muted: #8b949e; --accent: #58a6ff; --accent-dim: #1f6feb;
+    --mono: "SF Mono", ui-monospace, "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color-scheme: dark;
   }
-  .wrap { max-width: 760px; margin: 0 auto; }
-  h1 { font-size: 30px; margin: 40px 0 8px; line-height: 1.25; }
-  h2 { font-size: 20px; margin: 40px 0 12px; }
-  p.lede { font-size: 18px; color: #c9d1d9; margin: 0 0 28px; }
-  p, li { color: #c9d1d9; }
-  code { background: #161b22; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
-  pre { background: #161b22; padding: 14px; border-radius: 8px; overflow-x: auto; }
-  pre code { background: none; padding: 0; }
-  a { color: #58a6ff; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .cta { display: inline-block; margin: 8px 12px 8px 0; padding: 10px 18px; background: #238636; color: #fff; border-radius: 6px; font-weight: 600; }
-  .cta.secondary { background: #21262d; border: 1px solid #30363d; }
-  ul { padding-left: 20px; }
-  video { width: 100%; border-radius: 8px; margin-top: 12px; background: #000; }
-  footer { margin-top: 60px; color: #8b949e; font-size: 14px; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 var(--sans);
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+  a { color: inherit; text-decoration: none; }
+  code, .mono { font-family: var(--mono); }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0; border-bottom: 1px solid var(--border);
+  }
+  nav .brand { font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+  nav .brand .dot { color: var(--accent); }
+  nav .links { display: flex; align-items: center; gap: 28px; font-size: 14px; color: var(--muted); }
+  nav .links a:hover { color: var(--text); }
+  nav .cta {
+    background: var(--text); color: var(--bg); padding: 9px 16px; border-radius: 6px;
+    font-size: 14px; font-weight: 600;
+  }
+  @media (max-width: 640px) { nav .links { display: none; } }
+
+  .hero { padding: 88px 0 64px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 18px;
+  }
+  .hero h1 {
+    font-size: clamp(40px, 6vw, 68px); line-height: 1.04; margin: 0 0 14px;
+    letter-spacing: -0.03em; font-weight: 800;
+  }
+  .hero .sub { font-size: clamp(20px, 2.4vw, 26px); color: var(--text); margin: 0 0 22px; font-weight: 600; }
+  .hero p.desc { font-size: 18px; color: var(--muted); max-width: 620px; margin: 0 0 34px; }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+  .btn {
+    display: inline-block; padding: 13px 22px; border-radius: 6px; font-weight: 600; font-size: 15px;
+    border: 1px solid transparent;
+  }
+  .btn.primary { background: var(--accent); color: #0d1117; }
+  .btn.primary:hover { background: #79b8ff; }
+  .btn.ghost { border-color: var(--border); color: var(--text); }
+  .btn.ghost:hover { border-color: #3a3a3d; }
+
+  .cmdbox {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 20px; font-family: var(--mono); font-size: 14px; color: #d8d7d2;
+    overflow-x: auto; white-space: pre; margin-bottom: 16px;
+  }
+  .cmdbox .c { color: var(--muted); }
+  .trust { font-size: 14px; color: var(--muted); }
+  .trust a { color: #79b8ff; text-decoration: underline; }
+
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 12px; margin: 40px 0 0;
+  }
+  .stat {
+    border: 1px solid var(--border); border-radius: 6px; padding: 10px 16px;
+    font-size: 13px; color: var(--muted); font-family: var(--mono);
+  }
+  .stat b { color: var(--text); font-family: var(--sans); }
+
+  section.block { padding: 64px 0; border-top: 1px solid var(--border); }
+  .block h2 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .block .lede { color: var(--muted); font-size: 16px; margin: 0 0 36px; max-width: 640px; }
+
+  /* loop diagram */
+  .loop-diagram {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 32px; overflow-x: auto;
+  }
+  .loop-label { font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
+  .loop-row { display: flex; align-items: center; gap: 0; min-width: 640px; }
+  .loop-step {
+    border: 1px solid var(--border); background: var(--bg-alt); border-radius: 8px;
+    padding: 14px 18px; font-weight: 600; font-size: 15px; white-space: nowrap;
+  }
+  .loop-step.verify { border-color: #3fb950; color: #7ee787; }
+  .loop-arrow { padding: 0 14px; color: var(--accent); font-size: 18px; }
+
+  /* bold-lead paragraphs */
+  .lead-list p { margin: 0 0 22px; color: var(--muted); font-size: 16px; max-width: 720px; }
+  .lead-list p b { color: var(--text); }
+
+  /* playbook grid */
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .cat-card { border: 1px solid var(--border); border-radius: 8px; padding: 20px; background: var(--panel); }
+  .cat-card h3 { margin: 0 0 10px; font-size: 15px; font-family: var(--mono); color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
+  .cat-card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+  .cat-card li { margin-bottom: 4px; }
+  .cat-card code { color: #d8d7d2; }
+
+  /* tool chips */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px; font-size: 13px; color: var(--muted); }
+
+  video { width: 100%; border-radius: 10px; margin-top: 8px; background: #000; border: 1px solid var(--border); }
+
+  .faq-item { border-top: 1px solid var(--border); padding: 22px 0; }
+  .faq-item:first-child { border-top: none; }
+  .faq-item h3 { margin: 0 0 8px; font-size: 17px; }
+  .faq-item p { margin: 0; color: var(--muted); }
+  .faq-item code { color: #d8d7d2; font-size: 0.9em; }
+
+  footer { border-top: 1px solid var(--border); padding: 40px 0 60px; color: var(--muted); font-size: 14px; }
+  footer a { text-decoration: underline; }
+  footer .foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
 </style>
 </head>
 <body>
+
 <div class="wrap">
-  <h1>agent-playbooks</h1>
-  <p class="lede">One portable rulebook for AI coding agents — built on the
-  <a href="https://agents.md">AGENTS.md</a> standard, works with Claude Code,
-  Cursor, Antigravity, Gemini CLI, Devin CLI, Factory Droid, Grok Build,
-  Kimi Code, OpenCode, Pi, Hermes Agent, and GitHub Copilot.</p>
+  <nav>
+    <div class="brand">agent<span class="dot">·</span>playbooks</div>
+    <div class="links">
+      <a href="https://github.com/chiragmangaldev3112/agent-playbooks#readme">Docs</a>
+      <a href="demo.html">Demo</a>
+      <a href="https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/SECURITY.md">Security</a>
+      <a href="https://github.com/chiragmangaldev3112/agent-playbooks">GitHub</a>
+    </div>
+    <a class="cta" href="https://github.com/chiragmangaldev3112/agent-playbooks#install">Install</a>
+  </nav>
 
-  <a class="cta" href="https://github.com/chiragmangaldev3112/agent-playbooks">View on GitHub</a>
-  <a class="cta secondary" href="demo.html">▶ Watch the demo</a>
+  <div class="hero">
+    <p class="eyebrow">Portable engineering workflows for AI coding agents</p>
+    <h1>Agent Playbooks</h1>
+    <p class="sub">Your agent says it's fixed. Verify before you believe it.</p>
+    <p class="desc">35 playbooks that give Claude Code, Cursor, Codex, GitHub Copilot,
+    Antigravity, and 10 other AI coding tools a shared engineering process —
+    reproduce before fixing, test before building, verify independently
+    before calling anything done. Built on the open
+    <a href="https://agents.md" style="text-decoration:underline">AGENTS.md</a> standard.</p>
 
-  <h2>Why</h2>
-  <p>Every AI coding tool wants instructions in its own format and location.
-  agent-playbooks is one generic instruction set instead — write the rules
-  once, point every tool at the same source of truth. 35 playbooks cover
-  reproducing and fixing bugs, test-first feature development, code review,
-  security review, frontend/backend testing, safe database migrations,
-  incident response, and running an agent against a standing autonomous
-  mission — each one independently verified against a real test case, not
-  just written and published.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="https://github.com/chiragmangaldev3112/agent-playbooks">View on GitHub</a>
+      <a class="btn ghost" href="demo.html">▶ Watch the demo</a>
+    </div>
 
-  <h2>Install</h2>
-  <pre><code>curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
-chmod +x install.sh
-./install.sh /path/to/your/project</code></pre>
-  <p>No account, no token — see the
-  <a href="https://github.com/chiragmangaldev3112/agent-playbooks#readme">full README</a>
-  for per-tool setup, exactly what the installer does and doesn't send,
-  and every playbook's index.</p>
+    <div class="cmdbox">curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
+chmod +x install.sh<span class="c">   # read it first if you want -- that's the point</span>
+./install.sh .</div>
+    <p class="trust">No account, no token. MIT licensed, installer and content both.
+    Every release is Ed25519-signed and hash-verified before anything touches
+    your project — see <a href="https://github.com/chiragmangaldev3112/agent-playbooks#verifying-a-release">how</a>.</p>
 
-  <h2>Watch it work</h2>
-  <p>Every one of the 35 playbooks, narrated, each with a real terminal run:</p>
-  <video controls preload="metadata"
-    src="https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4">
-  </video>
+    <div class="stats">
+      <div class="stat"><b>35</b> playbooks</div>
+      <div class="stat"><b>15</b> tools supported</div>
+      <div class="stat"><b>MIT</b> licensed, fully</div>
+      <div class="stat">Every release <b>signed</b></div>
+    </div>
+  </div>
 
-  <h2>FAQ</h2>
-  <p><strong>What is agent-playbooks?</strong><br>
-  A portable, tool-agnostic instruction set for AI coding agents, built on
-  the AGENTS.md standard. 35 playbooks covering bug fixes, feature
-  development, code review, security review, testing, and autonomous
-  operation, so you write the rules once instead of configuring every AI
-  coding tool separately.</p>
+  <section class="block">
+    <h2>One loop, every task</h2>
+    <p class="lede">There's no command to memorize. Describe the task normally — the
+    router classifies it and sends it to the matching playbook, which always
+    ends in independent verification, not a self-reported "done."</p>
+    <div class="loop-diagram">
+      <div class="loop-label">core/engineering-loop.md</div>
+      <div class="loop-row">
+        <div class="loop-step">Request</div><div class="loop-arrow">→</div>
+        <div class="loop-step">Classify</div><div class="loop-arrow">→</div>
+        <div class="loop-step">Route</div><div class="loop-arrow">→</div>
+        <div class="loop-step">Implement</div><div class="loop-arrow">→</div>
+        <div class="loop-step verify">Verify</div><div class="loop-arrow">→</div>
+        <div class="loop-step">Report</div>
+      </div>
+    </div>
+  </section>
 
-  <p><strong>Which AI coding tools does it support?</strong><br>
-  15 tools: Claude Code, Antigravity, Cursor, GitHub Copilot, GitHub
-  Copilot CLI, OpenAI Codex CLI, Codex App, Gemini CLI, Devin CLI, Factory
-  Droid, Grok Build, Kimi Code, OpenCode, Pi, and Hermes Agent. Most read
-  AGENTS.md automatically; the README documents the exact mechanism for
-  each.</p>
+  <section class="block">
+    <h2>Why this exists</h2>
+    <div class="lead-list">
+      <p><b>Every tool wants its own file.</b> Claude Code, Cursor, Codex, and
+      Copilot each expect instructions in their own format and location.
+      agent-playbooks is one generic instruction set instead — write the
+      rules once, point every tool at the same source of truth.</p>
+      <p><b>An agent left to its own judgment fails in the same few ways,
+      every time.</b> It guesses at an ambiguous spec instead of asking. It
+      grades its own work instead of checking it independently. It forgets a
+      project's own conventions the moment a new session starts. It
+      occasionally runs something destructive because nothing stopped it.</p>
+      <p><b>This is that process, written down once, usable everywhere.</b>
+      Every playbook has been run against a real, throwaway test case at
+      least once — not just written and published.</p>
+    </div>
+  </section>
 
-  <p><strong>How do I install it?</strong><br>
-  <code>curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh
-  -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project</code>
-  — no account or token required. The installer does fetch the current
-  release from a small backend each run; every release is signed and
-  verified before anything is written to your project (see
-  <a href="https://github.com/chiragmangaldev3112/agent-playbooks#verifying-a-release">Verifying a release</a>).</p>
+  <section class="block">
+    <h2>Verified, not just promised</h2>
+    <p class="lede">The installer fetches content from a backend on every run —
+    which matters, because that content becomes literal instructions for an
+    agent with shell access. Here's exactly what stands between a
+    compromised backend and your project.</p>
+    <div class="lead-list">
+      <p><b>Every release is signed.</b> An Ed25519 key that never leaves the
+      maintainer's machine signs a manifest of every file's sha256 hash.
+      <code>install.sh</code> verifies the signature and re-hashes every
+      fetched file before writing anything — a spoofed backend can no
+      longer silently swap in different content.</p>
+      <p><b>A real, enforced block on destructive commands.</b> Not a
+      markdown instruction hoping the agent listens — a deterministic
+      script wired into the tool's own pre-execution hook where supported,
+      with its exact coverage and gaps documented, not assumed.</p>
+      <p><b>Nothing hidden about what gets sent.</b> The installer sends one
+      random local ID, nothing else. No account, no telemetry beyond that,
+      no email. Read <code>supabase/functions/check-in/index.ts</code>
+      yourself — it's the whole mechanism.</p>
+    </div>
+  </section>
 
-  <p><strong>Is it free?</strong><br>
-  Yes. The installer is MIT-licensed; the playbook content is free to use
-  in your own projects under a separate license included with every
-  install — see the repository for exact terms.</p>
+  <section class="block">
+    <h2>35 playbooks, one engineering loop</h2>
+    <p class="lede">Grouped by kind of concern. Full detail, a flowchart per
+    playbook, and a worked example for every one live in the
+    <a href="https://github.com/chiragmangaldev3112/agent-playbooks#readme" style="text-decoration:underline">README</a>,
+    <a href="https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/FLOWS.md" style="text-decoration:underline">FLOWS.md</a>, and
+    <a href="https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/EXAMPLES.md" style="text-decoration:underline">EXAMPLES.md</a>.</p>
+    <div class="cat-grid">
+      <div class="cat-card">
+        <h3>Core</h3>
+        <ul>
+          <li><code>engineering-loop</code> — router + verification rule</li>
+          <li><code>bug-fix</code> — reproduce before fixing</li>
+          <li><code>feature-development</code> — test-first</li>
+          <li><code>clarify-before-building</code></li>
+          <li><code>issue-triage</code></li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Quality</h3>
+        <ul>
+          <li><code>code-review</code> / <code>receiving-code-review</code></li>
+          <li><code>security-review</code></li>
+          <li><code>architecture-review</code></li>
+          <li><code>frontend-testing</code> / <code>backend-testing</code></li>
+          <li><code>docs-sync</code>, <code>observability</code>, <code>writing-style</code></li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Change types</h3>
+        <ul>
+          <li><code>refactoring</code></li>
+          <li><code>dependency-upgrades</code></li>
+          <li><code>database-migration</code></li>
+          <li><code>incident-response</code></li>
+          <li><code>release</code>, <code>performance</code></li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Safety</h3>
+        <ul>
+          <li><code>safety-guardrail</code> — real, enforced</li>
+          <li><code>secret-scan</code> — real, enforced</li>
+          <li><code>memory-hygiene</code></li>
+          <li><code>sensitive-data</code></li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Autonomy</h3>
+        <ul>
+          <li><code>mission-mode</code></li>
+          <li><code>standing-permission</code></li>
+          <li><code>roles</code> — six reusable personas</li>
+        </ul>
+      </div>
+      <div class="cat-card">
+        <h3>Project, mapping &amp; media</h3>
+        <ul>
+          <li><code>project-bootstrap</code>, <code>project-audit</code></li>
+          <li><code>codebase-mapping</code>, <code>database-mapping</code></li>
+          <li><code>third-party-api-integration</code></li>
+          <li><code>demo-video</code>, <code>video-review</code>, <code>doc-review</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-  <p><strong>What is AGENTS.md?</strong><br>
-  A cross-vendor open standard for giving AI coding agents project-level
-  instructions in a single, tool-agnostic file, read automatically by most
-  major AI coding tools. agent-playbooks builds its entire instruction set
-  on top of this standard rather than inventing a proprietary format.</p>
+  <section class="block">
+    <h2>Works with your tools, not one of them</h2>
+    <p class="lede">Claude Code and Cursor get real generated Skills/rules; Codex
+    CLI, Gemini CLI, and most others read <code>AGENTS.md</code> natively with
+    nothing extra to generate.</p>
+    <div class="chip-row">
+      <span class="chip">Claude Code</span>
+      <span class="chip">Cursor</span>
+      <span class="chip">Antigravity</span>
+      <span class="chip">GitHub Copilot</span>
+      <span class="chip">GitHub Copilot CLI</span>
+      <span class="chip">OpenAI Codex CLI</span>
+      <span class="chip">Codex App</span>
+      <span class="chip">Gemini CLI</span>
+      <span class="chip">Devin CLI</span>
+      <span class="chip">Factory Droid</span>
+      <span class="chip">Grok Build</span>
+      <span class="chip">Kimi Code</span>
+      <span class="chip">OpenCode</span>
+      <span class="chip">Pi</span>
+      <span class="chip">Hermes Agent</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Watch it work</h2>
+    <p class="lede">Every one of the 35 playbooks, narrated, each with a real terminal run — not a slideshow.</p>
+    <video controls preload="metadata"
+      src="https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4">
+    </video>
+  </section>
+
+  <section class="block">
+    <h2>FAQ</h2>
+    <div class="faq-item">
+      <h3>What is agent-playbooks?</h3>
+      <p>A portable, tool-agnostic instruction set for AI coding agents, built on
+      the AGENTS.md standard. 35 playbooks covering bug fixes, feature
+      development, code review, security review, testing, and autonomous
+      operation, so you write the rules once instead of configuring every AI
+      coding tool separately.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Which AI coding tools does it support?</h3>
+      <p>15 tools: Claude Code, Antigravity, Cursor, GitHub Copilot, GitHub
+      Copilot CLI, OpenAI Codex CLI, Codex App, Gemini CLI, Devin CLI, Factory
+      Droid, Grok Build, Kimi Code, OpenCode, Pi, and Hermes Agent. Most read
+      AGENTS.md automatically; the README documents the exact mechanism for
+      each.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How do I install it?</h3>
+      <p><code>curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh
+      -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project</code>
+      — no account or token required. The installer fetches the current
+      release from a small backend each run; every release is signed and
+      verified before anything is written to your project (see
+      <a href="https://github.com/chiragmangaldev3112/agent-playbooks#verifying-a-release" style="text-decoration:underline">Verifying a release</a>).</p>
+    </div>
+    <div class="faq-item">
+      <h3>Is it free?</h3>
+      <p>Yes. Both the installer and the playbook content are MIT-licensed — free
+      to use, fork, modify, and redistribute, commercially or otherwise.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What is AGENTS.md?</h3>
+      <p>A cross-vendor open standard for giving AI coding agents project-level
+      instructions in a single, tool-agnostic file, read automatically by most
+      major AI coding tools. agent-playbooks builds its entire instruction set
+      on top of this standard rather than inventing a proprietary format.</p>
+    </div>
+  </section>
 
   <footer>
-    <a href="https://github.com/chiragmangaldev3112/agent-playbooks">github.com/chiragmangaldev3112/agent-playbooks</a>
-    · MIT-licensed installer, separately licensed playbook content (see repo)
+    <div class="foot-row">
+      <div><a href="https://github.com/chiragmangaldev3112/agent-playbooks">github.com/chiragmangaldev3112/agent-playbooks</a></div>
+      <div>MIT licensed — installer and content both</div>
+    </div>
   </footer>
 </div>
 </body>
