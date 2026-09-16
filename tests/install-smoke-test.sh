@@ -100,15 +100,7 @@ else
     "$(grep -q 'does not match the signed manifest' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
 fi
 
-echo "== Test 3: legitimately watermarked AGENTS.md still installs =="
-t3="$WORK/target3"
-if run_case 8903 "$t3" "$ALLOWED_SIGNERS_LINE" "--watermark"; then
-  check "watermarked install succeeds" "$(grep -c '<!-- ref:' "$t3/AGENTS.md" 2>/dev/null || echo 0)" "1"
-else
-  check "watermarked install should succeed" "failed" "succeeded"
-fi
-
-echo "== Test 4: missing manifest is refused =="
+echo "== Test 3: missing manifest is refused =="
 t4="$WORK/target4"
 if run_case 8904 "$t4" "$ALLOWED_SIGNERS_LINE" "--no-manifest"; then
   check "missing-manifest install should fail" "succeeded" "failed"
@@ -118,7 +110,7 @@ else
     "$(grep -q 'missing its integrity manifest' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
 fi
 
-echo "== Test 5: wrong signing key is rejected =="
+echo "== Test 4: wrong signing key is rejected =="
 t5="$WORK/target5"
 if run_case 8905 "$t5" "$WRONG_SIGNERS_LINE" ""; then
   check "wrong-key install should fail" "succeeded" "failed"
@@ -128,7 +120,7 @@ else
     "$(grep -q 'signature verification failed' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
 fi
 
-echo "== Test 6: --only installs a single playbook =="
+echo "== Test 5: --only installs a single playbook =="
 t6="$WORK/target6"
 if run_case 8906 "$t6" "$ALLOWED_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_ONLY=bug-fix; then
   check "--only installed the requested file" "$([[ -f "$t6/agent-playbooks/core/bug-fix.md" ]] && echo yes || echo no)" "yes"

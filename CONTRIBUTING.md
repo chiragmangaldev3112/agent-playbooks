@@ -11,9 +11,11 @@ time (see [README.md](README.md#how-this-is-distributed)). So:
 - **Bug reports / fixes / improvements for the installer, docs, backend,
   or tests** — welcome here, normal PR flow below.
 - **Playbook content itself** (wording, a new playbook, a fix to one
-  file's process) — not something this repo's PRs can carry, since the
-  content is licensed and distributed separately. Open an issue
-  describing what's wrong or missing and it'll get picked up on the
+  file's process) — MIT-licensed same as everything else here, but the
+  actual files live in a separate private source repo and aren't tracked
+  in this repo's git history, so a PR against this repo can't carry a
+  content change (there's nothing here for it to diff against). Open an
+  issue describing what's wrong or missing and it'll get picked up on the
   content side; a released fix shows up as a normal version bump you can
   install like any other.
 
@@ -33,11 +35,10 @@ time (see [README.md](README.md#how-this-is-distributed)). So:
    This runs `install.sh` against a local mock server with a throwaway
    signing key (never the real one — that only ever exists on the
    maintainer's machine) and checks: a clean install lands the right
-   files, tampered content is rejected, a legitimately watermarked
-   `AGENTS.md` still installs, a missing manifest is refused, and a
-   release signed with the wrong key is refused. Add a case here for any
-   new failure mode you're fixing — a fix without a test that would have
-   caught the original bug is easy to silently regress later.
+   files, tampered content is rejected, a missing manifest is refused,
+   and a release signed with the wrong key is refused. Add a case here
+   for any new failure mode you're fixing — a fix without a test that
+   would have caught the original bug is easy to silently regress later.
 
 3. If you changed `supabase/functions/check-in/index.ts`, type-check it:
    ```bash

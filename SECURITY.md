@@ -46,10 +46,15 @@ Worth reading before assuming a guarantee this doesn't make:
   a dangerous action hidden inside a script the agent wrote and then ran,
   anything not literally in the deny list). Treat "not on the list" as a
   real gap, not an oversight to assume is covered.
-- **The per-install watermark** on `AGENTS.md` is for tracing a leaked
-  copy back to the install it came from, not for restricting what you can
-  do with your own installed copy — see the README section above for
-  exactly what it does and doesn't do.
+- **No content mutation at all**: the check-in endpoint is a pure
+  passthrough — it does not modify any file before returning it. An
+  earlier version injected a per-install tracking watermark into
+  `AGENTS.md`; that was removed once the content was relicensed MIT (see
+  `agent-playbooks/CHANGELOG.md` 1.19.0), since tracing an "unauthorized"
+  copy stopped being meaningful once redistribution became explicitly
+  licensed. `AGENTS.md` does carry one permanent, identical-for-everyone
+  attribution line baked into its own source — not per-install, not
+  hidden, not a tracking mechanism.
 - **No credential handling**: the installer and generated artifacts never
   ask for, store, or transmit any third-party API key or credential. The
   backend's own service-role key lives only in the Edge Function's

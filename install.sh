@@ -12,10 +12,12 @@
 # token, nothing to ask the maintainer for -- just run it. This repo does
 # not carry the playbook content itself; it fetches the current release
 # from a check-in endpoint on each install (see README.md for exactly
-# what that does and doesn't do -- including a per-install watermark
-# woven into AGENTS.md's own content, invisible in normal rendering).
-# Requires curl, jq, base64 (standard on macOS/Linux) and a shell that
-# can run bash. macOS and Linux have this natively; Windows does not --
+# what that does and doesn't do -- MIT-licensed, signed, and verified
+# below before anything is written).
+# Requires curl, jq, base64, and ssh-keygen (all standard on macOS/Linux --
+# ssh-keygen verifies each release's signature, see "Verifying a release"
+# in README.md) and a shell that can run bash. macOS and Linux have this
+# natively; Windows does not --
 # run this via WSL or Git Bash, not from a plain Command
 # Prompt/PowerShell session (same constraint as this repo's other bash
 # scripts, e.g. media/demo-video.md's).
@@ -127,33 +129,6 @@ sha256_stdin() {
   else
     shasum -a 256 | awk '{print $1}'
   fi
-}
-
-# AGENTS.md is watermarked per-install by the check-in backend (a trailing
-# "<!-- ref: ... -->" comment woven in after fetch -- see README.md) so its
-# bytes differ on every install and can never match a single signed hash
-# as-is. The manifest signs the PRE-watermark hash, so this strips that
-# exact, fixed-shape suffix back off before hashing -- falls back to
-# hashing the file as-is if the suffix isn't found (which then correctly
-# fails verification below if AGENTS.md doesn't carry the watermark it's
-# supposed to). Never routes the tail bytes through a `$(...)` capture for
-# the actual comparison -- command substitution strips trailing newlines,
-# which would silently corrupt exactly the bytes this depends on
-# (confirmed: produced a false mismatch on every real watermarked file
-# before switching to `cmp` on raw streams here).
-hash_stripping_watermark() {
-  local f="$1" filesize token suffix suffixlen
-  filesize=$(wc -c < "$f" | tr -d ' ')
-  token="$(tail -c 40 "$f" | grep -oE '<!-- ref: [0-9a-f]{12} -->' | grep -oE '[0-9a-f]{12}' || true)"
-  if [[ -n "$token" ]]; then
-    suffix=$'\n'"<!-- ref: ${token} -->"$'\n'
-    suffixlen=${#suffix}
-    if [[ $filesize -ge $suffixlen ]] && tail -c "$suffixlen" "$f" | cmp -s - <(printf '%s' "$suffix"); then
-      head -c $((filesize - suffixlen)) "$f" | sha256_stdin
-      return
-    fi
-  fi
-  sha256_of_file "$f"
 }
 
 mkdir -p "$TARGET_DIR"
@@ -298,11 +273,7 @@ while IFS= read -r -d '' relpath; do
     echo "Error: fetched file '$relpath' has no entry in the signed manifest -- refusing to install." >&2
     exit 1
   fi
-  if [[ "$relpath" == "AGENTS.md" ]]; then
-    actual_hash="$(hash_stripping_watermark "$f")"
-  else
-    actual_hash="$(sha256_of_file "$f")"
-  fi
+  actual_hash="$(sha256_of_file "$f")"
   if [[ "$actual_hash" != "$expected_hash" ]]; then
     echo "Error: fetched file '$relpath' does not match the signed manifest -- refusing to install." >&2
     exit 1

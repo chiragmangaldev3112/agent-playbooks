@@ -10,10 +10,6 @@
 -- only sanctioned path, and content only ever leaves the database
 -- through it.
 
--- Needed to compute sha256() for the watermark-lookup query near the
--- bottom of this file -- harmless to enable even if you never use it.
-create extension if not exists pgcrypto;
-
 create table if not exists installations (
   id uuid primary key,
   first_seen timestamptz not null default now(),
@@ -41,24 +37,28 @@ alter table app_config enable row level security;
 
 -- archive_base64 stores a JSON object mapping each release file's
 -- relative path to its base64 content (produced by
--- maintainer/package-release.sh) -- not a single tar.gz. This is
--- deliberate: it lets the check-in Edge Function inject a per-install
--- watermark into AGENTS.md's content at request time before returning
--- it, without needing to unpack/repack a compressed archive.
+-- maintainer/package-release.sh) -- not a single tar.gz. (This used to
+-- also be so the check-in Edge Function could inject a per-install
+-- watermark into AGENTS.md at request time; removed once the content
+-- was relicensed MIT -- see agent-playbooks/CHANGELOG.md 1.18.0 -- since
+-- a token for tracing an unauthorized "leaked" copy stopped making sense
+-- the moment redistribution became explicitly licensed. The per-file
+-- shape is kept regardless: still what lets manifest_json below map
+-- cleanly one hash per file.)
 --
 -- manifest_json / manifest_signature: a signed, sorted-key JSON map of
--- {relative path: sha256} for the same files (pre-watermark, for
--- AGENTS.md), signed with the maintainer's release-signing key
--- (maintainer/release-signing-key, never in this database or any repo).
--- install.sh verifies the signature against a fixed public key baked
--- into the script, then re-hashes every fetched file against this
--- manifest, before writing anything to disk -- so a compromised or
--- spoofed version of this backend can no longer silently swap in
--- different content; it doesn't hold the private key needed to produce
--- a manifest install.sh will accept. Both nullable only so this
--- migration doesn't break on top of pre-existing rows -- install.sh
--- itself treats a release missing either as unverifiable and refuses to
--- install it, so in practice every release actually served needs both.
+-- {relative path: sha256} for the same files, signed with the
+-- maintainer's release-signing key (maintainer/release-signing-key,
+-- never in this database or any repo). install.sh verifies the
+-- signature against a fixed public key baked into the script, then
+-- re-hashes every fetched file against this manifest, before writing
+-- anything to disk -- so a compromised or spoofed version of this
+-- backend can no longer silently swap in different content; it doesn't
+-- hold the private key needed to produce a manifest install.sh will
+-- accept. Both nullable only so this migration doesn't break on top of
+-- pre-existing rows -- install.sh itself treats a release missing either
+-- as unverifiable and refuses to install it, so in practice every
+-- release actually served needs both.
 create table if not exists releases (
   version text primary key,
   archive_base64 text not null,
@@ -164,14 +164,3 @@ revoke all on releases from anon, authenticated;
 --   insert into releases (version, archive_base64, manifest_json, manifest_signature)
 --     values ('1.0.1', '<base64>', '<manifest json>', '<signature>');
 --   update app_config set latest_version = '1.0.1' where id = 1;
---
--- Trace a leaked copy back to the install it came from: the Edge
--- Function watermarks AGENTS.md with a token computed as
--- sha256(install_id) truncated to the first 12 hex characters -- nothing
--- extra is stored, so given a token found in a leaked copy, find the
--- matching installation by recomputing the same hash for every row
--- (requires the pgcrypto extension, enabled once via
--- `create extension if not exists pgcrypto;`):
---   select id, first_seen, last_seen, version
---   from installations
---   where left(encode(digest(id::text, 'sha256'), 'hex'), 12) = '<token from the leaked copy>';

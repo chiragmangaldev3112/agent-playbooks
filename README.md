@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/chiragmangaldev3112/agent-playbooks/actions/workflows/ci.yml/badge.svg)](https://github.com/chiragmangaldev3112/agent-playbooks/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/chiragmangaldev3112/agent-playbooks)](https://github.com/chiragmangaldev3112/agent-playbooks/releases)
-[![License](https://img.shields.io/badge/installer-MIT-blue)](LICENSE)
+[![License](https://img.shields.io/github/license/chiragmangaldev3112/agent-playbooks)](LICENSE)
 [![Issues](https://img.shields.io/github/issues/chiragmangaldev3112/agent-playbooks)](https://github.com/chiragmangaldev3112/agent-playbooks/issues)
 [![Stars](https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social)](https://github.com/chiragmangaldev3112/agent-playbooks/stargazers)
 
@@ -359,18 +359,17 @@ without writing anything (`Error: could not reach the check-in endpoint`).
 Nothing about `--version`/`--only`/tool selection changes that; every mode
 still needs one successful round trip to fetch the release.
 
-**One more thing this endpoint does, disclosed here rather than hidden**:
-it appends a short, inconspicuous watermark comment to `AGENTS.md` before
-returning it — a token derived from your install's own random ID (the
-same one already generated locally, no new data collected). It's
-invisible in normal markdown rendering and doesn't change how an AI
-reads the instructions; it exists so that if a full copy of this content
-ever turns up somewhere it shouldn't (redistributed, resold), it can be
-traced back to which install it came from. It does not, and isn't meant
-to, stop you from reading your own installed copy — nothing can do that
-while an AI tool also needs to read these files as plain text to use
-them; see `supabase/functions/check-in/index.ts` for the exact,
-readable logic.
+This endpoint does not modify any content before returning it — it's a
+pure passthrough (see `supabase/functions/check-in/index.ts`, fully
+readable). `AGENTS.md` does carry one permanent line crediting this
+project (`<!-- agent-playbooks (MIT): ...github.com/... -->`, invisible
+in normal markdown rendering) — but it's baked into the source content
+itself, identical in every install, not generated per-install. An
+earlier version of this endpoint injected a per-install tracking token
+instead, meant to trace an unauthorized "leaked" copy back to its
+source install; that stopped making sense once the content was
+relicensed MIT (redistribution is explicitly permitted now) and was
+removed — see `agent-playbooks/CHANGELOG.md` 1.19.0.
 
 ## Two different version numbers
 
@@ -404,18 +403,20 @@ if reproducibility matters to you. See [CHANGELOG.md](CHANGELOG.md) and
 contribute to (installer, docs, backend, tests — not playbook content
 itself, which is distributed separately) and how to run the install
 smoke test before opening a PR. [SECURITY.md](SECURITY.md) covers how to
-report a vulnerability and spells out exactly what the safety guardrail,
-release signing, and watermark do and don't protect against.
+report a vulnerability and spells out exactly what the safety guardrail
+and release signing do and don't protect against.
 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) covers what's expected of
 everyone participating here.
 
 ## License
 
-Two different licenses, deliberately:
-- **This installer and repo**: MIT — see [LICENSE](LICENSE). Fork it,
-  read it, run your own backend against the same schema, whatever.
-- **The playbook content itself**, fetched on install: a separate,
-  restrictive license, delivered as `agent-playbooks/LICENSE` inside every
-  install — in short, use it in your own projects freely, but don't
-  redistribute, republish, or resell it without the copyright holder's
-  permission. Read that file (it's short) rather than assuming terms.
+MIT, for everything — the installer/repo ([LICENSE](LICENSE)) and the
+playbook content itself, fetched on install and delivered as
+`agent-playbooks/LICENSE` inside every install. Fork it, redistribute
+it, modify and republish it, build on it commercially — all explicitly
+permitted, no separate terms to check.
+
+This wasn't always the case: content versions before 1.18.0 (see
+[CHANGELOG.md](CHANGELOG.md)) were distributed under a separate,
+restrictive license. That split existed for a while and is gone now —
+mentioned here rather than pretending it never happened.
