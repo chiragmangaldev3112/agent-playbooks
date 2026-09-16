@@ -47,7 +47,14 @@ ssh-keygen -Y sign -f "$WORK/testkey" -n agent-playbooks-release "$FIXTURE/manif
 
 # Runs one case: starts the mock server (with the given extra flags),
 # runs install.sh with the given signer line + any extra env, tears the
-# server down, and returns install.sh's own exit code.
+# server down, and returns install.sh's own exit code. stderr is also
+# captured to $LAST_STDERR so a caller can confirm *why* it failed --
+# without this, a case that expects failure would also "pass" if install.sh
+# failed for a completely unrelated reason (confirmed real: a CI runner
+# where the mock server itself was unreachable made every negative test
+# here report a false pass, since they only checked "failed + wrote
+# nothing," not the actual error).
+LAST_STDERR=""
 run_case() {
   local port="$1" target="$2" signers="$3" server_flag="$4"
   shift 4
@@ -55,15 +62,22 @@ run_case() {
   python3 "$REPO_DIR/tests/support/mock_server.py" "$FIXTURE" "$port" "$server_flag" &
   local server_pid=$!
   sleep 0.5
+  local stderr_file="$WORK/last_stderr"
   AGENT_PLAYBOOKS_CHECK_IN_URL="http://127.0.0.1:$port" \
     AGENT_PLAYBOOKS_ID_FILE="$WORK/id" \
     AGENT_PLAYBOOKS_TOOL=none \
     AGENT_PLAYBOOKS_ALLOWED_SIGNERS="$signers" \
     "$@" \
-    bash "$REPO_DIR/install.sh" "$target"
+    bash "$REPO_DIR/install.sh" "$target" 2>"$stderr_file"
   local result=$?
+  LAST_STDERR="$(cat "$stderr_file")"
   kill "$server_pid" 2>/dev/null || true
   wait "$server_pid" 2>/dev/null || true
+  if [[ -z "$LAST_STDERR" ]]; then
+    :
+  elif grep -q "could not reach the check-in endpoint" "$stderr_file"; then
+    echo "  NETWORK: mock server on 127.0.0.1:$port was unreachable -- this case can't have exercised the real check, only the network-failure path." >&2
+  fi
   return $result
 }
 
@@ -82,6 +96,8 @@ if run_case 8902 "$t2" "$ALLOWED_SIGNERS_LINE" "--tamper"; then
   check "tampered install should fail" "succeeded" "failed"
 else
   check "tampered install rejected" "$([[ -f "$t2/AGENTS.md" ]] && echo "wrote files" || echo "wrote nothing")" "wrote nothing"
+  check "tampered install rejected for the right reason" \
+    "$(grep -q 'does not match the signed manifest' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
 fi
 
 echo "== Test 3: legitimately watermarked AGENTS.md still installs =="
@@ -98,6 +114,8 @@ if run_case 8904 "$t4" "$ALLOWED_SIGNERS_LINE" "--no-manifest"; then
   check "missing-manifest install should fail" "succeeded" "failed"
 else
   check "missing-manifest install rejected" "$([[ -f "$t4/AGENTS.md" ]] && echo "wrote files" || echo "wrote nothing")" "wrote nothing"
+  check "missing-manifest install rejected for the right reason" \
+    "$(grep -q 'missing its integrity manifest' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
 fi
 
 echo "== Test 5: wrong signing key is rejected =="
@@ -106,6 +124,8 @@ if run_case 8905 "$t5" "$WRONG_SIGNERS_LINE" ""; then
   check "wrong-key install should fail" "succeeded" "failed"
 else
   check "wrong-key install rejected" "$([[ -f "$t5/AGENTS.md" ]] && echo "wrote files" || echo "wrote nothing")" "wrote nothing"
+  check "wrong-key install rejected for the right reason" \
+    "$(grep -q 'signature verification failed' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
 fi
 
 echo "== Test 6: --only installs a single playbook =="
