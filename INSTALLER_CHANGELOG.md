@@ -10,6 +10,15 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.0.0 — 2026-09-16
+Bumped straight from 1.4.0 to 2.0.0 (no 1.5–1.x releases skipped, nothing
+else changed) purely to get a tag this repo can actually cut: `v1.4.0`
+was already taken by a *content* release from 2026-09-04 (git tags here
+are shared between this axis and `CHANGELOG.md`'s, confirmed by checking
+`git tag -l` before attempting to tag 1.4.0 and finding the collision).
+Content versions climb roughly weekly; jumping to a clean `2.x` line
+avoids re-colliding again soon the way another `1.x` bump would.
+
 ## 1.4.0 — 2026-09-16
 Every release is now signed, and `install.sh` verifies it before writing
 anything to disk. `maintainer/package-release.sh` (private source) builds
