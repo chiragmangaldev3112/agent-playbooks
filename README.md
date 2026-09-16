@@ -1,5 +1,7 @@
 # Agent Playbooks
 
+<a href="https://chiragmangaldev3112.github.io/agent-playbooks/"><img src="docs/social-preview.png" alt="Agent Playbooks — portable engineering workflows for AI coding agents" width="100%"></a>
+
 [![CI](https://github.com/chiragmangaldev3112/agent-playbooks/actions/workflows/ci.yml/badge.svg)](https://github.com/chiragmangaldev3112/agent-playbooks/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/chiragmangaldev3112/agent-playbooks)](https://github.com/chiragmangaldev3112/agent-playbooks/releases)
 [![License](https://img.shields.io/github/license/chiragmangaldev3112/agent-playbooks)](LICENSE)
