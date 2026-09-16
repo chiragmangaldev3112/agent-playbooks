@@ -4,11 +4,24 @@
 [![License](https://img.shields.io/badge/installer-MIT-blue)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social)](https://github.com/chiragmangaldev3112/agent-playbooks/stargazers)
 
-A portable rulebook for AI coding agents — how to fix bugs, build features,
-review code, test frontend/backend work, run security reviews, and (if you
-want it) operate autonomously against a standing mission. Works with Claude
-Code, Antigravity, Cursor, GitHub Copilot/Codex, or any agent that can read
-a text file.
+**Portable engineering workflows for AI coding agents.** Give your agent a
+repeatable process — reproduce a bug before fixing it, write a test before
+building a feature, verify a change independently, refuse a destructive
+command outright — instead of letting it guess its way through each task.
+Works with Claude Code, Antigravity, Cursor, GitHub Copilot/Codex, or any
+agent that can read a text file.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
+chmod +x install.sh
+./install.sh .
+```
+
+Then ask your agent: *"Fix this bug — reproduce it first, write a
+regression test, implement the fix, and verify the result."* See
+**[Install](#install)** below for pinning a version, installing a single
+playbook, or per-tool setup, and **[Verifying a release](#verifying-a-release)**
+for what the installer checks before writing anything to your project.
 
 ## Why
 
@@ -81,6 +94,43 @@ setup, no account, no token — and prints the version it installed. It also
 drops in a one-line `CLAUDE.md` (only if you don't already have one) that
 just imports `AGENTS.md`, because Claude Code only auto-loads `CLAUDE.md`,
 never `AGENTS.md`.
+
+### Verifying a release
+
+This does mean the installer fetches content from a backend on every run
+(see **[How this is distributed](#how-this-is-distributed)**) — and
+because that content becomes literal instructions for an AI agent with
+shell access, a compromised or spoofed backend serving different content
+than intended is a real threat model, not a hypothetical one. `install.sh`
+defends against it automatically, before writing anything to your project:
+
+1. Every release is signed with an Ed25519 key that lives only on the
+   maintainer's machine (`maintainer/package-release.sh`, run at release
+   time — never deployed anywhere, never in this repo, never in the
+   backend). `install.sh` embeds the fixed public half and verifies the
+   signature with `ssh-keygen -Y verify` (not OpenSSL — stock macOS ships
+   LibreSSL, which cannot verify Ed25519 signatures at all; OpenSSH's
+   `ssh-keygen` is standard on macOS and virtually every Linux box).
+2. The signed manifest lists a sha256 for every file in the release.
+   `install.sh` re-hashes each fetched file and compares — a valid
+   signature over a manifest that doesn't match what was actually served
+   is caught here too.
+3. Either check failing aborts the install with a clear error and writes
+   nothing to your project. There is no "install anyway" flag.
+
+This is what actually changed: before, HTTPS proved the connection to
+`CHECK_IN_URL` was authentic, but not that the *content* it returned was
+what the maintainer published — a compromised backend could have served
+anything and every install would have accepted it silently. Now the
+backend is no longer in the trust path for content integrity; it can
+withhold a release (see `blocked`/`blocked_message` in `schema.sql`) but
+it can't successfully substitute one, because it never holds the private
+signing key.
+
+You don't need to do anything for this — it runs on every install. To
+check it yourself: the public key is the `ALLOWED_SIGNERS` line near the
+top of `install.sh`, and the verification logic is the block right before
+any file gets copied into your project.
 
 If you run it at a real terminal, it also asks which AI tool you're
 using and generates real native artifacts for it — not just a copy of
@@ -301,6 +351,12 @@ is hidden from you).
 
 No email or personal information is collected by the installer itself.
 
+**Is this network call required?** Yes — there's no offline/cached mode.
+If the endpoint can't be reached, `install.sh` prints an error and exits
+without writing anything (`Error: could not reach the check-in endpoint`).
+Nothing about `--version`/`--only`/tool selection changes that; every mode
+still needs one successful round trip to fetch the release.
+
 **One more thing this endpoint does, disclosed here rather than hidden**:
 it appends a short, inconspicuous watermark comment to `AGENTS.md` before
 returning it — a token derived from your install's own random ID (the
@@ -319,11 +375,35 @@ readable logic.
 `CHANGELOG.md` tracks the *content* version (`agent-playbooks/`) — the one
 `--version`/`AGENT_PLAYBOOKS_VERSION` lets you pin to. `VERSION` and
 `INSTALLER_CHANGELOG.md` in this repo track a separate thing: `install.sh`'s
-own version. You'll basically never need the second one — `curl
-.../install.sh` always fetches current `main` regardless, there's no "pin
-to an old installer" use case the way there's a real one for old content —
-it's tracked mainly so this repo's own release history reflects real,
-distinct states of the installer.
+own version.
+
+The quick-start command at the top of this README fetches `install.sh`
+from `main`, which changes over time — reasonable for "give me whatever's
+current," but not reproducible if you need the exact installer behavior
+from a specific point in time (say, for a CI pipeline you don't want to
+change out from under you). For that, fetch from a release tag instead —
+every tagged version (`v1.0.0` through the current one) is immutable:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/v1.17.0/install.sh -o install.sh
+chmod +x install.sh
+./install.sh --version 1.17.0 .
+```
+
+Note the two separate pins here: the URL's `v1.17.0` pins *which installer
+script* you get; `--version 1.17.0` pins *which content release* it fetches
+— they happen to share a number today but track independently, so set both
+if reproducibility matters to you. See [CHANGELOG.md](CHANGELOG.md) and
+[INSTALLER_CHANGELOG.md](INSTALLER_CHANGELOG.md) for what changed in each.
+
+## Contributing and security
+
+[CONTRIBUTING.md](CONTRIBUTING.md) covers what's actually in this repo to
+contribute to (installer, docs, backend, tests — not playbook content
+itself, which is distributed separately) and how to run the install
+smoke test before opening a PR. [SECURITY.md](SECURITY.md) covers how to
+report a vulnerability and spells out exactly what the safety guardrail,
+release signing, and watermark do and don't protect against.
 
 ## License
 

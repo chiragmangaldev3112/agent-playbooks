@@ -91,9 +91,70 @@ TARGET_DIR="${1:-.}"
 CHECK_IN_URL="${AGENT_PLAYBOOKS_CHECK_IN_URL:-https://cjogceoqhgjzpalbqpga.supabase.co/functions/v1/check-in}"
 ID_FILE="${AGENT_PLAYBOOKS_ID_FILE:-$HOME/.agent-playbooks-id}"
 
-for cmd in curl jq base64; do
+# Public half of the release-signing keypair (maintainer/release-signing-key
+# in the private source, never committed there). Every release is signed
+# with the private half at package time (maintainer/package-release.sh)
+# and verified against this fixed key below, before anything from a fetched
+# release is copied anywhere -- see "Verifying a release" in README.md for
+# what this does and doesn't protect against. `ssh-keygen -Y sign/verify`,
+# not openssl: stock macOS ships LibreSSL, whose `pkeyutl` cannot sign or
+# verify Ed25519 at all -- confirmed by actually trying it on a real Mac
+# before picking ssh-keygen (OpenSSH, present on macOS and virtually every
+# Linux box already) instead.
+#
+# Overridable via AGENT_PLAYBOOKS_ALLOWED_SIGNERS for exactly one reason:
+# tests/install-smoke-test.sh needs to sign fixtures with a throwaway key
+# instead of the real one (which never leaves the maintainer's machine, so
+# CI can't sign anything real). Every actual install uses the hardcoded
+# default -- nothing in a real invocation sets this variable.
+ALLOWED_SIGNERS="${AGENT_PLAYBOOKS_ALLOWED_SIGNERS:-release@agent-playbooks ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKzk3SMqAvHG9bI0EGfEQEE3h6LcUjOJ9TRUtcxpscjT agent-playbooks-release}"
+SIGNING_NAMESPACE="agent-playbooks-release"
+
+for cmd in curl jq base64 ssh-keygen; do
   command -v "$cmd" >/dev/null || { echo "Error: '$cmd' is required and was not found." >&2; exit 1; }
 done
+
+sha256_of_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+sha256_stdin() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum | awk '{print $1}'
+  else
+    shasum -a 256 | awk '{print $1}'
+  fi
+}
+
+# AGENTS.md is watermarked per-install by the check-in backend (a trailing
+# "<!-- ref: ... -->" comment woven in after fetch -- see README.md) so its
+# bytes differ on every install and can never match a single signed hash
+# as-is. The manifest signs the PRE-watermark hash, so this strips that
+# exact, fixed-shape suffix back off before hashing -- falls back to
+# hashing the file as-is if the suffix isn't found (which then correctly
+# fails verification below if AGENTS.md doesn't carry the watermark it's
+# supposed to). Never routes the tail bytes through a `$(...)` capture for
+# the actual comparison -- command substitution strips trailing newlines,
+# which would silently corrupt exactly the bytes this depends on
+# (confirmed: produced a false mismatch on every real watermarked file
+# before switching to `cmp` on raw streams here).
+hash_stripping_watermark() {
+  local f="$1" filesize token suffix suffixlen
+  filesize=$(wc -c < "$f" | tr -d ' ')
+  token="$(tail -c 40 "$f" | grep -oE '<!-- ref: [0-9a-f]{12} -->' | grep -oE '[0-9a-f]{12}' || true)"
+  if [[ -n "$token" ]]; then
+    suffix=$'\n'"<!-- ref: ${token} -->"$'\n'
+    suffixlen=${#suffix}
+    if [[ $filesize -ge $suffixlen ]] && tail -c "$suffixlen" "$f" | cmp -s - <(printf '%s' "$suffix"); then
+      head -c $((filesize - suffixlen)) "$f" | sha256_stdin
+      return
+    fi
+  fi
+  sha256_of_file "$f"
+}
 
 mkdir -p "$TARGET_DIR"
 TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
@@ -148,6 +209,15 @@ if [[ -z "$archive_json" ]]; then
   exit 1
 fi
 
+manifest_json="$(echo "$response" | jq -r '.[0].manifest_json // empty')"
+manifest_signature="$(echo "$response" | jq -r '.[0].manifest_signature // empty')"
+if [[ -z "$manifest_json" || -z "$manifest_signature" ]]; then
+  echo "Error: release is missing its integrity manifest/signature -- refusing to" >&2
+  echo "install unverified content. If you're the maintainer, republish with the" >&2
+  echo "current maintainer/package-release.sh (it signs every release)." >&2
+  exit 1
+fi
+
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
 
@@ -189,6 +259,50 @@ if [[ ! -f "$WORKDIR/AGENTS.md" || ! -d "$WORKDIR/agent-playbooks" ]]; then
   echo "Error: fetched release doesn't contain AGENTS.md / agent-playbooks/." >&2
   exit 1
 fi
+
+# Verify the release before anything from it touches $TARGET_DIR: the
+# signature proves the manifest itself came from the maintainer's signing
+# key untampered, and the per-file hash check proves the content fetched
+# just now actually matches what that manifest says -- together, a
+# compromised or spoofed check-in backend can no longer silently swap in
+# different files, since it doesn't hold the private signing key (kept
+# only on the maintainer's machine, never deployed anywhere).
+printf '%s' "$manifest_json" > "$WORKDIR/manifest.json"
+printf '%s' "$manifest_signature" > "$WORKDIR/manifest.json.sig"
+printf '%s\n' "$ALLOWED_SIGNERS" > "$WORKDIR/allowed_signers"
+
+if ! ssh-keygen -Y verify -f "$WORKDIR/allowed_signers" -I "release@agent-playbooks" \
+     -n "$SIGNING_NAMESPACE" -s "$WORKDIR/manifest.json.sig" \
+     < "$WORKDIR/manifest.json" >/dev/null 2>&1; then
+  echo "Error: release manifest signature verification failed -- refusing to" >&2
+  echo "install unverified content. This means either the fetched release was" >&2
+  echo "altered in transit, or the check-in backend is serving something it" >&2
+  echo "shouldn't. Do not retry blindly -- check https://github.com/chiragmangaldev3112/agent-playbooks" >&2
+  echo "for a security notice before trying again." >&2
+  exit 1
+fi
+
+while IFS= read -r -d '' relpath; do
+  # find ran with cwd=$WORKDIR (below), so relpath is already relative to
+  # it -- build the real path explicitly rather than reusing find's raw
+  # output as-is, since the rest of this script does not run with $WORKDIR
+  # as its cwd.
+  f="$WORKDIR/$relpath"
+  expected_hash="$(jq -r --arg k "$relpath" '.files[$k] // empty' "$WORKDIR/manifest.json")"
+  if [[ -z "$expected_hash" ]]; then
+    echo "Error: fetched file '$relpath' has no entry in the signed manifest -- refusing to install." >&2
+    exit 1
+  fi
+  if [[ "$relpath" == "AGENTS.md" ]]; then
+    actual_hash="$(hash_stripping_watermark "$f")"
+  else
+    actual_hash="$(sha256_of_file "$f")"
+  fi
+  if [[ "$actual_hash" != "$expected_hash" ]]; then
+    echo "Error: fetched file '$relpath' does not match the signed manifest -- refusing to install." >&2
+    exit 1
+  fi
+done < <(cd "$WORKDIR" && find AGENTS.md agent-playbooks -type f -print0)
 
 cp "$WORKDIR/AGENTS.md" "$TARGET_DIR/AGENTS.md"
 mkdir -p "$TARGET_DIR/agent-playbooks"

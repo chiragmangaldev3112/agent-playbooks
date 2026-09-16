@@ -15,6 +15,18 @@
 // actual security property here: not "you need permission to install,"
 // but "no infrastructure credential ever leaves the server."
 //
+// manifest_json / manifest_signature: check_in() (see schema.sql) now also
+// returns these two columns from `releases`. Nothing here needs to touch
+// them -- the `data`/`row` handling below has always passed the whole row
+// through untouched except for the one `archive_base64` mutation below, so
+// they flow to the installer as-is. They're the maintainer's signed,
+// pre-watermark file-hash manifest for this release; install.sh verifies
+// them against a fixed public key before trusting anything this function
+// returns. Deliberately NOT re-signed here: the signature is over the
+// pre-watermark manifest, and this function only ever mutates
+// AGENTS.md's watermark comment, which install.sh knows to strip back off
+// before checking the hash -- see install.sh's hash_stripping_watermark.
+//
 // Per-install watermark: the stored release is a JSON map of
 // {relative path: base64 file content} (see maintainer/package-release.sh),
 // not a single opaque archive -- deliberately, so this function can
