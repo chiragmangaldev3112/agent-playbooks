@@ -46,9 +46,9 @@ playbook in it has been run against a real, throwaway test case at least
 once, not just written and published.
 
 **[▶ Watch the demo in your browser](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)**
-(or [download the file directly](https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4))
-— 9 minutes, narrating and actually running all 36 playbooks, one real
-terminal demo each, not a slideshow.
+(or [download the file directly](https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v2.2.0/agent-playbooks-demo.mp4))
+— about 7.5 minutes, narrating and actually running all 36 playbooks, one
+real terminal demo each, not a slideshow.
 
 **What you get, at a glance** (full catalog with every file:
 [What's in the box](#whats-in-the-box)):
