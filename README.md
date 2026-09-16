@@ -1,7 +1,9 @@
 # Agent Playbooks
 
+[![CI](https://github.com/chiragmangaldev3112/agent-playbooks/actions/workflows/ci.yml/badge.svg)](https://github.com/chiragmangaldev3112/agent-playbooks/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/chiragmangaldev3112/agent-playbooks)](https://github.com/chiragmangaldev3112/agent-playbooks/releases)
 [![License](https://img.shields.io/badge/installer-MIT-blue)](LICENSE)
+[![Issues](https://img.shields.io/github/issues/chiragmangaldev3112/agent-playbooks)](https://github.com/chiragmangaldev3112/agent-playbooks/issues)
 [![Stars](https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social)](https://github.com/chiragmangaldev3112/agent-playbooks/stargazers)
 
 **Portable engineering workflows for AI coding agents.** Give your agent a
