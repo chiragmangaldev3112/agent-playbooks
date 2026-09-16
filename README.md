@@ -10,9 +10,13 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/chiragmangaldev3112/agent-playbooks" alt="License"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/issues"><img src="https://img.shields.io/github/issues/chiragmangaldev3112/agent-playbooks" alt="Issues"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
+  <br>
+  <img src="https://img.shields.io/badge/36_Playbooks-blueviolet" alt="36 Playbooks">
+  <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
+  <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
 </p>
 
-<h1 align="center">Agent Playbooks</h1>
+<h1 align="center">🤖 Agent Playbooks</h1>
 
 <p align="center"><strong>Portable engineering workflows for AI coding agents.</strong></p>
 
@@ -21,6 +25,13 @@
   write a test before building a feature, verify a change independently,
   refuse a destructive command outright — instead of letting it guess its
   way through each task.
+</p>
+
+<p align="center">
+  🧠 One instruction set, every tool &nbsp;•&nbsp;
+  🔁 Independent verification, always &nbsp;•&nbsp;
+  🛡️ Destructive commands hard-blocked &nbsp;•&nbsp;
+  🔐 Cryptographically signed releases
 </p>
 
 <p align="center">
@@ -38,31 +49,32 @@ chmod +x install.sh
 ./install.sh .
 ```
 
-Then ask your agent: *"Fix this bug — reproduce it first, write a
+💬 Then ask your agent: *"Fix this bug — reproduce it first, write a
 regression test, implement the fix, and verify the result."*
 
 **[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — every one of the 36 playbooks, narrated, with a real terminal run each. Not a slideshow.
 
 ---
 
-## Table of contents
+## 🗺️ Table of contents
 
-- [Why](#why)
-- [What you get, at a glance](#what-you-get-at-a-glance)
-- [Install](#install)
-  - [Verifying a release](#verifying-a-release)
-  - [Wiring into your AI tool](#wiring-into-your-ai-tool)
-- [Day to day: how you'll actually use this](#day-to-day-how-youll-actually-use-this)
-- [Playbook catalog](#playbook-catalog)
-- [Creating your own bot (a custom persona)](#creating-your-own-bot-a-custom-persona-with-a-demo)
-- [How this is distributed](#how-this-is-distributed)
-- [Two different version numbers](#two-different-version-numbers)
-- [Contributing and security](#contributing-and-security)
-- [License](#license)
+- [🤔 Why This Exists](#why)
+- [✨ What You Get, at a Glance](#what-you-get-at-a-glance)
+- [🚀 Quick Start / Install](#install)
+  - [🔐 Verifying a Release](#verifying-a-release)
+  - [🔌 Wiring Into Your AI Tool](#wiring-into-your-ai-tool)
+- [🔁 Day to Day: How You'll Actually Use This](#day-to-day-how-youll-actually-use-this)
+- [🧰 Playbook Catalog](#playbook-catalog)
+- [🧑‍🚀 Creating Your Own Bot (a Custom Persona)](#creating-your-own-bot-a-custom-persona-with-a-demo)
+- [📡 How This Is Distributed](#how-this-is-distributed)
+- [🔢 Two Different Version Numbers](#two-different-version-numbers)
+- [🤝 Contributing and Security](#contributing-and-security)
+- [📄 License](#license)
 
 ---
 
-## Why
+<a id="why"></a>
+## 🤔 Why This Exists
 
 Two separate problems, both real:
 
@@ -80,9 +92,20 @@ This is that process, written down once, usable everywhere — and every
 playbook in it has been run against a real, throwaway test case at least
 once, not just written and published.
 
-## What you get, at a glance
+**The difference, side by side:**
 
-Full catalog with every file: [Playbook catalog](#playbook-catalog).
+| ❌ Without Agent Playbooks | ✅ With Agent Playbooks |
+|---|---|
+| Agent guesses at an ambiguous spec | Asks before building |
+| Agent grades its own work | Independent verification, always |
+| Different instructions per AI tool | One file, every tool reads the same source |
+| A destructive command runs because nothing stopped it | Hard-blocked automatically, before it executes |
+| Project conventions forgotten every new session | Written down once, loaded every session |
+
+<a id="what-you-get-at-a-glance"></a>
+## ✨ What You Get, at a Glance
+
+Full catalog with every file: [🧰 Playbook Catalog](#playbook-catalog).
 
 | Category | Examples |
 |---|---|
@@ -93,13 +116,17 @@ Full catalog with every file: [Playbook catalog](#playbook-catalog).
 | **Autonomy** | standing-mission mode, reusable personas (Bug Hunter, Code Reviewer, ...) |
 | **Project & mapping** | repo onboarding, codebase/database mapping, third-party API integration |
 
-## Install
+<a id="install"></a>
+## 🚀 Quick Start / Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
 chmod +x install.sh
 ./install.sh /path/to/your/project   # or no path, for the current directory
 ```
+
+> [!TIP]
+> Takes under a minute. No account, no signup, no config file to hand-write.
 
 Needs a shell that can run bash — macOS and Linux have this natively.
 **On Windows**, run it via WSL or Git Bash, not a plain Command
@@ -128,7 +155,7 @@ exactly what was requested versus what was pulled in as a dependency, so
 it's never a silent surprise.
 
 <details>
-<summary>How single-playbook installs handle dependencies (click to expand)</summary>
+<summary>🔎 How single-playbook installs handle dependencies (click to expand)</summary>
 
 <br>
 
@@ -151,14 +178,21 @@ drops in a one-line `CLAUDE.md` (only if you don't already have one) that
 just imports `AGENTS.md`, because Claude Code only auto-loads `CLAUDE.md`,
 never `AGENTS.md`.
 
-### Verifying a release
+<a id="verifying-a-release"></a>
+### 🔐 Verifying a Release
 
 The installer fetches content from a backend on every run (see
-[How this is distributed](#how-this-is-distributed)) — and because that
+[📡 How This Is Distributed](#how-this-is-distributed)) — and because that
 content becomes literal instructions for an AI agent with shell access, a
 compromised or spoofed backend serving different content than intended is
-a real threat model, not a hypothetical one. `install.sh` defends against
-it automatically, **before writing anything to your project**:
+a real threat model, not a hypothetical one.
+
+> [!IMPORTANT]
+> `install.sh` cryptographically verifies every release **before writing
+> a single file to your project.** If verification fails, nothing gets
+> written — there is no "install anyway" flag.
+
+Here's exactly how:
 
 1. **Every release is signed** with an Ed25519 key that lives only on the
    maintainer's machine — never deployed anywhere, never in this repo,
@@ -171,7 +205,7 @@ it automatically, **before writing anything to your project**:
    signature over a manifest that doesn't match what was actually served
    is caught here too.
 3. **Either check failing aborts the install** with a clear error and
-   writes nothing to your project. There is no "install anyway" flag.
+   writes nothing to your project.
 
 You don't need to do anything for this — it runs on every install. To
 check it yourself: the public key is the `ALLOWED_SIGNERS` line near the
@@ -179,7 +213,7 @@ top of `install.sh`, and the verification logic is the block right before
 any file gets copied into your project.
 
 <details>
-<summary>What changed vs. before, and why it matters (click to expand)</summary>
+<summary>🔎 What changed vs. before, and why it matters (click to expand)</summary>
 
 <br>
 
@@ -193,7 +227,8 @@ substitute one, because it never holds the private signing key.
 
 </details>
 
-### Wiring into your AI tool
+<a id="wiring-into-your-ai-tool"></a>
+### 🔌 Wiring Into Your AI Tool
 
 If you run it at a real terminal, it also asks which AI tool you're
 using and generates real native artifacts for it — not just a copy of
@@ -241,7 +276,7 @@ and Antigravity, `/skill:bug-fix` in Pi) when you already know which
 one you want.
 
 <details>
-<summary><strong>Claude Code only</strong> — choosing which model each generated sub-agent uses (click to expand)</summary>
+<summary>⚙️ <strong>Claude Code only</strong> — choosing which model each generated sub-agent uses (click to expand)</summary>
 
 <br>
 
@@ -289,7 +324,8 @@ From then on, every actual task routes through
 `agent-playbooks/core/engineering-loop.md` — it classifies the request
 (bug, feature, review, test...) and sends it to the matching playbook.
 
-## Day to day: how you'll actually use this
+<a id="day-to-day-how-youll-actually-use-this"></a>
+## 🔁 Day to Day: How You'll Actually Use This
 
 There's no command to learn and no skill name to memorize. You describe
 what you want the way you already do, and the router
@@ -309,14 +345,15 @@ own:
 | "Here's a URL, find what's wrong with it" (no flow/spec named) | Maps the app's real pages/journeys first, prioritizes, then tests each one — instead of guessing which flow you meant |
 | "Here's a recording of the bug" (any video/audio file) | Extracts audio + frames, transcribes locally, re-verifies every finding against that evidence, then routes each one through the engineering loop if you want it fixed |
 | "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
-| Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
+| 🚫 Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
 That's the whole interface. You don't need to read all 36 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
 
-## Playbook catalog
+<a id="playbook-catalog"></a>
+## 🧰 Playbook Catalog
 
 This describes what each playbook does — the actual instruction text is
 delivered on install, not shown here. For a visual map of every
@@ -328,7 +365,7 @@ you'd say, here's what happens" example for every single one, see
 **[CHANGELOG.md](CHANGELOG.md)**.
 
 <details open>
-<summary><strong>Core</strong> — start every task here</summary>
+<summary>🎯 <strong>Core</strong> — start every task here</summary>
 
 <br>
 
@@ -343,7 +380,7 @@ you'd say, here's what happens" example for every single one, see
 </details>
 
 <details>
-<summary><strong>Quality</strong> — reviews and testing</summary>
+<summary>✅ <strong>Quality</strong> — reviews and testing</summary>
 
 <br>
 
@@ -362,7 +399,7 @@ you'd say, here's what happens" example for every single one, see
 </details>
 
 <details>
-<summary><strong>Change types</strong> — refactors, upgrades, migrations, releases</summary>
+<summary>🔄 <strong>Change types</strong> — refactors, upgrades, migrations, releases</summary>
 
 <br>
 
@@ -378,7 +415,7 @@ you'd say, here's what happens" example for every single one, see
 </details>
 
 <details>
-<summary><strong>Safety</strong> — real, enforced guardrails</summary>
+<summary>🛡️ <strong>Safety</strong> — real, enforced guardrails</summary>
 
 <br>
 
@@ -392,7 +429,7 @@ you'd say, here's what happens" example for every single one, see
 </details>
 
 <details>
-<summary><strong>Autonomy</strong> — personas and standing permission</summary>
+<summary>🤖 <strong>Autonomy</strong> — personas and standing permission</summary>
 
 <br>
 
@@ -405,7 +442,7 @@ you'd say, here's what happens" example for every single one, see
 </details>
 
 <details>
-<summary><strong>Project & mapping</strong> — onboarding, codebase/database/API mapping</summary>
+<summary>🗺️ <strong>Project & mapping</strong> — onboarding, codebase/database/API mapping</summary>
 
 <br>
 
@@ -420,7 +457,7 @@ you'd say, here's what happens" example for every single one, see
 </details>
 
 <details>
-<summary><strong>Media</strong> — turning recordings and documents into verified reports</summary>
+<summary>🎬 <strong>Media</strong> — turning recordings and documents into verified reports</summary>
 
 <br>
 
@@ -432,7 +469,8 @@ you'd say, here's what happens" example for every single one, see
 
 </details>
 
-## Creating your own bot (a custom persona), with a demo
+<a id="creating-your-own-bot-a-custom-persona-with-a-demo"></a>
+## 🧑‍🚀 Creating Your Own Bot (a Custom Persona), With a Demo
 
 The six built-in personas in `autonomy/roles.md` (Bug Hunter, Feature
 Builder, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project
@@ -447,7 +485,7 @@ down:
    reason.
 
 <details>
-<summary>Worked example, already in the box (click to expand)</summary>
+<summary>🔎 Worked example, already in the box (click to expand)</summary>
 
 <br>
 
@@ -477,17 +515,23 @@ generate the voice-over and screen capture with the included scripts
 (free/local tools, no cloud TTS account needed), and you have a demo of
 your new bot actually doing its job, not just a description of it.
 
-## How this is distributed
+<a id="how-this-is-distributed"></a>
+## 📡 How This Is Distributed
 
 This repo ships the installer and this description — not the playbook
 text itself. `install.sh` calls a check-in endpoint with a random local
 install ID (generated once on first install, never a name, email, or
-machine identifier — **no account or token needed, no email or personal
-information collected**). The endpoint logs the check-in and — if that ID
-isn't blocked — returns the current release.
+machine identifier).
+
+> [!NOTE]
+> No account or token needed. No email or personal information is
+> collected by the installer, ever.
+
+The endpoint logs the check-in and — if that ID isn't blocked — returns
+the current release.
 
 <details>
-<summary>How the backend and content-integrity model actually works (click to expand)</summary>
+<summary>🔎 How the backend and content-integrity model actually works (click to expand)</summary>
 
 <br>
 
@@ -496,12 +540,6 @@ forwards to the real backend using a key that lives only in the
 endpoint's own server-side environment (`supabase/functions/check-in/index.ts`,
 schema in `supabase/schema.sql` — both fully readable, nothing about the
 mechanism is hidden from you).
-
-**Is this network call required?** Yes — there's no offline/cached mode.
-If the endpoint can't be reached, `install.sh` prints an error and exits
-without writing anything (`Error: could not reach the check-in endpoint`).
-Nothing about `--version`/`--only`/tool selection changes that; every mode
-still needs one successful round trip to fetch the release.
 
 This endpoint does not modify any content before returning it — it's a
 pure passthrough. `AGENTS.md` does carry one permanent line crediting this
@@ -516,7 +554,15 @@ removed — see `agent-playbooks/CHANGELOG.md` 1.19.0.
 
 </details>
 
-## Two different version numbers
+> [!WARNING]
+> This network call is required on every install — there's no
+> offline/cached mode. If the endpoint can't be reached, `install.sh`
+> prints an error and exits without writing anything. Nothing about
+> `--version`/`--only`/tool selection changes that; every mode still
+> needs one successful round trip to fetch the release.
+
+<a id="two-different-version-numbers"></a>
+## 🔢 Two Different Version Numbers
 
 `CHANGELOG.md` tracks the *content* version (`agent-playbooks/`) — the one
 `--version`/`AGENT_PLAYBOOKS_VERSION` lets you pin to. `VERSION` and
@@ -524,7 +570,7 @@ removed — see `agent-playbooks/CHANGELOG.md` 1.19.0.
 own version.
 
 <details>
-<summary>Pinning the installer itself to an exact tag (click to expand)</summary>
+<summary>🔎 Pinning the installer itself to an exact tag (click to expand)</summary>
 
 <br>
 
@@ -549,7 +595,8 @@ if reproducibility matters to you. See [CHANGELOG.md](CHANGELOG.md) and
 
 </details>
 
-## Contributing and security
+<a id="contributing-and-security"></a>
+## 🤝 Contributing and Security
 
 [CONTRIBUTING.md](CONTRIBUTING.md) covers what's actually in this repo to
 contribute to (installer, docs, backend, tests — not playbook content
@@ -560,7 +607,8 @@ and release signing do and don't protect against.
 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) covers what's expected of
 everyone participating here.
 
-## License
+<a id="license"></a>
+## 📄 License
 
 MIT, for everything — the installer/repo ([LICENSE](LICENSE)) and the
 playbook content itself, fetched on install and delivered as
@@ -569,7 +617,7 @@ it, modify and republish it, build on it commercially — all explicitly
 permitted, no separate terms to check.
 
 <details>
-<summary>Licensing history (click to expand)</summary>
+<summary>🔎 Licensing history (click to expand)</summary>
 
 <br>
 
@@ -579,3 +627,10 @@ restrictive license. That split existed for a while and is gone now —
 mentioned here rather than pretending it never happened.
 
 </details>
+
+---
+
+<p align="center">
+  Built for developers who'd rather ship than repeat themselves.<br>
+  ⭐ <a href="https://github.com/chiragmangaldev3112/agent-playbooks">Star the repo</a> if this saves you time.
+</p>
