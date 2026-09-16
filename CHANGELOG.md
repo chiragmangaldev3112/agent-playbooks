@@ -8,6 +8,26 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.22.0 — 2026-09-16
+`scripts/record-screen.sh` now supports `--region=X,Y,W,H` on `start` and
+`timed`, cropping the output to one fixed rectangle instead of the full
+screen. Found the need for this the hard way while preparing a new demo
+video: a full-screen test recording on a real machine captured a private
+Microsoft Teams conversation that happened to be open, and a second
+attempt (after adding a naive full-screen-capture-then-trust-the-window
+approach) instead captured the recording tool's own host application
+window rather than the intended terminal, due to focus/z-order not being
+guaranteed across separate steps. `--region` fixes the actual risk (only
+the cropped bytes ever reach disk, regardless of what else is on screen)
+and was verified by driving real commands into a real, positioned
+terminal window and confirming the output contains exactly that
+window's content and nothing else. Also fixed a real bug hit while
+building this: `mapfile` (bash 4.0+) doesn't exist on macOS's default
+`/bin/bash` (3.2) -- confirmed by actually hitting "mapfile: command not
+found" on a real Mac, replaced with a portable `while read` loop, the
+same constraint `install.sh`'s own comments already document elsewhere
+in this project.
+
 ## 1.21.0 — 2026-09-16
 New playbook: `quality/exploratory-qa.md` (36th playbook). Closes a real
 gap found by comparing this project against a commercial autonomous-QA
