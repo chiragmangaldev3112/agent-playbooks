@@ -49,8 +49,12 @@ confirmed false by actually testing rather than assuming:
   worth recording so this doesn't get "fixed" again on a future pass
   without the same check.
 
-CI now also runs the install smoke test on `macos-latest` in addition to
-`ubuntu-latest`, not just Linux.
+Tried adding `macos-latest` to CI's install smoke test matrix; reverted
+it -- GitHub's hosted macOS runner consistently timed out connecting to
+the test's local mock server on `127.0.0.1`, even with the Application
+Firewall disabled, which isn't a real install.sh problem (the identical
+test passes on real macOS every time). macOS stays covered by manual
+verification before each release instead.
 
 ## 2.0.0 — 2026-09-16
 Bumped straight from 1.4.0 to 2.0.0 (no 1.5–1.x releases skipped, nothing
