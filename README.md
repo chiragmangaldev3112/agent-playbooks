@@ -406,6 +406,8 @@ itself, which is distributed separately) and how to run the install
 smoke test before opening a PR. [SECURITY.md](SECURITY.md) covers how to
 report a vulnerability and spells out exactly what the safety guardrail,
 release signing, and watermark do and don't protect against.
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) covers what's expected of
+everyone participating here.
 
 ## License
 
