@@ -1,0 +1,35 @@
+name: Playbook content issue
+description: Something's wrong, missing, or unclear in a playbook's actual instructions.
+labels: ["content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Playbook content (`agent-playbooks/`, `AGENTS.md`) isn't sourced
+        in this repo — see [CONTRIBUTING.md](../../CONTRIBUTING.md) for
+        why. This issue gets picked up on the content side directly; a
+        fix shows up as a normal version bump you can install like any
+        other.
+
+  - type: input
+    id: playbook
+    attributes:
+      label: Which playbook?
+      description: e.g. `core/bug-fix.md`, `quality/security-review.md`
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong, missing, or unclear?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: What were you trying to do when you hit this?
+      description: The real task/prompt, and what the agent actually did differently than expected.
+    validations:
+      required: false
