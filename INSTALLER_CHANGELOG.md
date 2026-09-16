@@ -10,6 +10,48 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.0.1 — 2026-09-16
+Four fixes from a second-pass audit, three confirmed real and one
+confirmed false by actually testing rather than assuming:
+
+- **Real, cross-platform-tested**: the `uuidgen`-missing fallback for
+  generating a local install ID hardcoded `shasum`, which isn't installed
+  on a lot of minimal Linux -- confirmed by hitting exactly this on a
+  bare `ubuntu:24.04` container (no `uuidgen`, no `shasum`, only
+  `sha256sum`). Now reuses the existing `sha256_stdin` helper, which
+  already prefers `sha256sum` before falling back to `shasum`. Verified
+  the full smoke test suite passes in that same clean container
+  afterward, plus a real install against production from inside it.
+- **Real**: the Claude Skill / Cursor rule / Antigravity Skill generators
+  derived each artifact's slug from the playbook's basename only -- two
+  playbooks with the same filename in different directories (a case the
+  README already anticipates for `--only`) would silently overwrite each
+  other's generated artifact. Slugs are now derived from the full
+  relative path.
+- **Real**: a model value from `AGENT_PLAYBOOKS_MODEL_*` was written
+  straight into generated YAML frontmatter with no validation -- a
+  newline in the value could inject an arbitrary extra frontmatter field
+  (tested with a value containing `\ntools: Read,Write,Bash,Edit`; before
+  this fix it landed in the generated file verbatim). Now restricted to
+  the charset every real model identifier uses; an invalid value warns
+  and falls back to the tier default instead of corrupting the file.
+- **Real**: `AGENTS.md` and `agent-playbooks/` were copied directly into
+  the target directory in two separate steps -- a failure partway through
+  (disk full, permission error) could leave a half-installed project that
+  a retry would then refuse to fix, since the existence checks at the top
+  treat "exists at all" as "already installed." Both are now built in a
+  staging path inside the target directory first and moved into place
+  with `mv` (atomic on the same filesystem) as the last two steps.
+- **False, checked and rejected**: a claim that macOS's `base64` doesn't
+  support `-d` (only BSD's `-D`) and would break every macOS install.
+  Tested directly: `echo aGVsbG8= | base64 -d` works fine on real macOS
+  (FreeBSD base64 has supported `-d` for a long time). No fix made --
+  worth recording so this doesn't get "fixed" again on a future pass
+  without the same check.
+
+CI now also runs the install smoke test on `macos-latest` in addition to
+`ubuntu-latest`, not just Linux.
+
 ## 2.0.0 — 2026-09-16
 Bumped straight from 1.4.0 to 2.0.0 (no 1.5–1.x releases skipped, nothing
 else changed) purely to get a tag this repo can actually cut: `v1.4.0`

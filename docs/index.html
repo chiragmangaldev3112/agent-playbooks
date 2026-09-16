@@ -58,7 +58,7 @@
     {
       "@type": "Question",
       "name": "How do I install agent-playbooks?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Run: curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project. No account, token, or cloud dependency is required." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Run: curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project. No account or token is required -- the installer does fetch the current release from a small backend on every run, and every release is cryptographically signed and verified before anything is written to your project." }
     },
     {
       "@type": "Question",
@@ -122,9 +122,10 @@
   <pre><code>curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
 chmod +x install.sh
 ./install.sh /path/to/your/project</code></pre>
-  <p>No account, no token, no cloud dependency — see the
+  <p>No account, no token — see the
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks#readme">full README</a>
-  for per-tool setup and every playbook's index.</p>
+  for per-tool setup, exactly what the installer does and doesn't send,
+  and every playbook's index.</p>
 
   <h2>Watch it work</h2>
   <p>Every one of the 35 playbooks, narrated, each with a real terminal run:</p>
@@ -150,7 +151,10 @@ chmod +x install.sh
   <p><strong>How do I install it?</strong><br>
   <code>curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh
   -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project</code>
-  — no account, token, or cloud dependency required.</p>
+  — no account or token required. The installer does fetch the current
+  release from a small backend each run; every release is signed and
+  verified before anything is written to your project (see
+  <a href="https://github.com/chiragmangaldev3112/agent-playbooks#verifying-a-release">Verifying a release</a>).</p>
 
   <p><strong>Is it free?</strong><br>
   Yes. The installer is MIT-licensed; the playbook content is free to use
