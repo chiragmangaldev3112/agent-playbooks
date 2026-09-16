@@ -15,32 +15,25 @@
 // actual security property here: not "you need permission to install,"
 // but "no infrastructure credential ever leaves the server."
 //
-// manifest_json / manifest_signature: check_in() (see schema.sql) now also
-// returns these two columns from `releases`. Nothing here needs to touch
-// them -- the `data`/`row` handling below has always passed the whole row
-// through untouched except for the one `archive_base64` mutation below, so
-// they flow to the installer as-is. They're the maintainer's signed,
-// pre-watermark file-hash manifest for this release; install.sh verifies
-// them against a fixed public key before trusting anything this function
-// returns. Deliberately NOT re-signed here: the signature is over the
-// pre-watermark manifest, and this function only ever mutates
-// AGENTS.md's watermark comment, which install.sh knows to strip back off
-// before checking the hash -- see install.sh's hash_stripping_watermark.
+// Pure passthrough to check_in() (see schema.sql), with no content
+// mutation of any kind -- this used to also inject a per-install
+// watermark into AGENTS.md's content before returning it, removed once
+// the playbook content was relicensed MIT (content v1.18.0): a token
+// meant to trace an unauthorized "leaked" copy back to its source
+// install stopped making sense the moment redistribution itself became
+// explicitly licensed. Attribution is now a static line baked directly
+// into AGENTS.md's own source content instead (same for every install,
+// no per-install data involved), which also means every fetched file's
+// hash matches its signed manifest entry exactly, with zero runtime
+// mutation anywhere in this path -- a strictly stronger trust property
+// than the watermarking version had.
 //
-// Per-install watermark: the stored release is a JSON map of
-// {relative path: base64 file content} (see maintainer/package-release.sh),
-// not a single opaque archive -- deliberately, so this function can
-// modify one file's content before returning it. A short token derived
-// from the caller's own p_id (no secret needed -- p_id is already an
-// opaque random UUID with no PII) gets appended to AGENTS.md as an
-// inconspicuous HTML comment. It's invisible in normal markdown
-// rendering and doesn't change how an AI reads the instructions, but if
-// a full copy of this content ever turns up somewhere it shouldn't,
-// the token traces it back to exactly which install it came from. The
-// token is fully deterministic from p_id (sha256, truncated) -- nothing
-// extra is stored; to identify an install from a found token, recompute
-// the same hash for each row in `installations` and compare (see
-// schema.sql's comments for the query).
+// manifest_json / manifest_signature: check_in() returns these two
+// columns from `releases` alongside archive_base64. Nothing here needs
+// to touch them -- this function has never filtered fields out of the
+// row, so they flow to the installer as-is, and install.sh verifies them
+// against a fixed public key before trusting anything this function
+// returns.
 //
 // Deploy:
 //   supabase functions deploy check-in --no-verify-jwt
@@ -50,51 +43,6 @@
 
 const SB_URL = Deno.env.get("SB_URL")!;
 const SB_SERVICE_ROLE_KEY = Deno.env.get("SB_SERVICE_ROLE_KEY")!;
-
-function base64ToBytes(b64: string): Uint8Array {
-  const binStr = atob(b64);
-  const bytes = new Uint8Array(binStr.length);
-  for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
-  return bytes;
-}
-
-function bytesToBase64(bytes: Uint8Array): string {
-  let binStr = "";
-  for (let i = 0; i < bytes.length; i++) binStr += String.fromCharCode(bytes[i]);
-  return btoa(binStr);
-}
-
-async function watermarkToken(installId: string): Promise<string> {
-  // Lowercase first: Postgres normalizes uuid columns to lowercase
-  // canonical form, and the lookup query in schema.sql hashes id::text
-  // read back from that column. macOS's uuidgen (the primary path
-  // install.sh uses to create a local ID) produces UPPERCASE UUIDs, so
-  // without this normalization the token embedded here would never
-  // match what the documented lookup query computes -- found by
-  // actually running that lookup query against a real install rather
-  // than assuming the two sides agreed on casing.
-  const data = new TextEncoder().encode(installId.toLowerCase());
-  const hashBuf = await crypto.subtle.digest("SHA-256", data);
-  const hashHex = Array.from(new Uint8Array(hashBuf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return hashHex.slice(0, 12);
-}
-
-// Mutates fileMap in place: appends a watermark comment to AGENTS.md's
-// content, UTF-8 safe (this content has real em-dashes, arrows, etc. --
-// naive Latin1 atob/btoa would corrupt them, hence the explicit
-// TextDecoder/TextEncoder round-trip rather than a direct string append
-// on the base64 itself).
-async function watermarkFileMap(fileMap: Record<string, string>, installId: string): Promise<void> {
-  const target = fileMap["AGENTS.md"];
-  if (!target) return; // defensive: don't fail the whole install if the shape ever changes
-  const bytes = base64ToBytes(target);
-  const content = new TextDecoder("utf-8").decode(bytes);
-  const token = await watermarkToken(installId);
-  const watermarked = `${content}\n<!-- ref: ${token} -->\n`;
-  fileMap["AGENTS.md"] = bytesToBase64(new TextEncoder().encode(watermarked));
-}
 
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") {
@@ -137,40 +85,7 @@ Deno.serve(async (req: Request) => {
 
   const text = await upstream.text();
 
-  if (!upstream.ok) {
-    return new Response(text, {
-      status: upstream.status,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  let data: Array<{ blocked?: boolean; archive_base64?: string; [k: string]: unknown }>;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    // Upstream didn't return the JSON shape expected -- pass it through
-    // unmodified rather than crash; nothing here should ever be able to
-    // turn a working install into a broken one.
-    return new Response(text, {
-      status: upstream.status,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const row = data[0];
-  if (row && !row.blocked && row.archive_base64) {
-    try {
-      const fileMap = JSON.parse(row.archive_base64) as Record<string, string>;
-      await watermarkFileMap(fileMap, body.p_id);
-      row.archive_base64 = JSON.stringify(fileMap);
-    } catch {
-      // Watermarking is a nice-to-have, not something that should ever
-      // block a real install -- if anything about this fails, fall back
-      // to serving the unwatermarked archive rather than erroring out.
-    }
-  }
-
-  return new Response(JSON.stringify(data), {
+  return new Response(text, {
     status: upstream.status,
     headers: { "Content-Type": "application/json" },
   });

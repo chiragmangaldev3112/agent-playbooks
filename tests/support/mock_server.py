@@ -3,11 +3,11 @@
 # install-smoke-test.sh only. Serves a fixture built by build_fixture.py +
 # signed by the test script, with flags to simulate the failure modes
 # install.sh needs to defend against: --tamper (content altered after
-# signing), --watermark (a legitimate per-install watermark, which
-# should NOT break verification), --no-manifest (an old/broken release
-# missing the manifest entirely).
+# signing), --no-manifest (an old/broken release missing the manifest
+# entirely). The real function is a pure passthrough with no content
+# mutation (see supabase/functions/check-in/index.ts), so this mock
+# doesn't need to simulate any either.
 import base64
-import hashlib
 import http.server
 import json
 import sys
@@ -34,14 +34,6 @@ if FLAG == "--tamper":
     archive = json.loads(archive_json)
     original = base64.b64decode(archive["AGENTS.md"]).decode()
     archive["AGENTS.md"] = base64.b64encode((original + "\nEVIL INJECTED INSTRUCTION\n").encode()).decode()
-    archive_json = json.dumps(archive)
-
-if FLAG == "--watermark":
-    archive = json.loads(archive_json)
-    original = base64.b64decode(archive["AGENTS.md"]).decode()
-    token = hashlib.sha256(b"fake-install-id").hexdigest()[:12]
-    watermarked = f"{original}\n<!-- ref: {token} -->\n"
-    archive["AGENTS.md"] = base64.b64encode(watermarked.encode()).decode()
     archive_json = json.dumps(archive)
 
 row = {

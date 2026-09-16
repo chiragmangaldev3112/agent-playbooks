@@ -10,6 +10,20 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.1.0 — 2026-09-16
+Removed `hash_stripping_watermark` and its call site. The check-in
+backend used to weave a per-install tracking token into `AGENTS.md`
+before returning it, so `install.sh` had to strip that exact, fixed-shape
+suffix back off before comparing against the signed manifest's
+pre-watermark hash. Once the playbook content was relicensed MIT
+(`agent-playbooks/CHANGELOG.md` 1.18.0), tracing an "unauthorized" copy
+back to its install stopped making sense -- redistribution is explicitly
+licensed now -- so the backend was simplified to a pure passthrough with
+zero content mutation (1.19.0), and every file, `AGENTS.md` included,
+now hashes directly against its manifest entry with no special-casing.
+Also updated the header comment's tool-requirements line, which never
+mentioned `ssh-keygen` despite it being a hard requirement since 1.4.0.
+
 ## 2.0.1 — 2026-09-16
 Four fixes from a second-pass audit, three confirmed real and one
 confirmed false by actually testing rather than assuming:
