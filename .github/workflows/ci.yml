@@ -35,3 +35,14 @@ jobs:
           deno-version: v2.x
       - name: Type-check the check-in Edge Function
         run: deno check supabase/functions/check-in/index.ts
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for accidentally committed credentials
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
