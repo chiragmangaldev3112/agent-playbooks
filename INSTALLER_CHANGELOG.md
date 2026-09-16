@@ -10,6 +10,48 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.2.0 — 2026-09-16
+Three fixes from a fresh-eyes runtime-behavior audit that actually ran
+the installer under adversarial conditions rather than just reading it,
+plus one release-process gap the same audit round caught from the docs
+side:
+
+- **P1, real, silent data corruption**: two installs started at nearly
+  the same moment into the same empty target both passed the pre-flight
+  existence checks (neither had written anything yet), then both raced
+  to `mv` their fully-staged `agent-playbooks/` into place. Since `mv`
+  moves *into* an existing directory rather than erroring, the loser's
+  entire staged tree silently nested inside the winner's as
+  `.agent-playbooks.staging.<pid>/` debris -- and **both processes
+  printed "Installed..." and exited 0**, no error either side. Confirmed
+  by actually running two installs concurrently against a local mock
+  server before fixing, and again after. Fixed with an atomic `mkdir`
+  lock (`.agent-playbooks.install-lock`, cleaned up in the exit trap) --
+  `mkdir` is POSIX-guaranteed atomic everywhere this script runs, unlike
+  the existence checks that raced before. The loser now gets a clear,
+  immediate error instead of silent corruption.
+- **A read-only target directory produced a raw, unscripted `cp:
+  Permission denied`** several steps into the install instead of one of
+  this script's own hand-written error messages, even though it already
+  failed safely (no partial state left behind). Now checked upfront,
+  before any network round trip.
+- **An explicitly-passed-but-empty target-directory argument** (e.g. a
+  caller's own wrapper script passing an unexpectedly-unset variable)
+  silently defaulted to installing into the current directory with zero
+  warning -- confirmed as a real footgun by the auditor hitting it by
+  accident mid-audit. Now warns explicitly before proceeding.
+- **Release-process gap**: `VERSION`/`INSTALLER_CHANGELOG.md` had already
+  been bumped to 2.0.1 and 2.1.0 in prior commits, but neither was ever
+  actually tagged or published as a GitHub Release -- the "Latest"
+  release and the `README.md` release badge both still pointed at
+  `v2.0.0`, 11 commits and two version bumps stale. Nothing enforces
+  that a version bump gets tagged (the pre-commit hook only checks
+  `VERSION`+this file move together in the same commit, not that a tag
+  follows), which is exactly how this drifted. Tagged and released as
+  `v2.1.0` retroactively before this entry, so the badge is caught up as
+  of that point; this entry itself ships correctly tagged as part of
+  `v2.2.0`.
+
 ## 2.1.0 — 2026-09-16
 Removed `hash_stripping_watermark` and its call site. The check-in
 backend used to weave a per-install tracking token into `AGENTS.md`
