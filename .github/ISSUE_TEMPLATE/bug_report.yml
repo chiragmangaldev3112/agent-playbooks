@@ -1,0 +1,53 @@
+name: Bug report
+description: Something in the installer, docs, or backend is broken.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a playbook *content* problem (wording, a process step, a
+        missing case) rather than the installer itself, use the
+        "Playbook content issue" template instead — the fix path is
+        different since content isn't sourced in this repo.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you expected instead, and what actually happened.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Exact command(s) that reproduce it
+      description: Copy-paste the exact `install.sh` invocation (redact nothing that isn't secret — env vars, flags, etc. all matter here).
+      render: bash
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS / shell
+      description: e.g. "macOS 15, zsh" / "Ubuntu 24.04, bash" / "Windows via WSL2 Ubuntu"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Installer / content version
+      description: From the install output, or `agent-playbooks/VERSION` in an existing install.
+    validations:
+      required: false
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Full output
+      description: The actual terminal output, errors included.
+      render: text
+    validations:
+      required: true
