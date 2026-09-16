@@ -45,11 +45,30 @@ alter table app_config enable row level security;
 -- deliberate: it lets the check-in Edge Function inject a per-install
 -- watermark into AGENTS.md's content at request time before returning
 -- it, without needing to unpack/repack a compressed archive.
+--
+-- manifest_json / manifest_signature: a signed, sorted-key JSON map of
+-- {relative path: sha256} for the same files (pre-watermark, for
+-- AGENTS.md), signed with the maintainer's release-signing key
+-- (maintainer/release-signing-key, never in this database or any repo).
+-- install.sh verifies the signature against a fixed public key baked
+-- into the script, then re-hashes every fetched file against this
+-- manifest, before writing anything to disk -- so a compromised or
+-- spoofed version of this backend can no longer silently swap in
+-- different content; it doesn't hold the private key needed to produce
+-- a manifest install.sh will accept. Both nullable only so this
+-- migration doesn't break on top of pre-existing rows -- install.sh
+-- itself treats a release missing either as unverifiable and refuses to
+-- install it, so in practice every release actually served needs both.
 create table if not exists releases (
   version text primary key,
   archive_base64 text not null,
+  manifest_json text,
+  manifest_signature text,
   created_at timestamptz not null default now()
 );
+
+alter table releases add column if not exists manifest_json text;
+alter table releases add column if not exists manifest_signature text;
 
 alter table releases enable row level security;
 
@@ -60,7 +79,15 @@ alter table releases enable row level security;
 -- which PostgREST can resolve ambiguously for a 2-key JSON body (ambiguous
 -- between "call the 2-arg one" and "call the 3-arg one, default the
 -- third"). Drop the old signature first so there's exactly one function.
+--
+-- Adding manifest_json/manifest_signature to the RETURNS TABLE shape below
+-- is a second, separate reason to drop-first: `create or replace function`
+-- refuses to change an existing function's return type even when the
+-- argument signature is unchanged (Postgres error 42P13), so the (uuid,
+-- text, text) overload from the change above must also be dropped before
+-- this version can be created.
 drop function if exists check_in(uuid, text);
+drop function if exists check_in(uuid, text, text);
 
 -- p_requested_version: optional. Omitted (the default, and the only mode
 -- before this parameter existed) serves app_config.latest_version, same
@@ -72,7 +99,7 @@ drop function if exists check_in(uuid, text);
 -- kind of "no archive returned" -- from the installer's point of view
 -- both are just "didn't get content, here's why."
 create or replace function check_in(p_id uuid, p_version text default null, p_requested_version text default null)
-returns table(blocked boolean, blocked_message text, latest_version text, notice text, archive_base64 text)
+returns table(blocked boolean, blocked_message text, latest_version text, notice text, archive_base64 text, manifest_json text, manifest_signature text)
 language plpgsql
 security definer
 set search_path = public
@@ -83,6 +110,8 @@ declare
   v_latest text;
   v_notice text;
   v_archive text;
+  v_manifest_json text;
+  v_manifest_signature text;
   v_target text;
 begin
   insert into installations (id, version)
@@ -100,7 +129,8 @@ begin
 
   if not v_blocked then
     v_target := coalesce(p_requested_version, v_latest);
-    select r.archive_base64 into v_archive
+    select r.archive_base64, r.manifest_json, r.manifest_signature
+    into v_archive, v_manifest_json, v_manifest_signature
     from releases r where r.version = v_target;
 
     if v_archive is null and p_requested_version is not null then
@@ -109,7 +139,7 @@ begin
     end if;
   end if;
 
-  return query select v_blocked, v_blocked_message, v_latest, v_notice, v_archive;
+  return query select v_blocked, v_blocked_message, v_latest, v_notice, v_archive, v_manifest_json, v_manifest_signature;
 end;
 $$;
 
@@ -129,9 +159,10 @@ revoke all on releases from anon, authenticated;
 --   select id, first_seen, last_seen, checkin_count, version, blocked
 --   from installations order by last_seen desc;
 --
--- Publish a release (after building the archive with
+-- Publish a release (after building the archive + signed manifest with
 -- maintainer/package-release.sh, which prints this exact SQL):
---   insert into releases (version, archive_base64) values ('1.0.1', '<base64>');
+--   insert into releases (version, archive_base64, manifest_json, manifest_signature)
+--     values ('1.0.1', '<base64>', '<manifest json>', '<signature>');
 --   update app_config set latest_version = '1.0.1' where id = 1;
 --
 -- Trace a leaked copy back to the install it came from: the Edge

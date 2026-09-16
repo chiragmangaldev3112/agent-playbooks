@@ -2,11 +2,39 @@
 
 This tracks **`install.sh`'s own version** — a separate axis from
 `CHANGELOG.md`, which tracks the *content* (`agent-playbooks/`) it fetches.
-You almost never need to think about this one: `curl .../install.sh` always
-fetches current `main`, and there's no real case for pinning to an old
-installer script the way `--version` lets you pin to old content — the tool
-just gets bug fixes forward. This file exists mainly so the repo's Releases
-reflect real, distinct states of the installer rather than being empty.
+Most people never need to think about this one: `curl .../install.sh`
+always fetches current `main`, and the tool just gets bug fixes forward.
+If you do need the exact installer behavior from a point in time
+reproducible (e.g. in CI), every tagged version here is fetchable from an
+immutable URL — see README.md's "Two different version numbers" section.
+This file exists mainly so the repo's Releases reflect real, distinct
+states of the installer rather than being empty.
+
+## 1.4.0 — 2026-09-16
+Every release is now signed, and `install.sh` verifies it before writing
+anything to disk. `maintainer/package-release.sh` (private source) builds
+a manifest of each file's sha256, signs it with an Ed25519 key that never
+leaves the maintainer's machine, and the check-in backend now returns
+`manifest_json`/`manifest_signature` alongside the release. `install.sh`
+verifies the signature against a fixed public key with `ssh-keygen -Y
+verify`, then re-hashes every fetched file against the manifest, before
+any file touches the target project — a release missing either, or that
+fails either check, is refused outright, nothing written. `ssh-keygen`,
+not `openssl`: confirmed on a real Mac that stock macOS's LibreSSL
+`pkeyutl` cannot sign or verify Ed25519 at all, so a portability check
+before writing this ruled that path out in favor of OpenSSH's `-Y
+sign`/`-Y verify`, present on macOS and virtually every Linux box already.
+`AGENTS.md` specifically needed its own handling since the backend
+watermarks it per-install (see README.md) — the manifest signs the
+pre-watermark hash, and `install.sh` strips the known-shape watermark
+comment back off (verified byte-exact via `cmp` on raw streams, not a
+`$(...)` capture, which silently strips the trailing newline that exact
+byte comparison depends on) before comparing. New required tool:
+`ssh-keygen` (OpenSSH). Added `tests/install-smoke-test.sh` (run in CI)
+covering a clean install, tampered content, a legitimately watermarked
+file, a missing manifest, and a release signed with the wrong key — each
+verified to actually fail (or succeed) as expected, not just written and
+assumed correct.
 
 ## 1.3.1 — 2026-09-14
 Closed a path-traversal gap in the file-write loop that reconstructs the
