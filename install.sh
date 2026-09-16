@@ -87,6 +87,20 @@ while [[ $# -gt 0 ]]; do
     *) positional+=("$1"); shift ;;
   esac
 done
+# An explicitly-passed-but-empty argument (e.g. `./install.sh "$VAR"` where
+# $VAR turned out unset in the caller's own wrapper script) is otherwise
+# indistinguishable from "no argument at all" once `${1:-.}` below
+# defaults it to the current directory -- silently. Confirmed a real trap:
+# hit this by accident during testing (an empty variable caused a real
+# install into the wrong directory with zero warning). ${#positional[@]}
+# safely reads 0 for a genuinely empty array on bash 3.2 too -- it's only
+# *expanding* "${positional[@]}" that has the empty-array-under-set-u
+# quirk documented elsewhere in this script, not counting it.
+if [[ ${#positional[@]} -gt 0 && -z "${positional[0]}" ]]; then
+  echo "Warning: the target directory argument was empty -- defaulting to" >&2
+  echo "the current directory. If that wasn't intentional (e.g. an unset" >&2
+  echo "variable), press Ctrl-C now." >&2
+fi
 set -- "${positional[@]:-}"
 
 TARGET_DIR="${1:-.}"
@@ -133,6 +147,16 @@ sha256_stdin() {
 
 mkdir -p "$TARGET_DIR"
 TARGET_DIR="$(cd "$TARGET_DIR" && pwd)"
+
+# Fail fast with a real error message, not a raw `cp: Permission denied`
+# after an otherwise-successful fetch -- confirmed real: a read-only
+# target directory reached the staging `cp` several steps later and
+# leaked an unscripted stderr line instead of one of this script's own
+# hand-written ones.
+if [[ ! -w "$TARGET_DIR" ]]; then
+  echo "Error: $TARGET_DIR is not writable." >&2
+  exit 1
+fi
 
 if [[ -e "$TARGET_DIR/AGENTS.md" ]]; then
   echo "AGENTS.md already exists at $TARGET_DIR/AGENTS.md -- not overwriting it." >&2
@@ -287,10 +311,29 @@ done < <(cd "$WORKDIR" && find AGENTS.md agent-playbooks -type f -print0)
 # Without this, a partial failure would also permanently block any retry:
 # the existence checks above refuse to run again once AGENTS.md/
 # agent-playbooks/ exist at all, complete or not.
+# Concurrency lock: `mkdir` is atomic (POSIX-guaranteed) everywhere this
+# script runs, unlike the existence checks above -- two installs started
+# at nearly the same moment both pass those checks (neither has written
+# anything yet), then both reach the final `mv` into $TARGET_DIR/
+# agent-playbooks/ below. Since `mv` moves INTO an existing directory
+# rather than erroring, the loser's fully-staged tree used to silently
+# nest inside the winner's, with BOTH processes printing "Installed..."
+# and exiting 0 -- confirmed real by actually running two installs into
+# the same empty target concurrently before this lock existed. Only one
+# `mkdir` call for the same path can ever succeed; the loser fails
+# immediately, before touching anything else.
+LOCK_DIR="$TARGET_DIR/.agent-playbooks.install-lock"
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+  echo "Error: another agent-playbooks install appears to be running in" >&2
+  echo "$TARGET_DIR right now ($LOCK_DIR already exists). If you're sure" >&2
+  echo "nothing is actually running, remove that directory and retry." >&2
+  exit 1
+fi
+
 STAGE_AGENTS="$TARGET_DIR/.AGENTS.md.staging.$$"
 STAGE_PLAYBOOKS="$TARGET_DIR/.agent-playbooks.staging.$$"
 rm -rf "$STAGE_AGENTS" "$STAGE_PLAYBOOKS"
-trap 'rm -rf "$WORKDIR" "$STAGE_AGENTS" "$STAGE_PLAYBOOKS"' EXIT
+trap 'rm -rf "$WORKDIR" "$STAGE_AGENTS" "$STAGE_PLAYBOOKS" "$LOCK_DIR"' EXIT
 
 cp "$WORKDIR/AGENTS.md" "$STAGE_AGENTS"
 mkdir -p "$STAGE_PLAYBOOKS"

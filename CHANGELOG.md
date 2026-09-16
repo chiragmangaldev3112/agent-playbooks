@@ -1,9 +1,21 @@
 # Changelog
 
 Every entry here corresponds to a real, tested change to the playbook
-content — not a version bump for its own sake. See `agent-playbooks/VERSION`
-for the currently-installed version; a fresh `install.sh` run always fetches
-the latest, and now prints the version it installed.
+content — not a version bump for its own sake. Once installed, see
+`agent-playbooks/VERSION` inside your own project for the version you
+have (this file itself isn't fetched into that directory — it's the
+same content this repo publishes it from, kept here for browsing before
+you install); a fresh `install.sh` run always fetches the latest, and
+now prints the version it installed.
+
+## 1.20.0 — 2026-09-16
+Docs-only clarification, no behavior change: this file's own opening note
+said "see `agent-playbooks/VERSION` for the currently-installed version"
+without explaining that `agent-playbooks/` doesn't exist as a path in the
+*public* repo someone browsing this file on GitHub would be looking at
+(content isn't sourced there -- it's fetched by `install.sh` at install
+time). A repo browser who hadn't installed yet could go looking for a
+directory that isn't there. Reworded to say so directly.
 
 ## 1.19.0 — 2026-09-16
 Replaced the per-install watermark with a static attribution line.
