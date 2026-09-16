@@ -17,7 +17,10 @@ jobs:
           ignore_paths: "supabase/.temp"
 
   install-smoke-test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Run install.sh against a local mock release

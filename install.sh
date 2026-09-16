@@ -174,7 +174,12 @@ if [[ ! -f "$ID_FILE" ]]; then
   if command -v uuidgen >/dev/null; then
     uuidgen > "$ID_FILE"
   else
-    { date +%s%N; echo "$RANDOM"; } | shasum | cut -c1-32 > "$ID_FILE"
+    # shasum (Perl-based) isn't installed on a lot of minimal Linux --
+    # confirmed by hitting exactly this on a bare Ubuntu 24.04 container,
+    # which has neither uuidgen nor shasum by default. sha256_stdin
+    # already prefers sha256sum (real coreutils, present everywhere) and
+    # only falls back to shasum, so reuse it here instead of assuming.
+    { date +%s%N; echo "$RANDOM"; } | sha256_stdin | cut -c1-32 > "$ID_FILE"
   fi
 fi
 local_id="$(cat "$ID_FILE")"
@@ -304,11 +309,23 @@ while IFS= read -r -d '' relpath; do
   fi
 done < <(cd "$WORKDIR" && find AGENTS.md agent-playbooks -type f -print0)
 
-cp "$WORKDIR/AGENTS.md" "$TARGET_DIR/AGENTS.md"
-mkdir -p "$TARGET_DIR/agent-playbooks"
+# Built fully in a staging path next to the real target, then moved into
+# place at the very end via `mv` (atomic on the same filesystem) -- so a
+# failure partway through (disk full mid-copy, permission error) never
+# leaves AGENTS.md or agent-playbooks/ half-written in $TARGET_DIR itself.
+# Without this, a partial failure would also permanently block any retry:
+# the existence checks above refuse to run again once AGENTS.md/
+# agent-playbooks/ exist at all, complete or not.
+STAGE_AGENTS="$TARGET_DIR/.AGENTS.md.staging.$$"
+STAGE_PLAYBOOKS="$TARGET_DIR/.agent-playbooks.staging.$$"
+rm -rf "$STAGE_AGENTS" "$STAGE_PLAYBOOKS"
+trap 'rm -rf "$WORKDIR" "$STAGE_AGENTS" "$STAGE_PLAYBOOKS"' EXIT
+
+cp "$WORKDIR/AGENTS.md" "$STAGE_AGENTS"
+mkdir -p "$STAGE_PLAYBOOKS"
 
 if [[ -z "$only_requested" ]]; then
-  cp -R "$WORKDIR/agent-playbooks/." "$TARGET_DIR/agent-playbooks/"
+  cp -R "$WORKDIR/agent-playbooks/." "$STAGE_PLAYBOOKS/"
 else
   # --only mode: resolve each requested name to a real file under
   # agent-playbooks/, then bring along what it actually needs to work --
@@ -440,12 +457,12 @@ else
   done
 
   for relpath in "${included[@]}"; do
-    mkdir -p "$TARGET_DIR/agent-playbooks/$(dirname "$relpath")"
-    cp "$pb_root/$relpath" "$TARGET_DIR/agent-playbooks/$relpath"
+    mkdir -p "$STAGE_PLAYBOOKS/$(dirname "$relpath")"
+    cp "$pb_root/$relpath" "$STAGE_PLAYBOOKS/$relpath"
   done
-  cp "$pb_root/VERSION" "$TARGET_DIR/agent-playbooks/VERSION" 2>/dev/null || true
-  cp "$pb_root/LICENSE" "$TARGET_DIR/agent-playbooks/LICENSE" 2>/dev/null || true
-  chmod +x "$TARGET_DIR"/agent-playbooks/scripts/*.sh 2>/dev/null || true
+  cp "$pb_root/VERSION" "$STAGE_PLAYBOOKS/VERSION" 2>/dev/null || true
+  cp "$pb_root/LICENSE" "$STAGE_PLAYBOOKS/LICENSE" 2>/dev/null || true
+  chmod +x "$STAGE_PLAYBOOKS"/scripts/*.sh 2>/dev/null || true
 
   echo "--only: requested ${directly_requested[*]}" >&2
   pulled_in=()
@@ -460,7 +477,12 @@ else
     echo "--only: pulled in as real dependencies: ${pulled_in[*]}" >&2
   fi
 fi
-chmod +x "$TARGET_DIR"/agent-playbooks/scripts/*.sh 2>/dev/null || true
+chmod +x "$STAGE_PLAYBOOKS"/scripts/*.sh 2>/dev/null || true
+
+# The only two writes into $TARGET_DIR itself for AGENTS.md/agent-playbooks/
+# -- both single directory-entry renames, atomic on the same filesystem.
+mv "$STAGE_AGENTS" "$TARGET_DIR/AGENTS.md"
+mv "$STAGE_PLAYBOOKS" "$TARGET_DIR/agent-playbooks"
 
 # Codex CLI and Cursor both read AGENTS.md at the project root natively,
 # confirmed against each tool's own official docs -- nothing more needed
@@ -529,7 +551,13 @@ generate_claude_artifacts() {
   local count=0 f relpath slug desc
   while IFS= read -r -d '' f; do
     relpath="agent-playbooks/${f#"$pb_dir"/}"
-    slug="$(basename "$f" .md | tr '[:upper:]' '[:lower:]')"
+    # Derived from the full relative path, not just the basename -- two
+    # playbooks in different directories sharing a filename (this repo's
+    # own README anticipates that case for --only) would otherwise
+    # generate the same slug and silently overwrite each other's artifact.
+    slug="${f#"$pb_dir"/}"
+    slug="${slug%.md}"
+    slug="$(echo "${slug//\//-}" | tr '[:upper:]' '[:lower:]')"
     desc="$(extract_description "$f")"
     mkdir -p "$skills_dir/$slug"
     printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \
@@ -562,6 +590,17 @@ project-bootstrapper|implement|Onboards an agent to an unfamiliar repo, groundin
     else
       model="sonnet"
     fi
+    # $model can come straight from an env var the caller set
+    # (AGENT_PLAYBOOKS_MODEL_*) -- written raw into YAML frontmatter below,
+    # a stray newline, colon, or quote in it would corrupt the generated
+    # file (or worse, inject an extra frontmatter field) rather than just
+    # fail to match a real model. Restrict to the charset every real model
+    # identifier actually uses instead of an enum of today's known names,
+    # so a legitimate future model string still works.
+    if [[ "$model" =~ [^A-Za-z0-9._-] || -z "$model" ]]; then
+      echo "Warning: ignoring invalid model value '$model' for $pslug (only letters, digits, '.', '_', '-' allowed) -- using the tier default instead." >&2
+      [[ "$ptier" == "verify" ]] && model="opus" || model="sonnet"
+    fi
     printf -- '---\nname: %s\ndescription: "%s"\nmodel: %s\ntools: Read, Grep, Glob, Bash\n---\n\nFollow the persona defined in `agent-playbooks/autonomy/roles.md` exactly (the section matching this agent'"'"'s name).\n' \
       "$pslug" "$pdesc" "$model" > "$agents_dir/$pslug.md"
     n=$((n + 1))
@@ -575,7 +614,13 @@ generate_cursor_artifacts() {
   local count=0 f relpath slug desc
   while IFS= read -r -d '' f; do
     relpath="agent-playbooks/${f#"$pb_dir"/}"
-    slug="$(basename "$f" .md | tr '[:upper:]' '[:lower:]')"
+    # Derived from the full relative path, not just the basename -- two
+    # playbooks in different directories sharing a filename (this repo's
+    # own README anticipates that case for --only) would otherwise
+    # generate the same slug and silently overwrite each other's artifact.
+    slug="${f#"$pb_dir"/}"
+    slug="${slug%.md}"
+    slug="$(echo "${slug//\//-}" | tr '[:upper:]' '[:lower:]')"
     desc="$(extract_description "$f")"
     printf -- '---\ndescription: "%s"\nalwaysApply: false\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$rules_dir/$slug.mdc"
@@ -592,7 +637,13 @@ generate_antigravity_artifacts() {
   local count=0 f relpath slug desc
   while IFS= read -r -d '' f; do
     relpath="agent-playbooks/${f#"$pb_dir"/}"
-    slug="$(basename "$f" .md | tr '[:upper:]' '[:lower:]')"
+    # Derived from the full relative path, not just the basename -- two
+    # playbooks in different directories sharing a filename (this repo's
+    # own README anticipates that case for --only) would otherwise
+    # generate the same slug and silently overwrite each other's artifact.
+    slug="${f#"$pb_dir"/}"
+    slug="${slug%.md}"
+    slug="$(echo "${slug//\//-}" | tr '[:upper:]' '[:lower:]')"
     desc="$(extract_description "$f")"
     mkdir -p "$skills_dir/$slug"
     printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \

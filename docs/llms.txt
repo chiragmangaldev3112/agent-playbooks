@@ -9,6 +9,8 @@ agent-playbooks solves two problems for teams using AI coding agents: every tool
 - [README](https://github.com/chiragmangaldev3112/agent-playbooks#readme): full install instructions, per-tool wiring notes, and the complete playbook index
 - [CHANGELOG](https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/CHANGELOG.md): every released version and what changed
 - [Demo video](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html): all 35 playbooks narrated, each with a real terminal run
+- [SECURITY](https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/SECURITY.md): the actual trust model -- every release is signed and its file hashes verified before install, what the safety guardrail does and doesn't cover, how to report a vulnerability
+- [CONTRIBUTING](https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/CONTRIBUTING.md): what's in this repo to contribute to and how to test a change before opening a PR
 
 ## Install
 
