@@ -50,6 +50,18 @@ once, not just written and published.
 — 9 minutes, narrating and actually running all 35 playbooks, one real
 terminal demo each, not a slideshow.
 
+**What you get, at a glance** (full catalog with every file:
+[What's in the box](#whats-in-the-box)):
+
+| Category | Examples |
+|---|---|
+| Core | reproduce-before-fix bug workflow, test-first feature development, ambiguity resolution |
+| Quality | code review, security review, architecture review, frontend/backend testing |
+| Change types | refactoring, dependency upgrades, database migration, incident response, release |
+| Safety | enforced destructive-command block, enforced secret-commit block |
+| Autonomy | standing-mission mode, reusable personas (Bug Hunter, Code Reviewer, ...) |
+| Project & mapping | repo onboarding, codebase/database mapping, third-party API integration |
+
 ## Install
 
 ```bash
