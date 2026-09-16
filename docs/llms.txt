@@ -2,13 +2,13 @@
 
 > Portable, tool-agnostic instructions for AI coding agents, built on the AGENTS.md standard. One instruction set works across Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, Factory Droid, Grok Build, Kimi Code, OpenCode, Pi, Hermes Agent, and GitHub Copilot -- no per-tool configuration needed.
 
-agent-playbooks solves two problems for teams using AI coding agents: every tool wants instructions in its own format, and an agent left to its own judgment fails in predictable ways (guessing instead of asking, grading its own work, forgetting conventions between sessions, running destructive commands). It provides 35 playbooks -- reproduce-before-fix bug fixing, test-first feature development, independent code review, security review, frontend/backend testing, safe database migration, incident response, and autonomous operation -- each verified against a real test case before publishing, installed with a single shell command and no account or token.
+agent-playbooks solves two problems for teams using AI coding agents: every tool wants instructions in its own format, and an agent left to its own judgment fails in predictable ways (guessing instead of asking, grading its own work, forgetting conventions between sessions, running destructive commands). It provides 36 playbooks -- reproduce-before-fix bug fixing, test-first feature development, independent code review, security review, frontend/backend testing, cold-start exploratory QA, safe database migration, incident response, and autonomous operation -- each verified against a real test case before publishing, installed with a single shell command and no account or token.
 
 ## Docs
 
 - [README](https://github.com/chiragmangaldev3112/agent-playbooks#readme): full install instructions, per-tool wiring notes, and the complete playbook index
 - [CHANGELOG](https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/CHANGELOG.md): every released version and what changed
-- [Demo video](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html): all 35 playbooks narrated, each with a real terminal run
+- [Demo video](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html): all 36 playbooks narrated, each with a real terminal run
 - [SECURITY](https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/SECURITY.md): the actual trust model -- every release is signed and its file hashes verified before install, what the safety guardrail does and doesn't cover, how to report a vulnerability
 - [CONTRIBUTING](https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/CONTRIBUTING.md): what's in this repo to contribute to and how to test a change before opening a PR
 

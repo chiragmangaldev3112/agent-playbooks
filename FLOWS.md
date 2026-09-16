@@ -192,6 +192,23 @@ flowchart TD
     I --> J[If it fails later:\ndiagnose vs contract,\nfix, re-verify, revert if not fixed]
 ```
 
+### `quality/exploratory-qa.md`
+
+Given a URL with no other direction: discover journeys, then test them
+
+```mermaid
+flowchart TD
+    A[Given: a URL,\nno other spec] --> B[Confirm scope + access]
+    B --> C[Map the app:\nnav, routes, states]
+    C --> D{Source access\navailable too?}
+    D -->|Yes| E[Cross-check against\nreal routes]
+    D -->|No| F[Black-box map only]
+    E --> G[Coverage map:\nfound / prioritized / out of scope]
+    F --> G
+    G --> H[Hand each journey to\nfrontend/backend-testing.md]
+    H --> I[One site-wide report]
+```
+
 ### `quality/docs-sync.md`
 
 Verify doc claims against real code, run the project's real linter
