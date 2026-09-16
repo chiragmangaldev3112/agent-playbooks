@@ -8,6 +8,48 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.21.0 — 2026-09-16
+New playbook: `quality/exploratory-qa.md` (36th playbook). Closes a real
+gap found by comparing this project against a commercial autonomous-QA
+product's actual feature set, not just its marketing headline: every
+existing testing playbook (`frontend-testing.md`, `backend-testing.md`,
+even `project-audit.md`) assumes you already know what to test — a
+named flow, a spec, a diff. Nothing covered the "here's a URL, no other
+direction" starting point: map what the app actually offers first,
+prioritize, then hand each discovered journey to the existing testing
+disciplines rather than re-inventing them.
+
+Wired into `core/engineering-loop.md`'s classifier and routing rules so
+it's reachable the same way every other playbook is — a user never
+needs to name it directly. Added to `README.md`'s catalog and
+`EXAMPLES.md`.
+
+Verified for real, not just written: ran the playbook's own process
+(map → prioritize → test → report) against this project's own live
+GitHub Pages site before publishing. It found a real bug (a page-level
+horizontal-overflow defect at mobile width, caused by the engineering-
+loop diagram's `min-width` escaping its own scroll container) that was
+fixed and re-verified as part of the same pass — the playbook's process
+actually surfaced something real on its first real run, not a
+hypothetical.
+
+Revised once more before publishing, after checking the same commercial
+product's fuller feature breakdown (not just its homepage) against the
+first draft: added an explicit standing console/network-error check
+(page can render correctly while still throwing an error nobody would
+notice without checking), theme/light-dark consistency mapping, a hand-
+off to `safety/security-review.md` alongside the two testing playbooks (a
+security check needs exactly the surface this playbook's discovery pass
+already produces), WCAG contrast ratios and keyboard-trap testing beyond
+`frontend-testing.md` step 8's per-control checklist, and a proactive
+performance check (slow network calls, render-blocking resources, long
+main-thread tasks) that no existing playbook covered outside a reactive,
+already-reported slowdown. The one thing not adopted: the commercial
+product's actual "time-travel" deterministic-replay debugging technology
+-- that's a specific runtime capability, not a process a playbook's
+wording can provide; noted as a real, narrower gap rather than papered
+over.
+
 ## 1.20.0 — 2026-09-16
 Docs-only clarification, no behavior change: this file's own opening note
 said "see `agent-playbooks/VERSION` for the currently-installed version"

@@ -12,7 +12,7 @@ are just realistic phrasing, not required syntax.
 ### `core/engineering-loop.md`
 **Scenario:** any task at all — this is the front door.
 **You say:** "Fix this bug where the checkout button does nothing on mobile."
-**What happens:** classified as a bug fix, routed to `bug-fix.md`. Once
+**What happens:** classified as a bug fix, routed to `core/bug-fix.md`. Once
 implemented, a fresh evidence-based pass verifies it independently before
 anything is reported done.
 
@@ -99,6 +99,18 @@ after.
 `required: true` field becomes a missing-field test case straight off
 the spec, not from memory — plus a concurrency case and an
 idempotency check for retried requests.
+
+### `quality/exploratory-qa.md`
+**Scenario:** a client hands over a staging URL with no test plan.
+**You say:** "Here's the staging link, tell me what's wrong with it
+before we ship."
+**What happens:** maps every page and state the app actually offers
+first (not a guessed list), cross-checks that map against the real
+routes in source if available, prioritizes toward checkout/auth/
+destructive flows over static pages, then hands each prioritized flow to
+`frontend-testing.md`/`backend-testing.md`'s own edge-case checklists —
+producing one report with a coverage map (tested / tested-lightly /
+explicitly skipped, with a reason) plus findings, not a bare bug list.
 
 ### `quality/docs-sync.md`
 **Scenario:** a README that hasn't been touched in a year.
@@ -257,7 +269,7 @@ support-ticket text as high-sensitivity by default), rejects a plan to
 log the full export payload for debugging, and defines a retention
 window before shipping instead of "we'll figure out deletion later."
 
-## Top level
+## Project
 
 ### `project/project-bootstrap.md`
 **Scenario:** pointing an agent at a repo it's never seen before.
@@ -267,6 +279,16 @@ config (never invents one that "should" work), writes a grounded
 `AGENTS.md`, wires the safety guardrail if the tool supports it, and
 actually runs the detected commands to confirm they work before
 reporting done.
+
+### `project/project-audit.md`
+**Scenario:** inheriting a project with an unknown amount of technical debt.
+**You say:** "Audit this project and tell me what's wrong."
+**What happens:** runs the existing quality checklists across the whole
+project, reports findings ranked by real impact, and stops to wait for
+explicit approval on what to fix — it doesn't start changing code just
+because it found something.
+
+## Mapping
 
 ### `mapping/codebase-mapping.md`
 **Scenario:** inheriting a codebase with zero documentation.
@@ -295,13 +317,7 @@ one batch, asks once (not per-endpoint) before touching anything that
 creates or charges something real, and writes the verified findings to
 a doc you can actually implement against.
 
-### `project/project-audit.md`
-**Scenario:** inheriting a project with an unknown amount of technical debt.
-**You say:** "Audit this project and tell me what's wrong."
-**What happens:** runs the existing quality checklists across the whole
-project, reports findings ranked by real impact, and stops to wait for
-explicit approval on what to fix — it doesn't start changing code just
-because it found something.
+## Media
 
 ### `media/demo-video.md`
 **Scenario:** wanting a narrated walkthrough of a new feature.
@@ -310,34 +326,3 @@ because it found something.
 narrated audio and a screen recording using free local tools, then
 actually plays back the result to confirm timing lines up before calling
 it done — not just assembling files and assuming it works.
-
-### `media/video-review.md`
-**Scenario:** a tester hands over a screen recording of a bug instead of
-writing it up.
-**You say:** "Here's a video of the checkout bug, tell me what's wrong and
-fix it."
-**What happens:** extracts the audio and periodic frames locally, gets a
-transcript if a speech-to-text engine is available (or says plainly if
-one isn't, and reviews the frames alone instead), drafts a summary/key
-points/bugs/asks from what was actually said and shown, then re-checks
-every one of those findings against that same transcript/frame evidence
-before reporting them — not just repeating an initial guess. If a real
-codebase is present, each fix/build ask is then handed to
-`core/engineering-loop.md` one at a time, never bundled together.
-
-### `media/doc-review.md`
-**Scenario:** a stakeholder emails a requirements doc instead of filing a
-ticket.
-**You say:** "Here's the spec PDF, tell me what it's asking for and
-what's still open."
-**What happens:** extracts the text (`pdftotext`/`pandoc` depending on
-format), renders pages as images instead only where the text comes back
-suspiciously sparse (a scanned page, not just any page with a picture on
-it), reads a 600-page document in ~20-page chunks rather than all at once
-so it costs the same to review as a 6-page one, drafts a summary/key
-points/the document's own raised questions/action items split into
-fix-vs-build, then re-checks every finding against that same text/page
-evidence before reporting them. If a real codebase is present, each
-action item is handed to `core/engineering-loop.md` one at a time; a
-raised question gets surfaced back to you instead of being answered on
-the document's behalf.

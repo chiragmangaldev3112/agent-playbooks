@@ -47,7 +47,7 @@ once, not just written and published.
 
 **[▶ Watch the demo in your browser](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)**
 (or [download the file directly](https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4))
-— 9 minutes, narrating and actually running all 35 playbooks, one real
+— 9 minutes, narrating and actually running all 36 playbooks, one real
 terminal demo each, not a slideshow.
 
 **What you get, at a glance** (full catalog with every file:
@@ -56,7 +56,7 @@ terminal demo each, not a slideshow.
 | Category | Examples |
 |---|---|
 | Core | reproduce-before-fix bug workflow, test-first feature development, ambiguity resolution |
-| Quality | code review, security review, architecture review, frontend/backend testing |
+| Quality | code review, security review, architecture review, frontend/backend testing, cold-start exploratory QA |
 | Change types | refactoring, dependency upgrades, database migration, incident response, release |
 | Safety | enforced destructive-command block, enforced secret-commit block |
 | Autonomy | standing-mission mode, reusable personas (Bug Hunter, Code Reviewer, ...) |
@@ -254,11 +254,12 @@ own:
 | "This feature stores user data" | Classifies what's sensitive before deciding how to handle it, keeps it out of logs |
 | "Document this codebase / database" | Maps real module or table boundaries from actual code/schema, not folder or column names |
 | "Integrate with X's API" | Tests the real API behavior for real, never handles your credential directly |
+| "Here's a URL, find what's wrong with it" (no flow/spec named) | Maps the app's real pages/journeys first, prioritizes, then tests each one — instead of guessing which flow you meant |
 | "Here's a recording of the bug" (any video/audio file) | Extracts audio + frames, transcribes locally, re-verifies every finding against that evidence, then routes each one through the engineering loop if you want it fixed |
 | "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
 | Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all 35 files before
+That's the whole interface. You don't need to read all 36 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
@@ -286,6 +287,7 @@ purpose), see **[CHANGELOG.md](CHANGELOG.md)**.
 | `quality/security-review.md` | Language-agnostic security checklist |
 | `quality/architecture-review.md` | Design-level review: visibility, failure containment, access boundaries, operational control |
 | `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers |
+| `quality/exploratory-qa.md` | Given a URL with no other direction: map the app's real journeys first, then test each one |
 | `quality/docs-sync.md` | Verify doc claims against real code, run the project's real linter |
 | `quality/observability.md` | Instrument a feature so its failures surface before a user reports them |
 | `quality/writing-style.md` | Commit messages, PR descriptions, and reports that read like someone who understands the change; links to [github.com/blader/humanizer](https://github.com/blader/humanizer) for a deeper catalog of the same patterns, as an optional follow-up, not a dependency |

@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-site-verification" content="nt9vtEzPQ9s2uKeMrE_KEHdB61vgrIBrZYika3s2Aqc" />
 <title>agent-playbooks — portable AGENTS.md instructions for AI coding agents</title>
-<meta name="description" content="One portable rulebook for AI coding agents — Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, GitHub Copilot, and more. 35 playbooks for bug fixes, feature development, code review, and testing, built on the AGENTS.md standard. Free, open source, install in one command.">
+<meta name="description" content="One portable rulebook for AI coding agents — Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, GitHub Copilot, and more. 36 playbooks for bug fixes, feature development, code review, and testing, built on the AGENTS.md standard. Free, open source, install in one command.">
 <link rel="canonical" href="https://chiragmangaldev3112.github.io/agent-playbooks/">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="agent-playbooks — portable AGENTS.md instructions for AI coding agents">
-<meta property="og:description" content="One portable rulebook for AI coding agents across every major tool — 35 playbooks for bug fixes, features, review, and testing. Free, open source.">
+<meta property="og:description" content="One portable rulebook for AI coding agents across every major tool — 36 playbooks for bug fixes, features, review, and testing. Free, open source.">
 <meta property="og:url" content="https://chiragmangaldev3112.github.io/agent-playbooks/">
 <meta property="og:site_name" content="agent-playbooks">
 <meta property="og:image" content="https://chiragmangaldev3112.github.io/agent-playbooks/social-preview.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="agent-playbooks — portable AGENTS.md instructions for AI coding agents">
-<meta name="twitter:description" content="One portable rulebook for AI coding agents across every major tool — 35 playbooks for bug fixes, features, review, and testing.">
+<meta name="twitter:description" content="One portable rulebook for AI coding agents across every major tool — 36 playbooks for bug fixes, features, review, and testing.">
 <meta name="twitter:image" content="https://chiragmangaldev3112.github.io/agent-playbooks/social-preview.png">
 
 <script type="application/ld+json">
@@ -27,15 +27,15 @@
   "@context": "https://schema.org",
   "@type": "SoftwareSourceCode",
   "name": "agent-playbooks",
-  "description": "Portable, tool-agnostic instructions for AI coding agents, built on the AGENTS.md standard. 35 playbooks covering bug fixes, feature development, code review, testing, security, and autonomous operation, usable with Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, Factory Droid, Grok Build, Kimi Code, OpenCode, Pi, Hermes Agent, and GitHub Copilot.",
+  "description": "Portable, tool-agnostic instructions for AI coding agents, built on the AGENTS.md standard. 36 playbooks covering bug fixes, feature development, code review, testing, security, and autonomous operation, usable with Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, Factory Droid, Grok Build, Kimi Code, OpenCode, Pi, Hermes Agent, and GitHub Copilot.",
   "codeRepository": "https://github.com/chiragmangaldev3112/agent-playbooks",
   "programmingLanguage": "Markdown",
   "license": "https://github.com/chiragmangaldev3112/agent-playbooks/blob/main/LICENSE",
   "author": { "@type": "Person", "name": "chiragmangaldev3112" },
   "video": {
     "@type": "VideoObject",
-    "name": "agent-playbooks full demo — all 35 playbooks",
-    "description": "A narrated, real-terminal demo of all 35 agent-playbooks playbooks.",
+    "name": "agent-playbooks full demo — all 36 playbooks",
+    "description": "A narrated, real-terminal demo of all 36 agent-playbooks playbooks.",
     "contentUrl": "https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4",
     "uploadDate": "2026-09-15"
   }
@@ -50,7 +50,7 @@
     {
       "@type": "Question",
       "name": "What is agent-playbooks?",
-      "acceptedAnswer": { "@type": "Answer", "text": "agent-playbooks is a portable, tool-agnostic instruction set for AI coding agents, built on the AGENTS.md standard. It provides 35 playbooks covering bug fixes, feature development, code review, security review, testing, and autonomous operation, so you write the rules once instead of configuring every AI coding tool separately." }
+      "acceptedAnswer": { "@type": "Answer", "text": "agent-playbooks is a portable, tool-agnostic instruction set for AI coding agents, built on the AGENTS.md standard. It provides 36 playbooks covering bug fixes, feature development, code review, security review, testing, and autonomous operation, so you write the rules once instead of configuring every AI coding tool separately." }
     },
     {
       "@type": "Question",
@@ -85,9 +85,10 @@
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
+    overflow-x: hidden;
     font: 16px/1.6 var(--sans);
   }
   .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
@@ -155,7 +156,7 @@
   /* loop diagram */
   .loop-diagram {
     background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 32px; overflow-x: auto;
+    padding: 32px; overflow-x: auto; max-width: 100%;
   }
   .loop-label { font-family: var(--mono); font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
   .loop-row { display: flex; align-items: center; gap: 0; min-width: 640px; }
@@ -213,7 +214,7 @@
     <p class="eyebrow">Portable engineering workflows for AI coding agents</p>
     <h1>Agent Playbooks</h1>
     <p class="sub">One process for every task — implement, then verify independently.</p>
-    <p class="desc">35 playbooks that give Claude Code, Cursor, Codex, GitHub Copilot,
+    <p class="desc">36 playbooks that give Claude Code, Cursor, Codex, GitHub Copilot,
     Antigravity, and 10 other AI coding tools a shared engineering process —
     reproduce before fixing, test before building, verify independently
     before calling anything done. Built on the open
@@ -232,7 +233,7 @@ chmod +x install.sh<span class="c">   # read it first if you want -- that's the 
     your project — see <a href="https://github.com/chiragmangaldev3112/agent-playbooks#verifying-a-release">how</a>.</p>
 
     <div class="stats">
-      <div class="stat"><b>35</b> playbooks</div>
+      <div class="stat"><b>36</b> playbooks</div>
       <div class="stat"><b>15</b> tools supported</div>
       <div class="stat"><b>MIT</b> licensed, fully</div>
       <div class="stat">Every release <b>signed</b></div>
@@ -299,7 +300,7 @@ chmod +x install.sh<span class="c">   # read it first if you want -- that's the 
   </section>
 
   <section class="block">
-    <h2>35 playbooks, one engineering loop</h2>
+    <h2>36 playbooks, one engineering loop</h2>
     <p class="lede">Grouped by kind of concern. Full detail, a flowchart per
     playbook, and a worked example for every one live in the
     <a href="https://github.com/chiragmangaldev3112/agent-playbooks#readme" style="text-decoration:underline">README</a>,
@@ -391,7 +392,7 @@ chmod +x install.sh<span class="c">   # read it first if you want -- that's the 
 
   <section class="block">
     <h2>Watch it work</h2>
-    <p class="lede">Every one of the 35 playbooks, narrated, each with a real terminal run — not a slideshow.</p>
+    <p class="lede">Every one of the 36 playbooks, narrated, each with a real terminal run — not a slideshow.</p>
     <video controls preload="metadata"
       src="https://github.com/chiragmangaldev3112/agent-playbooks/releases/download/v1.17.0/agent-playbooks-demo.mp4">
     </video>
@@ -402,7 +403,7 @@ chmod +x install.sh<span class="c">   # read it first if you want -- that's the 
     <div class="faq-item">
       <h3>What is agent-playbooks?</h3>
       <p>A portable, tool-agnostic instruction set for AI coding agents, built on
-      the AGENTS.md standard. 35 playbooks covering bug fixes, feature
+      the AGENTS.md standard. 36 playbooks covering bug fixes, feature
       development, code review, security review, testing, and autonomous
       operation, so you write the rules once instead of configuring every AI
       coding tool separately.</p>
