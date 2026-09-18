@@ -8,6 +8,24 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.24.1 — 2026-09-18
+Fixed `safety/config-protection.md`'s own verification instructions
+after a full re-check of the 1.24.0 release found a real, repeatable
+trap in them: step 2 said to "discard or re-stage" the rejected commit's
+staged change before continuing, without naming an exact command. That
+vague instruction was tried and failed twice, independently — the
+original verification, and a later separate re-verification pass of the
+already-shipped playbook both used plain `git checkout -- <file>`, which
+silently does nothing when the file is already staged (it restores from
+the index, not `HEAD`), producing a confusing false-"blocked" result on
+an unrelated file in both cases. The underlying mechanism
+(`block-config-edit.sh`, the git pre-commit hook, the Claude Code
+`PreToolUse` shim) was confirmed working correctly throughout both
+incidents — this was purely a documentation gap in how to reset a
+scratch repo between verification steps, now fixed by naming the exact
+correct command (`git checkout HEAD -- <file>`) instead of a vaguer
+instruction that repeatedly failed to prevent the same mistake.
+
 ## 1.24.0 — 2026-09-18
 Added `safety/config-protection.md` — a new, 37th playbook, plus
 `scripts/block-config-edit.sh` and `scripts/claude-code-config-protection-hook.sh`
