@@ -8,6 +8,42 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.26.0 — 2026-09-18
+Prompted by outside feedback (a Reddit comment on the launch post)
+observing that reliable playbooks need an explicit stopping rule, not
+just procedural steps. Checked this against all 37 files rather than
+taking the premise at face value: `core/engineering-loop.md` already has
+a universal stalled-loop bound ("three attempts, then stop and report
+what's ruled out") that names `core/feature-development.md` and
+`change-types/refactoring.md` as examples by name — but neither of those
+files, nor most others with a genuinely iterative shape, actually pointed
+back to it. A direct invocation of a playbook by name (several tools
+support `/name`/`@name` invocation per the README) can bypass the router
+entirely, so a reader landing on one of these files directly had no way
+to discover the bound existed.
+
+Added a short pointer (not a duplicate of the rule — that would drift out
+of sync over time) to the seven playbooks with a real, unbounded-retry
+shape and no existing connection to the central rule:
+`core/feature-development.md`, `change-types/refactoring.md`,
+`change-types/dependency-upgrades.md`, `change-types/performance.md`,
+`change-types/incident-response.md` (a stricter, escalate-to-a-human
+version, given live production impact is a different stakes profile than
+routine retrying), `quality/backend-testing.md`, and
+`quality/frontend-testing.md`.
+
+Deliberately did *not* add one to `quality/docs-sync.md` or
+`quality/receiving-code-review.md`, despite both surfacing in the initial
+grep-based sweep: both are bounded, finite-checklist processes (verify N
+claims once each, respond to N review items once each), not unbounded
+retry loops — forcing a stopping rule onto a process that doesn't loop
+would be padding, not a fix. Also correctly left `autonomy/mission-mode.md`
+untouched: it already has its own explicit, more detailed stopping/hard-stop
+rule (`safety-guardrail.md`'s exit-2 hard stops plus its own "same fix
+failing more than N times" trigger) — the initial automated sweep flagged
+it as a gap due to a keyword-search false negative, corrected before
+any change was made there.
+
 ## 1.25.0 — 2026-09-18
 A full independent re-evaluation of all 37 playbooks — three fresh-eyes
 passes (no prior context from the files that added `config-protection.md`
