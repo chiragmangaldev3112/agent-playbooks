@@ -8,6 +8,98 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.25.0 — 2026-09-18
+A full independent re-evaluation of all 37 playbooks — three fresh-eyes
+passes (no prior context from the files that added `config-protection.md`
+or the doc-review/markitdown work), each reading its assigned files in
+full rather than skimming. Every finding below was independently
+re-verified against the actual repo before being fixed, not applied on
+the reviewing pass's say-so.
+
+**Real bugs fixed:**
+- **`scripts/claude-code-secret-hook.sh` had a real security-relevant
+  gap**: its matcher only ever covered `Write`/`Edit`, so a `MultiEdit`
+  call writing a secret bypassed this Claude Code hook (layer 2)
+  entirely — layer 1 (the git pre-commit hook) would still have caught
+  it at commit time, but the defense-in-depth layer had a real hole.
+  Fixed: the matcher now includes `MultiEdit`, and the extraction logic
+  was rewritten to check every `new_string` in `MultiEdit`'s `edits`
+  array (its payload has no top-level `content`/`new_string` field the
+  way `Write`/`Edit` do, so widening the matcher alone would have
+  matched the call and silently extracted nothing). Re-tested for real:
+  a fake-but-correctly-shaped secret placed in the *second* edit of a
+  real `MultiEdit` payload is now caught, a clean `MultiEdit` still
+  passes, across both the `jq` and `python3`-fallback code paths.
+- **Two files wrongly attributed an "ask before hard-to-reverse action"
+  instinct to `safety/safety-guardrail.md`** (`quality/frontend-testing.md`
+  step 14, `quality/exploratory-qa.md` step 1) — that script's own text
+  explicitly disclaims covering anything but a fixed shell-command
+  blocklist ("merging, pushing to a shared branch, deploying... have no
+  corresponding deny pattern here at all"). The actual source of that
+  instinct is `AGENTS.md` rule 5, which safety-guardrail.md itself
+  defers to. Both references corrected.
+- **`quality/frontend-testing.md` mischaracterized `media/demo-video.md`**
+  as being for "a narrated *marketing* walkthrough... not for test
+  evidence" — demo-video.md's own scope explicitly includes "testers
+  recording a bug reproduction as a narrated video." Reworded to state
+  the real distinction (framework-native automated evidence vs. a
+  narrated walkthrough for a human audience) without the false claim.
+- **`quality/backend-testing.md`'s read-only/write-access step split
+  silently omitted steps 9 and 10** from either list — step 10
+  explicitly involves editing code/tests to fix a regression, so it
+  belongs in the write-access group along with step 9 (running the
+  suite that was just authored). Fixed to list steps 8–10 together.
+- **`project/project-bootstrap.md` had two real defects from the
+  `config-protection.md` step added in 1.24.0**: step 5 claimed to
+  reuse "the same `Write|Edit`-matching hooks list step 3/4 already
+  created," but step 3 (safety-guardrail) wires a `Bash`-matched hook,
+  not `Write|Edit` — only step 4 does. Corrected to cite step 4 alone.
+  Separately, the Flow diagram folded config-protection's git-hook layer
+  (explicitly "unconditional too" in the prose) into the same node as
+  the *conditional* per-tool hooks, contradicting the step 4 pattern the
+  diagram already got right for secret-scan.md. Diagram corrected to
+  show both git hooks as unconditional, matching the prose.
+- **`autonomy/roles.md` cited the wrong part of `README.md`** for its
+  Claude Code model-tagging mechanism — the per-tool wiring-artifact
+  table it pointed to doesn't cover this at all; the actual content
+  lives in a separate section further down. Reference corrected to name
+  that section directly instead of a vague "wiring notes."
+- **`media/video-review.md`'s frame-interval example was mathematically
+  wrong**: it claimed a 12-second clip and a 4-hour recording both land
+  around ~120 frames total, but the stated formula (`duration ÷ 120`,
+  floored at 3s) gives a 12-second clip exactly 4 frames, not 120 — the
+  3s floor dominates for anything under ~6 minutes. Corrected to
+  describe both regimes accurately.
+- **`safety/config-protection.md`'s git pre-commit hook had a real,
+  if cosmetic, bug**: `--diff-filter=AMD` fetched added and deleted
+  entries only for the loop to immediately discard everything that
+  wasn't a modification. Narrowed to `--diff-filter=M`, and the fix
+  itself prompted two new real tests (deleting an ordinary file,
+  deleting the tracked config file) confirming neither is wrongly
+  treated as a blockable edit.
+- **`EXAMPLES.md` was missing entries for `media/doc-review.md` and
+  `media/video-review.md` entirely**, despite the README's explicit
+  promise of a worked example for every playbook. Both added.
+- Two minor cross-reference style inconsistencies fixed (a same-directory
+  reference written as `../category/file.md` instead of a bare filename,
+  in `change-types/release.md` and `autonomy/standing-permission.md` —
+  both already resolved correctly, just inconsistent with house style).
+
+**Verification methodology**: structural checks (all 280+ cross-references
+across all 37 files resolve to real paths; README.md/FLOWS.md/EXAMPLES.md
+each independently confirmed to enumerate exactly all 37) were run
+directly, not delegated. Content-level review (factual accuracy, internal
+consistency, overstated "verified" claims) was delegated to three
+independent passes specifically so the review wouldn't just re-check the
+same assumptions the authoring pass already held — every finding those
+passes surfaced was independently re-verified against the actual repo
+state before any fix was made (re-reading the exact lines quoted, and for
+the `roles.md` finding, checking README.md directly rather than trusting
+"this isn't documented anywhere" at face value — it turned out to be
+documented, just not in the specific table the finding pointed at, which
+changed the fix from "add missing content" to "correct an imprecise
+pointer").
+
 ## 1.24.1 — 2026-09-18
 Fixed `safety/config-protection.md`'s own verification instructions
 after a full re-check of the 1.24.0 release found a real, repeatable

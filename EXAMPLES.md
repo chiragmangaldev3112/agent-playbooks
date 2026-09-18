@@ -337,3 +337,25 @@ a doc you can actually implement against.
 narrated audio and a screen recording using free local tools, then
 actually plays back the result to confirm timing lines up before calling
 it done — not just assembling files and assuming it works.
+
+### `media/video-review.md`
+**Scenario:** a stakeholder sends a screen recording of a bug instead of
+writing a ticket.
+**You say:** "Here's a recording of the bug — tell me what's wrong."
+**What happens:** extracts the audio and key frames, transcribes locally,
+drafts findings (summary, key points, bugs/gaps, fix-vs-build asks), then
+re-verifies each one against the actual frames/transcript before
+reporting — and can hand any one "fix" ask to `../core/engineering-loop.md`
+if you want it turned into an implementation plan.
+
+### `media/doc-review.md`
+**Scenario:** a stakeholder emails a requirements doc instead of filing a
+ticket.
+**You say:** "Here's the spec — review it and tell me what needs to
+happen."
+**What happens:** extracts the text (page images too, for a scanned or
+image-heavy PDF), reads it in bounded chunks regardless of length, drafts
+a summary/key-points/queries-raised/action-items report, re-verifies each
+finding against the actual extracted text before reporting — and can hand
+any one "fix" or "build" action item to `../core/engineering-loop.md` if
+you want it acted on.
