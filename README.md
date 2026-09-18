@@ -608,6 +608,12 @@ and release signing do and don't protect against.
 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) covers what's expected of
 everyone participating here.
 
+Have feedback, a question, or found a playbook that doesn't hold up
+against your real use case? [Open a Discussion](https://github.com/chiragmangaldev3112/agent-playbooks/discussions)
+rather than staying quiet about it — that's exactly what it's there for,
+separate from [Issues](https://github.com/chiragmangaldev3112/agent-playbooks/issues)
+(bugs/concrete fixes) and [SECURITY.md](SECURITY.md) (vulnerabilities).
+
 <a id="license"></a>
 ## 📄 License
 
