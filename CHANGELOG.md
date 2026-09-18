@@ -8,6 +8,48 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.27.0 — 2026-09-18
+Added a real regression-eval harness (`evals/`, run via
+`scripts/run-evals.sh`), the other half of the same Reddit feedback that
+prompted 1.26.0's stopping-rule pointers: reliable playbooks need
+evidence requirements, not just narrative "verified" claims. Every real
+bug already documented in this CHANGELOG that has a script behind it —
+the MultiEdit secret-scan gap, the dotted-parent-directory extension
+misdetection, the config-protection git-hook dead filter component, the
+core destructive-command patterns — is now a real, re-runnable
+failing/passing pair instead of a one-time narrative, so a future change
+that reintroduces one of these regressions gets caught automatically
+instead of needing a fresh manual re-verification pass to rediscover it.
+
+Deliberately scoped to **script-backed playbooks only**
+(`safety/safety-guardrail.md`, `safety/secret-scan.md`,
+`safety/config-protection.md`, `media/doc-review.md`'s extraction
+pipeline) — 47 real cases across 6 eval files. Prose-only playbooks (the
+other 33) get no automated eval, on purpose: there's no honest automated
+pass/fail for "did an agent correctly follow these steps," and building
+a fake one that prints a green checkmark would be exactly the kind of
+hollow "verified" claim this project exists to reject. See
+`evals/README.md` for the reasoning and how to add a case.
+
+The harness was tested doing the thing it's actually for, not just run
+once and trusted: a real pattern in `block-dangerous.sh` was deliberately
+weakened (removing bare `/` from the root-target regex), confirmed the
+eval suite caught it (4 real failures, correct non-zero exit code), then
+reverted and re-confirmed all 47 cases pass again. A case whose required
+external tool isn't installed (`pandoc`, `pdftotext`+`cupsfilter`,
+`markitdown`) skips cleanly rather than failing or falsely passing —
+verified by actually running with and without those tools on `PATH`.
+
+Wired into `maintainer/package-release.sh`: every release now runs the
+full eval suite before packaging, and refuses to package on any failure,
+no override flag — the same "no install anyway" reasoning `install.sh`'s
+own signature check already uses. Verified for real, not just by reading
+the diff: ran `package-release.sh` end to end and confirmed the evals
+actually execute as part of it, block on a real induced failure, and
+that the informational eval output goes to stderr while stdout stays
+clean SQL (the one thing that would have broken silently if this were
+wired in carelessly).
+
 ## 1.26.0 — 2026-09-18
 Prompted by outside feedback (a Reddit comment on the launch post)
 observing that reliable playbooks need an explicit stopping rule, not
