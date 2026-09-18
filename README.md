@@ -465,7 +465,7 @@ you'd say, here's what happens" example for every single one, see
 |---|---|
 | `media/demo-video.md` | Generate a narrated screen-recording demo from a script, free tools only |
 | `media/video-review.md` | Turn an existing recording (bug repro, feedback video, any format ffmpeg reads) into a verified report — summary, key points, bugs/gaps, fix-vs-build asks — then optionally route each ask through `core/engineering-loop.md` |
-| `media/doc-review.md` | Turn a document (PDF/DOCX/ODT/RTF/etc.) into a verified report — summary, key points, queries it raises, fix-vs-build action items — reads even a several-hundred-page document in bounded chunks, then optionally routes each item through `core/engineering-loop.md` |
+| `media/doc-review.md` | Turn a document (PDF/DOCX/ODT/RTF/XLSX/etc.) into a verified report — summary, key points, queries it raises, fix-vs-build action items — reads even a several-hundred-page document in bounded chunks, then optionally routes each item through `core/engineering-loop.md` |
 
 </details>
 

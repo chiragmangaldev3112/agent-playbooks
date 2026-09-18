@@ -8,6 +8,35 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.23.0 — 2026-09-18
+`media/doc-review.md`/`scripts/extract-doc-text.sh` now handle
+`.xlsx`/`.xls` spreadsheets, via `markitdown`
+(https://github.com/microsoft/markitdown) rather than `pandoc`
+(https://github.com/jgm/pandoc). This was prompted by a question about
+whether converting extracted documents to Markdown would reduce token
+usage — tested for real rather than assumed, against a table-bearing
+`.docx`, a synthetic `.pdf`, and a `.pptx` deck, using `tiktoken` for
+real token counts. Result: Markdown lost or tied on every format already
+handled (plain text extraction is already the more token-efficient
+choice — Markdown's own syntax costs more than it saves), so nothing
+changed for `.docx`/PDF/`.pptx`. The one real gap: `pandoc` 3.11 lists
+`.xlsx` as a supported input format but was confirmed to fail on a real,
+valid `.xlsx` file (`Failed to parse XLSX: Entry not found:
+xl//xl/worksheets/sheet1.xml`), and has no `.xls` support at all.
+`markitdown` reads both correctly, so it's used there and only there.
+Two more real findings from the same testing, both now documented in
+`doc-review.md`: `markitdown`'s own `.docx` table conversion has a
+verified bug (blank header row, real headers demoted to a data row —
+confirmed by inspecting the raw output), and its spreadsheet reader
+silently turns literal cell values like `"None"`/`"NA"`/`"NULL"` into
+blank cells (a `pandas` null-inference behavior, confirmed against the
+source `.xlsx` directly) — both are why `markitdown` stays scoped to
+spreadsheets rather than adopted more broadly, and why the playbook now
+tells a reviewer to double-check any blank spreadsheet cell against the
+source file. `extract-doc-text.sh`'s `.docx`/PDF paths were re-run
+unchanged to confirm no regression, and the missing-`markitdown`-on-PATH
+error path was verified for real.
+
 ## 1.22.0 — 2026-09-16
 `scripts/record-screen.sh` now supports `--region=X,Y,W,H` on `start` and
 `timed`, cropping the output to one fixed rectangle instead of the full
