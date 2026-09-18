@@ -8,6 +8,45 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.24.0 — 2026-09-18
+Added `safety/config-protection.md` — a new, 37th playbook, plus
+`scripts/block-config-edit.sh` and `scripts/claude-code-config-protection-hook.sh`
+— a real, enforced block on editing an existing linter/formatter/style
+config file (ESLint, Prettier, Biome, Ruff, ShellCheck, Stylelint,
+markdownlint), while still allowing first-time creation of one. Targets a
+real failure mode: an agent facing a failing lint/format check weakening
+the config instead of fixing the flagged code, the same "real exit code,
+no LLM judgment" shape as `safety-guardrail.md`/`secret-scan.md`.
+
+Two-layer wiring, same reasoning as `secret-scan.md`: a git pre-commit
+hook (primary, tool-agnostic) plus a Claude Code `PreToolUse` hook
+(defense in depth). The two-layer split isn't cosmetic — checked directly
+against a real, current Cursor checkout (its actual `hooks.json` and hook
+event list) and confirmed it has no `beforeFileEdit`/`beforeWrite` event
+at all, only `afterFileEdit` (fires after the write already landed, so it
+can revert but never prevent one). That's why the git layer, not a
+per-tool pre-write hook, is the one every project gets regardless of
+which AI coding tool is in use.
+
+Both scripts were run for real, not just written: 8 direct cases against
+`block-config-edit.sh` (protected-vs-not, exists-vs-first-time-creation,
+a case-insensitive-filesystem match, a dangling symlink at a protected
+path, stdin input, a nested path, and confirming `pyproject.toml` is
+correctly never blocked), the Claude Code JSON shim against real-shaped
+`Write`/`Edit`/`MultiEdit` payloads (both the `jq` and `python3`-fallback
+paths), and the git pre-commit hook in a real scratch repo — a first-time
+`.eslintrc.js` commit succeeding, a modification to that same tracked
+file being genuinely rejected, and an ordinary source file continuing to
+commit normally afterward. `project/project-bootstrap.md` now wires this
+in alongside the existing two guardrails (renumbered as a new step 5).
+
+Also folds in the source of this addition: `docs/social-preview.png` was
+regenerated (it had been stuck at "35 Playbooks" since before the 36th
+playbook shipped) and every "36 playbooks" reference describing the
+current playbook count (not the still-36-playbook demo video, which
+wasn't re-recorded) was updated to 37 across `README.md`,
+`docs/index.html`, and `docs/llms.txt`.
+
 ## 1.23.0 — 2026-09-18
 `media/doc-review.md`/`scripts/extract-doc-text.sh` now handle
 `.xlsx`/`.xls` spreadsheets, via `markitdown`
