@@ -11,7 +11,7 @@
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/issues"><img src="https://img.shields.io/github/issues/chiragmangaldev3112/agent-playbooks" alt="Issues"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
   <br>
-  <img src="https://img.shields.io/badge/36_Playbooks-blueviolet" alt="36 Playbooks">
+  <img src="https://img.shields.io/badge/37_Playbooks-blueviolet" alt="37 Playbooks">
   <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
   <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
 </p>
@@ -112,7 +112,7 @@ Full catalog with every file: [🧰 Playbook Catalog](#playbook-catalog).
 | **Core** | reproduce-before-fix bug workflow, test-first feature development, ambiguity resolution |
 | **Quality** | code review, security review, architecture review, frontend/backend testing, cold-start exploratory QA |
 | **Change types** | refactoring, dependency upgrades, database migration, incident response, release |
-| **Safety** | enforced destructive-command block, enforced secret-commit block |
+| **Safety** | enforced destructive-command block, enforced secret-commit block, enforced lint/format config-protection |
 | **Autonomy** | standing-mission mode, reusable personas (Bug Hunter, Code Reviewer, ...) |
 | **Project & mapping** | repo onboarding, codebase/database mapping, third-party API integration |
 
@@ -347,7 +347,7 @@ own:
 | "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
 | 🚫 Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all 36 files before
+That's the whole interface. You don't need to read all 37 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
@@ -423,6 +423,7 @@ you'd say, here's what happens" example for every single one, see
 |---|---|
 | `safety/safety-guardrail.md` | A real, enforced block on destructive shell commands |
 | `safety/secret-scan.md` | A real, enforced block on committing real secrets/credentials |
+| `safety/config-protection.md` | A real, enforced block on editing an existing linter/formatter config to make a failing check pass instead of fixing the code |
 | `safety/memory-hygiene.md` | Don't trust a remembered fact once its source code has changed |
 | `safety/sensitive-data.md` | Classify data before deciding how strictly to handle it |
 

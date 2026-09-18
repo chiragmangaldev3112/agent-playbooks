@@ -459,6 +459,22 @@ flowchart TD
     C --> E[Hard block:\ncommit rejected or\nwrite refused]
 ```
 
+### `safety/config-protection.md`
+
+A real, enforced block on editing an existing linter/formatter config to
+make a failing check pass instead of fixing the code
+
+```mermaid
+flowchart TD
+    A[File about to be\nwritten, or staged for commit] --> B[block-config-edit.sh checks\nbasename against protected_files]
+    B -->|Not a protected name| D[Exit 0: proceeds normally]
+    B -->|Protected name| C{Already existed\nbefore this change?}
+    C -->|No -- first-time creation| D
+    C -->|Yes| E[Exit 2: blocked,\nreason on stderr]
+    E --> F1[Claude Code:\nhard block pre-write]
+    E --> F2[git pre-commit:\ncommit rejected]
+```
+
 ### `safety/memory-hygiene.md`
 
 Don't trust a remembered fact once its source code has changed

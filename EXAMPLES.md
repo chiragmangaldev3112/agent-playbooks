@@ -252,6 +252,17 @@ which tool is used, since it fires on the commit itself), then actually
 tests it — a fake-but-real-shaped secret gets a commit genuinely
 rejected, and an ordinary code change still commits normally afterward.
 
+### `safety/config-protection.md`
+**Scenario:** an agent facing a failing lint check tries to edit
+`.eslintrc.js` to turn the failing rule off, instead of fixing the code.
+**You say:** "Set up config-protection for this project."
+**What happens:** installs the git pre-commit hook (works regardless of
+which tool is used, same reasoning as secret-scan.md — most AI coding
+tools have no pre-write hook to block this with at all), then actually
+tests it — committing a fresh `.eslintrc.js` for the first time succeeds,
+modifying that same tracked file and recommitting is genuinely rejected,
+and an ordinary source-file change still commits normally afterward.
+
 ### `safety/memory-hygiene.md`
 **Scenario:** an agent recalls "this function handles retries" from an
 earlier session.

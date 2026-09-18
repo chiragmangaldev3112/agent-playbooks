@@ -2,7 +2,7 @@
 
 > Portable, tool-agnostic instructions for AI coding agents, built on the AGENTS.md standard. One instruction set works across Claude Code, Cursor, Antigravity, Gemini CLI, Devin CLI, Factory Droid, Grok Build, Kimi Code, OpenCode, Pi, Hermes Agent, and GitHub Copilot -- no per-tool configuration needed.
 
-agent-playbooks solves two problems for teams using AI coding agents: every tool wants instructions in its own format, and an agent left to its own judgment fails in predictable ways (guessing instead of asking, grading its own work, forgetting conventions between sessions, running destructive commands). It provides 36 playbooks -- reproduce-before-fix bug fixing, test-first feature development, independent code review, security review, frontend/backend testing, cold-start exploratory QA, safe database migration, incident response, and autonomous operation -- each verified against a real test case before publishing, installed with a single shell command and no account or token.
+agent-playbooks solves two problems for teams using AI coding agents: every tool wants instructions in its own format, and an agent left to its own judgment fails in predictable ways (guessing instead of asking, grading its own work, forgetting conventions between sessions, running destructive commands). It provides 37 playbooks -- reproduce-before-fix bug fixing, test-first feature development, independent code review, security review, frontend/backend testing, cold-start exploratory QA, safe database migration, incident response, and autonomous operation -- each verified against a real test case before publishing, installed with a single shell command and no account or token.
 
 ## Docs
 
