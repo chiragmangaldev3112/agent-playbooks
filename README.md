@@ -531,6 +531,19 @@ machine identifier).
 The endpoint logs the check-in and — if that ID isn't blocked — returns
 the current release.
 
+**Third parties that see the check-in.** Two hosted services sit on the
+path, and each acts as a processor for this one request only:
+
+| Service | Role | What it receives |
+|---|---|---|
+| [Supabase](https://supabase.com/) | Runs the check-in function and stores the releases | The random install ID and, if you pass `--version`, the version you asked for |
+| [Cloudflare](https://www.cloudflare.com/) | Network proxy in front of Supabase | Standard request metadata, including your IP address, as with any HTTPS request |
+
+Nothing from your project is sent. The installer runs locally, and the
+tools the playbooks' scripts call (jq, FFmpeg, whisper and so on) are
+invoked on your machine, never bundled. Once installed, the full list of
+tools and their licences is in `agent-playbooks/THIRD_PARTY.md`.
+
 <details>
 <summary>🔎 How the backend and content-integrity model actually works (click to expand)</summary>
 
