@@ -123,7 +123,12 @@ ID_FILE="${AGENT_PLAYBOOKS_ID_FILE:-$HOME/.agent-playbooks-id}"
 # instead of the real one (which never leaves the maintainer's machine, so
 # CI can't sign anything real). Every actual install uses the hardcoded
 # default -- nothing in a real invocation sets this variable.
-ALLOWED_SIGNERS="${AGENT_PLAYBOOKS_ALLOWED_SIGNERS:-release@agent-playbooks ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKzk3SMqAvHG9bI0EGfEQEE3h6LcUjOJ9TRUtcxpscjT agent-playbooks-release}"
+# Two keys are trusted during a key rotation (2026-09-29): the original key,
+# whose signature is on every release published before the rotation, and the
+# new key that signs releases from 1.28.0 on. Drop the first line once no
+# release signed by it needs to keep installing.
+ALLOWED_SIGNERS="${AGENT_PLAYBOOKS_ALLOWED_SIGNERS:-release@agent-playbooks ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKzk3SMqAvHG9bI0EGfEQEE3h6LcUjOJ9TRUtcxpscjT agent-playbooks-release
+release@agent-playbooks ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAndbKEwhyeMrjeRlTvbgLoqGR9aLsWaqsfLzO1c7nTf agent-playbooks-release}"
 SIGNING_NAMESPACE="agent-playbooks-release"
 
 for cmd in curl jq base64 ssh-keygen; do
