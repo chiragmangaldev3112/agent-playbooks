@@ -542,7 +542,9 @@ path, and each acts as a processor for this one request only:
 Nothing from your project is sent. The installer runs locally, and the
 tools the playbooks' scripts call (jq, FFmpeg, whisper and so on) are
 invoked on your machine, never bundled. Once installed, the full list of
-tools and their licences is in `agent-playbooks/THIRD_PARTY.md`.
+tools, licences and credited projects (for example
+[blader/humanizer](https://github.com/blader/humanizer), MIT) is in
+`agent-playbooks/THIRD_PARTY.md`.
 
 <details>
 <summary>🔎 How the backend and content-integrity model actually works (click to expand)</summary>
