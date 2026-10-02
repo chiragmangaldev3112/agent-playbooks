@@ -582,16 +582,22 @@ generate_claude_artifacts() {
     printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$skills_dir/$slug/SKILL.md"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -path "*/examples/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" -print0)
 
-  local personas='bug-hunter|verify|Reproduces a reported bug with a real, runnable failing test before proposing any fix.
-feature-builder|implement|Implements a feature test-first: failing test from the spec, implement until it passes.
-code-reviewer|verify|Reviews a diff for correctness, security, and convention adherence.
-test-writer|implement|Adds test coverage for existing, untested code.
-manual-exploratory-tester|verify|Explores a running app or change the way a human tester would.
-project-bootstrapper|implement|Onboards an agent to an unfamiliar repo, grounding every claim in real files.'
-  local n=0 pslug ptier pdesc model env_name
-  while IFS='|' read -r pslug ptier pdesc; do
+  # Fourth field is the tool list. roles.md's default access includes
+  # editing files; only the two roles it marks read/run (Code Reviewer,
+  # Manual/Exploratory Tester) get the read-only set. Bash still lets
+  # those two write in practice -- roles.md says so itself -- so this is
+  # the persona's stated remit made visible, not a hard boundary.
+  local tools_rw='Read, Grep, Glob, Bash, Edit, Write' tools_ro='Read, Grep, Glob, Bash'
+  local personas="bug-hunter|verify|Reproduces a reported bug with a real, runnable failing test before proposing any fix.|$tools_rw
+feature-builder|implement|Implements a feature test-first: failing test from the spec, implement until it passes.|$tools_rw
+code-reviewer|verify|Reviews a diff for correctness, security, and convention adherence.|$tools_ro
+test-writer|implement|Adds test coverage for existing, untested code.|$tools_rw
+manual-exploratory-tester|verify|Explores a running app or change the way a human tester would.|$tools_ro
+project-bootstrapper|implement|Onboards an agent to an unfamiliar repo, grounding every claim in real files.|$tools_rw"
+  local n=0 pslug ptier pdesc ptools model env_name
+  while IFS='|' read -r pslug ptier pdesc ptools; do
     [[ -z "$pslug" ]] && continue
     # Most-specific override wins: this exact persona, then its tier, then
     # the opus(verify)/sonnet(implement) built-in default. Same override
@@ -620,8 +626,8 @@ project-bootstrapper|implement|Onboards an agent to an unfamiliar repo, groundin
       echo "Warning: ignoring invalid model value '$model' for $pslug (only letters, digits, '.', '_', '-' allowed) -- using the tier default instead." >&2
       [[ "$ptier" == "verify" ]] && model="opus" || model="sonnet"
     fi
-    printf -- '---\nname: %s\ndescription: "%s"\nmodel: %s\ntools: Read, Grep, Glob, Bash\n---\n\nFollow the persona defined in `agent-playbooks/autonomy/roles.md` exactly (the section matching this agent'"'"'s name).\n' \
-      "$pslug" "$pdesc" "$model" > "$agents_dir/$pslug.md"
+    printf -- '---\nname: %s\ndescription: "%s"\nmodel: %s\ntools: %s\n---\n\nFollow the persona defined in `agent-playbooks/autonomy/roles.md` exactly (the section matching this agent'"'"'s name).\n' \
+      "$pslug" "$pdesc" "$model" "$ptools" > "$agents_dir/$pslug.md"
     n=$((n + 1))
   done <<< "$personas"
   echo "Generated $count Claude Code Skills (.claude/skills/) and $n sub-agents (.claude/agents/, model-tiered per autonomy/roles.md)." >&2
@@ -644,7 +650,7 @@ generate_cursor_artifacts() {
     printf -- '---\ndescription: "%s"\nalwaysApply: false\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$rules_dir/$slug.mdc"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -path "*/examples/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" -print0)
   echo "Generated $count Cursor rules (.cursor/rules/*.mdc, Agent Requested mode --" >&2
   echo "Cursor semantically matches on 'description' the same way Claude Skills do)." >&2
   echo "AGENTS.md is also read natively by Cursor on its own, confirmed in its docs." >&2
@@ -668,7 +674,7 @@ generate_antigravity_artifacts() {
     printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$skills_dir/$slug/SKILL.md"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -path "*/examples/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" -print0)
   echo "Generated $count Antigravity Skills (.agents/skills/*/SKILL.md)." >&2
   echo "Unlike Cursor/Codex CLI, Antigravity's own docs never confirm it reads" >&2
   echo "AGENTS.md automatically -- these generated Skills are the reliable path." >&2

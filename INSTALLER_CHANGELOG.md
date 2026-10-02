@@ -10,6 +10,28 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.2.1 — 2026-10-02
+Two fixes found by running a full install of the real content with
+`AGENT_PLAYBOOKS_TOOL=claude`/`cursor`/`antigravity` and reading every
+generated file, rather than only the fixture the smoke test used:
+
+- **`THIRD_PARTY.md` was being turned into a skill.** Content 1.28.0
+  added that file (a licence and data-processor list, not a playbook),
+  and the generators' exclusion list didn't know about it, so every
+  Claude Code, Cursor, and Antigravity install since then got a 38th
+  "skill" called `third_party` that just said to follow the licence list.
+  Excluded by name now, along with anything under `evals/`.
+- **Every generated Claude Code sub-agent was read-only.** All six
+  personas got `tools: Read, Grep, Glob, Bash`, but `autonomy/roles.md`
+  says the default persona can edit files and that Bug Hunter, Feature
+  Builder, and Test Writer specifically need write access. Those three
+  and Project Bootstrapper now get `Edit, Write` too; Code Reviewer and
+  Manual/Exploratory Tester, the two roles marked read/run only, keep
+  the read-only set.
+
+`tests/install-smoke-test.sh` has a new case covering both. It fails 3
+checks against the 2.2.0 installer and passes against this one.
+
 ## 2.2.0 — 2026-09-16
 Three fixes from a fresh-eyes runtime-behavior audit that actually ran
 the installer under adversarial conditions rather than just reading it,
