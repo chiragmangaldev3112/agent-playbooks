@@ -73,8 +73,11 @@ implemented on agreement alone.
 **Scenario:** a diff adding a search-by-username API.
 **You say:** "Security review this change."
 **What happens:** walks the checklist, finds the query string is
-interpolated directly into SQL, and reports it with a concrete scenario
-(`username=' OR '1'='1`) rather than just flagging "looks risky."
+interpolated directly into SQL, and proves it with a failing test that
+sends `username=' OR '1'='1` against a local instance and gets every
+user's row back, rather than just flagging "looks risky." Once it's
+fixed, the same test is re-run and now fails to leak anything, then a
+second pass re-runs it independently.
 
 ### `quality/architecture-review.md`
 **Scenario:** a new shared event that three teams will consume.
@@ -163,8 +166,11 @@ suite before calling it done.
 **You say:** "Rename the `user_id` column to `customer_id`."
 **What happens:** refuses to do it as one step — expands (adds the new
 column), migrates (dual-writes and backfills), and only contracts (drops
-the old one) once every caller is confirmed on the new shape, each stage
-its own deploy.
+the old one) once a search of every consumer and real query traffic
+show nothing still reads it and a fresh backup has been restored
+successfully, each stage its own deploy. Every stage's rollback is run
+on a copy of real data before it ships, and after each stage the checks
+written beforehand are run against the real rows.
 
 ### `change-types/incident-response.md`
 **Scenario:** the API is returning 500s for all users right now.

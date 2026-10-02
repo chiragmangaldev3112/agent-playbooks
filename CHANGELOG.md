@@ -8,6 +8,109 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.29.0 — 2026-10-02
+Made "verify the real result" an explicit closing step in the playbooks
+that ended at "Report," prompted by LinkedIn feedback: a reader keeps
+verify fixed at the end of every process and checks the real result of
+each agent step instead of taking its word for it. Checking the actual
+text against that showed the rule was enforced by
+`core/engineering-loop.md`, but four playbooks had no verification step
+of their own and never referenced the router, so invoking one directly
+(`/name`, `@name`) relied on the agent applying a rule the playbook
+itself didn't ask for.
+
+- `AGENTS.md`: states that a directly invoked playbook still ends with
+  `core/engineering-loop.md` step 4's independent pass.
+- `quality/security-review.md`: critical and high findings get proven
+  where it's safe (a failing test or a request against a local instance,
+  never production) and the report marks each finding as demonstrated or
+  reasoned-only; the proof is re-run after the fix and must now fail; the
+  project's own dependency audit, SAST, and `scripts/detect-secrets.sh`
+  get run and their output read; closing independent-verification step.
+  Checklist now also covers XXE, CSRF, open redirect, mass assignment,
+  race conditions/TOCTOU, rate limiting, and CORS.
+- `change-types/database-migration.md`: expected-state queries written
+  before each stage runs, not judged afterwards; the full
+  forward/rollback/forward round trip is run on a real data copy, since a
+  rollback that has never run is unverified; contract now needs evidence
+  that nothing uses the old shape (search of every consumer, real query
+  traffic) and a backup restored successfully just before; large-table
+  guidance (batched backfill, lock and statement timeouts, non-blocking
+  index builds, two-step constraints); a failed check stops the migration
+  instead of being explained away; closing independent-verification step
+  per stage. Also fixed the flowchart, which drew "write rollback" after
+  the contract stage when the text says before every stage.
+- `quality/architecture-review.md`: closing step where a second pass
+  opens every "this is satisfied" pointer (dashboard, timeout value, auth
+  check) instead of trusting it.
+- `quality/observability.md`: trigger the failure outside production and
+  watch the signal fire, since an alert that has never fired is an
+  assumption; closing independent-verification step.
+
+A full pass over every playbook and persona for the same gap found eight
+more that checked their own work but stopped short of a real-result or
+independent check:
+
+- `change-types/dependency-upgrades.md`: re-run the audit after a
+  security upgrade; independent re-run of suite and audit.
+- `change-types/performance.md`: a second pass re-measures under the same
+  conditions instead of trusting the implementer's numbers.
+- `change-types/refactoring.md`: independent cold read of the diff for
+  behavior changes the tests don't cover.
+- `change-types/release.md`: exercise the rollback path once before
+  rollout; confirm the live version and the health signal from the
+  source, not the deploy tool's status.
+- `change-types/incident-response.md`: watch the recovered signal for a
+  defined window before declaring service restored.
+- `quality/receiving-code-review.md`: hand the changes back so the
+  reviewer re-runs the tests and confirms each finding is resolved.
+- `quality/docs-sync.md`: re-check every corrected claim, run the doc's
+  own examples, re-lint.
+- `quality/exploratory-qa.md`: re-reproduce each finding from a clean
+  start before reporting (intermittent ones say so); a second pass
+  follows the repro steps for critical and high findings.
+- `safety/sensitive-data.md`: verify against the running system — search
+  logs and analytics for known test values, run a real deletion and check
+  every copy, read the encryption setting, try a denied read.
+- `autonomy/roles.md`: Bug Hunter's own fix still needs a separate pass;
+  Test Writer proves each new test fails when the behavior breaks;
+  Manual/Exploratory Tester re-reproduces each finding before filing.
+- `mapping/third-party-api-integration.md`: each verified entry in the
+  integration doc names the call that verified it, and a separate pass
+  re-runs the read-only calls before the doc is handed over.
+- `autonomy/roles.md`, custom roles ("create your own bot"): the
+  definition now has a sixth field, how the role's work gets checked (the
+  evidence every output carries and who re-checks it), and a required
+  trial on tasks with known answers, including a clean one, before the
+  role is relied on. The section also said "four things" while listing
+  five; the public README cited a "prove it first" rule that roles.md
+  didn't actually contain.
+
+Catalog fixes found by the same pass: `AGENTS.md` was missing
+`quality/exploratory-qa.md`; `README.md` was missing
+`safety/config-protection.md`; `EXAMPLES.md` was missing the
+config-protection, video-review, and doc-review entries;
+`core/engineering-loop.md` now routes recordings and documents to
+`media/video-review.md` and `media/doc-review.md`. Also connected a
+dangling "unsure" branch in `safety/sensitive-data.md`'s flowchart.
+
+Prose-only changes, so no new evals (see `evals/README.md` for why prose
+playbooks don't get one); the existing suite still passes.
+
+## 1.28.0 — 2026-09-29
+Added `THIRD_PARTY.md`: every external tool the scripts invoke (jq, curl,
+FFmpeg, espeak-ng, Piper, whisper, Poppler, Pandoc, LibreOffice,
+ShellCheck, markitdown, Playwright) and the hosted services the installer contacts
+(Supabase, Cloudflare), with licences and what data each receives, linked
+from the README. Added an optional, explicitly unevaluated note on using a
+fast classifier model as an extra guardrail layer to
+`safety/safety-guardrail.md`: the deterministic script stays the gate, and
+nothing sensitive goes to a hosted model. Also credited the referenced
+projects (humanizer, Contributor Covenant), pointed the Piper links at its
+maintained GPL-3.0 successor now that the original repo is archived, and
+removed an unreachable `||` case in `scripts/block-dangerous.sh` (no
+behaviour change; evals unchanged).
+
 ## 1.27.0 — 2026-09-18
 Added a real regression-eval harness (`evals/`, run via
 `scripts/run-evals.sh`), the other half of the same Reddit feedback that

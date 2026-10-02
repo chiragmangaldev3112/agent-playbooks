@@ -52,7 +52,7 @@ chmod +x install.sh
 💬 Then ask your agent: *"Fix this bug — reproduce it first, write a
 regression test, implement the fix, and verify the result."*
 
-**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — every one of the 36 playbooks, narrated, with a real terminal run each. Not a slideshow.
+**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 37 playbooks (all but `safety/config-protection.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
 
 ---
 
@@ -475,7 +475,7 @@ you'd say, here's what happens" example for every single one, see
 
 The six built-in personas in `autonomy/roles.md` (Bug Hunter, Feature
 Builder, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project
-Bootstrapper) cover the common cases. A new one is four things written
+Bootstrapper) cover the common cases. A new one is six things written
 down:
 
 1. **Name** — the job, not a person ("Dependency Auditor," not "Dave").
@@ -484,6 +484,11 @@ down:
    numbered process if nothing covers it yet.
 4. **Access level** — read/run only, or read/write, with a one-line
    reason.
+5. **Model tier** — *verify* if it checks someone else's work (strongest
+   model), *implement* if its work gets checked by someone else.
+6. **How its work gets checked** — the evidence every output carries (a
+   test, a captured request, a command and its output) and who re-checks
+   it. A bot whose output can't be checked shouldn't be a bot.
 
 <details>
 <summary>🔎 Worked example, already in the box (click to expand)</summary>
@@ -502,13 +507,21 @@ down:
 >
 > Read/run only for the audit; upgrading is a separate step needing write
 > access, per the linked playbook.
+>
+> Every flagged package comes with the audit command and its output, the
+> advisory ID, and the file and line where the vulnerable function is
+> actually called, so anyone can re-run the check. Trial before first
+> use: a lockfile with one planted vulnerable version (must be flagged)
+> and a clean lockfile (must be reported clean).
 
 </details>
 
-Before trusting a new persona, prove it: give it a real, answerable task
-and check whether the answer is actually right, not just plausible —
-`autonomy/roles.md`'s own rule for when delegating to one is worth it at
-all.
+Before trusting a new persona, prove it: give it two or three tasks whose
+right answer you already know, including one where the right answer is
+"nothing's wrong," and compare what it returns with that answer, not with
+whether it sounds right. That's `autonomy/roles.md`'s rule for any new
+role, and it's how you find a bot that invents problems or misses the one
+you planted.
 
 Once it's proven, `media/demo-video.md` turns it into a shareable, narrated
 screen-recording — write the scenes as plain `SAY:`/`SHOW:` lines,

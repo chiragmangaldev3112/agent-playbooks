@@ -18,7 +18,8 @@ flowchart TD
     D --> E
     E --> F[Implement via\nthe routed playbook]
     F --> G[Verify independently—\nfresh, evidence-based pass]
-    G -->|Fails| F
+    G -->|Fails, new info| F
+    G -->|Fails, no progress\nafter repeated tries| K[Stop: report what's\nruled out, ask]
     G -->|Passes| H{Matches AGENTS.md\nrule 5?}
     H -->|Yes| I[Stop, ask\nfor confirmation]
     H -->|No| J[Report]
@@ -36,7 +37,8 @@ flowchart TD
     B -->|Reproduced| D[Isolate smallest\nfailing case]
     D --> E[Fix the root cause]
     E --> F[Re-run repro +\nfull test suite]
-    F -->|Still fails| D
+    F -->|Still fails, new info| D
+    F -->|Still fails, no progress\nafter repeated tries| H[Stop: report what's\nruled out, ask]
     F -->|Passes| G[Report]
 ```
 
@@ -120,6 +122,7 @@ flowchart TD
     F -->|Yes| I[Implement one at a time:\nblocking, then simple, then complex]
     I --> J[Test each\nbefore the next]
     J --> K[Report what changed,\nnot performed agreement]
+    K --> V[Hand back: reviewer re-runs\ntests, confirms each finding]
 ```
 
 ### `quality/security-review.md`
@@ -129,12 +132,16 @@ Language-agnostic security checklist
 ```mermaid
 flowchart TD
     A[Diff to review] --> B[Get the real diff]
-    B --> C[Walk every changed file\nagainst the checklist]
+    B --> S[Run the project's real\nscanners, if it has any]
+    S --> C[Walk every changed file\nagainst the checklist]
     C --> D{Concrete exploitable\nscenario exists?}
     D -->|No| E[Not a finding—\nnote as investigated]
     D -->|Yes| F[Record: file, line,\nscenario, severity]
-    F --> G[Rank by severity]
-    G --> H[Report]
+    F --> P[Critical/high: prove it\nwhere safe to—test or local PoC]
+    P --> G[Rank by severity]
+    G --> H[Report: proven vs.\nreasoned-only, per finding]
+    H --> V[After a fix: re-run the proof,\nconfirm it now fails]
+    V --> I[Verify independently—\nengineering-loop.md step 4]
 ```
 
 ### `quality/architecture-review.md`
@@ -144,12 +151,15 @@ Design-level review: visibility, failure containment, access boundaries, operati
 ```mermaid
 flowchart TD
     A[Design to review] --> B[Add system-specific\nitems to the base checklist]
-    B --> C[Walk checklist against\nthe actual design]
+    B --> R[Scale review depth to\nhow far the change reaches]
+    R --> P[Check for a recorded\npast decision on this area]
+    P --> C[Walk checklist against\nthe actual design]
     C --> D[Name where each item\nis actually satisfied]
     D --> E{Item unsatisfied?}
     E -->|Yes| F[Real gap, or a\ndeliberate tradeoff?]
     E -->|No| G[Next item]
     F --> H[Report gaps ranked by\nwhat breaks first]
+    H --> V[Verify independently—\nre-check every 'satisfied' pointer]
 ```
 
 ### `quality/frontend-testing.md`
@@ -166,11 +176,21 @@ flowchart TD
     C --> F[Assert on behavior,\nnot implementation]
     D --> F
     E --> F
-    F --> G[Handle async correctly]
-    G --> H[Check accessibility]
+    F --> G[Wait for the real state,\nnot just present]
+    G --> G2[Stable locator,\nnot positional]
+    G2 --> G3[Verify current state\nrather than assume it]
+    G3 --> G4[One action per step—\nwatch for duplicates]
+    G4 --> H[Check accessibility]
     H --> I[Run suite: fails without\nchange, passes with it]
     I --> J[Capture video/screenshot\nevidence for E2E]
-    J --> K[If it fails later:\ndiagnose vs behavior,\nfix, re-verify, revert if not fixed]
+    J --> K{No automated layer?\nManual/exploratory pass}
+    K --> L[Capture network/API\nrequest+response evidence]
+    L --> M[Write evidence-backed\nreport: steps, API calls,\nbugs, suggestions]
+    M --> N{Worth automating?}
+    N -->|Yes| O[Codify into real test code,\ngrounded in actual source]
+    N -->|No, one-off check| P[Report is the\ndeliverable]
+    O --> Q[Run for real,\ncapture pass/fail output]
+    J --> R[If it fails later:\ndiagnose vs behavior,\nfix, re-verify, revert if not fixed]
 ```
 
 ### `quality/backend-testing.md`
@@ -179,7 +199,8 @@ Test layering for server code
 
 ```mermaid
 flowchart TD
-    A[API/logic to test] --> B[Derive test matrix\nfrom real schema]
+    A[API/logic to test] --> A2{REST + OpenAPI,\nor GraphQL?}
+    A2 --> B[Derive test matrix\nfrom real schema]
     B --> C{Pick the layer}
     C --> D[Unit]
     C --> E[Integration—\nreal dependency]
@@ -188,7 +209,15 @@ flowchart TD
     E --> G
     F --> G
     G --> H[Manage test\ndata deliberately]
-    H --> I[Run suite: new test\nfails, then passes]
+    H --> H2[Poll real async\ncompletion, not a sleep]
+    H2 --> H3[Only mock what\nyou can't run]
+    H3 --> H4{No automated\nsuite yet?}
+    H4 -->|Yes| H5[Hit the real endpoint,\ncapture request+response]
+    H5 --> H6[Evidence-backed report:\nsteps, cases, bugs, suggestions]
+    H6 --> H7{Worth automating?}
+    H7 -->|Yes| H8[Codify into real test code,\ngrounded in the real contract]
+    H4 -->|No, suite exists| H8
+    H8 --> I[Run suite: new test\nfails, then passes]
     I --> J[If it fails later:\ndiagnose vs contract,\nfix, re-verify, revert if not fixed]
 ```
 
@@ -198,15 +227,22 @@ Given a URL with no other direction: discover journeys, then test them
 
 ```mermaid
 flowchart TD
-    A[Given: a URL,\nno other spec] --> B[Confirm scope + access]
-    B --> C[Map the app:\nnav, routes, states]
+    A[Given: a URL or\nrunning app, no other spec] --> B[Confirm scope + access:\nauth, destructive-action limits]
+    B --> C[Map the app:\nnav, routes, distinct states]
     C --> D{Source access\navailable too?}
-    D -->|Yes| E[Cross-check against\nreal routes]
+    D -->|Yes| E[Cross-check discovered\npages against real routes]
     D -->|No| F[Black-box map only]
-    E --> G[Coverage map:\nfound / prioritized / out of scope]
+    E --> G[Build a coverage map:\nfound / prioritized / out of scope]
     F --> G
-    G --> H[Hand each journey to\nfrontend/backend-testing.md]
-    H --> I[One site-wide report]
+    G --> H[For each prioritized journey:\nfrontend/backend-testing.md +\nsecurity-review.md + a11y/perf checks]
+    H --> I[Capture evidence the\nsame way those playbooks do]
+    I --> R[Re-reproduce each finding\nfrom a clean start]
+    R --> J[One site-wide report:\ncoverage map + findings]
+    J --> V[Second pass follows the\nrepro steps for critical/high]
+    V --> K
+    K{Worth automating\nwhat was found?}
+    K -->|Yes| L[frontend-testing.md step 14 /\nbackend-testing.md step 8]
+    K -->|No| M[Report is the deliverable]
 ```
 
 ### `quality/docs-sync.md`
@@ -224,6 +260,12 @@ flowchart TD
     E -->|Orphaned| H[Remove]
     C --> I{Real capability with\nno doc coverage?}
     I -->|Yes| J[Flag—ask before\nwriting new docs]
+    G --> R[Re-check corrected claims,\nrun doc examples, re-lint]
+    R --> S[Report]
+    F --> S
+    H --> S
+    J --> S
+    S --> V[Verify independently—\nengineering-loop.md step 4]
 ```
 
 ### `quality/observability.md`
@@ -239,6 +281,8 @@ flowchart TD
     D -->|Diagnostic only| F[Log/dashboard only]
     E --> G[Confirm signal reaches\na real dashboard/alert]
     F --> G
+    G --> T[Trigger the failure outside prod,\nwatch the signal actually fire]
+    T --> V[Verify independently—\nengineering-loop.md step 4]
 ```
 
 ### `quality/writing-style.md`
@@ -274,6 +318,7 @@ flowchart TD
     G -->|No| H{Behavior change\nturned out necessary?}
     H -->|Yes| I[Stop—route to\nbug-fix/feature-development]
     H -->|No| J[Confirm nothing\nobservable changed]
+    J --> V[Verify independently—\nengineering-loop.md step 4]
 ```
 
 ### `change-types/dependency-upgrades.md`
@@ -290,9 +335,9 @@ flowchart TD
     F -->|Yes| G[Actually run the app]
     F -->|No| H{Security-driven\nupgrade?}
     G --> H
-    H -->|Yes| I[Confirm CVE\nactually addressed]
-    H -->|No| J[Done]
-    I --> J
+    H -->|Yes| I[Confirm CVE addressed:\nadvisory + re-run audit]
+    H -->|No| J
+    I --> J[Verify independently—\nengineering-loop.md step 4]
 ```
 
 ### `change-types/database-migration.md`
@@ -302,16 +347,20 @@ Safe schema changes via expand/migrate/contract
 ```mermaid
 flowchart TD
     A[Schema change] --> B{Additive\nor breaking?}
-    B -->|Additive| C[Safe by default]
-    B -->|Breaking| D[Expand: add new\nshape alongside old]
-    D --> E[Migrate: backfill,\ndual-write]
-    E --> F[Contract: remove old\nonce all callers moved]
-    C --> G[Write rollback before\nforward migration]
-    F --> G
-    G --> H[Test against realistic\nconcurrent access]
-    H --> I[Run against\nreal data copy]
-    I --> J[Confirm before\nshared/production]
-    J --> K[Query real state after\neach stage, confirm it matches]
+    B -->|Additive| C[One stage]
+    B -->|Breaking| D[Stages: expand →\nmigrate → contract]
+    C --> G
+    D --> G[Per stage: write forward +\nrollback + expected-state checks]
+    G --> R[On a real data copy: run forward,\ncheck, run rollback, check, re-run]
+    R --> H[Test under realistic\nconcurrent access + lock limits]
+    H --> X{Contract stage?}
+    X -->|Yes| Y[Prove no caller uses old shape,\nrestored backup, human sign-off]
+    X -->|No| J
+    Y --> J[Confirm before\nshared/production]
+    J --> K[Run it; run the expected-state\nchecks against real rows]
+    K -->|Mismatch| L[Stop: roll back,\nreport]
+    K -->|Match| V[Verify independently—\nengineering-loop.md step 4]
+    V -->|More stages| G
 ```
 
 ### `change-types/incident-response.md`
@@ -327,7 +376,9 @@ flowchart TD
     D --> F[Verify via real signal,\nnot command success]
     E --> F
     F -->|Still broken| B
-    F -->|Restored| G[Root-cause properly,\nno longer under pressure]
+    F -->|Looks healthy| W[Watch for a defined window]
+    W -->|Degrades again| B
+    W -->|Holds| G[Root-cause properly,\nno longer under pressure]
     G --> H[Write down\nwhat happened]
 ```
 
@@ -341,14 +392,16 @@ flowchart TD
     B -->|Low| C[Deploy normally]
     B -->|Higher| D[Pick rollout mechanism:\nflag / staged / window]
     D --> E[Decide rollback\npath up front]
-    E --> F[Name the health signal]
+    E --> E2[Exercise the rollback\npath once, outside prod]
+    E2 --> F[Name health signal +\ndegraded threshold]
     F --> G[Release to a small stage]
     G --> H[Watch the signal]
     H -->|Degraded| I[Roll back →\nincident-response.md]
     H -->|Healthy| J{More exposure\nto reach?}
     J -->|Yes| K[Confirm before\nwidening]
     K --> G
-    J -->|No| L[Done]
+    J -->|No| L[Confirm live version + signal\nfrom the source, not the tool]
+    L --> V[Verify independently—\nengineering-loop.md step 4]
 ```
 
 ### `change-types/performance.md`
@@ -365,6 +418,7 @@ flowchart TD
     F --> G[Run full test suite]
     G -->|Regressed| E
     G -->|Faster, no regression| H[State any\ntradeoff explicitly]
+    H --> V[Independent re-measure,\nsame conditions]
 ```
 
 
@@ -396,9 +450,12 @@ flowchart TD
     A{Need to delegate?} -->|Can't state the exact ask,\nor can't verify the answer| B[Do it directly]
     A -->|Can do both| C{Existing persona fits?}
     C -->|Yes| D[Use it: Bug Hunter,\nFeature Builder, Code Reviewer,\nTest Writer, Manual Tester,\nProject Bootstrapper]
-    C -->|No| E[Define new role:\nname, remit,\nplaybook, access level]
+    C -->|No| E[Define new role: name, remit,\nplaybook, access, model tier,\nhow its work gets checked]
+    E --> T[Trial on tasks with\nknown answers]
+    T -->|Wrong or invented findings| E
+    T -->|Matches| F
     D --> F[Follow its\nlinked playbook exactly]
-    E --> F
+    F --> V[Output carries evidence;\nchecked per engineering-loop.md step 4]
 ```
 
 **Claude Code only — which model a generated persona uses:**
@@ -497,11 +554,14 @@ Classify data before deciding how strictly to handle it
 flowchart TD
     A[Feature touches personal/\nsensitive data] --> B[Classify: direct /\nindirect / not sensitive]
     B -->|Unsure| C[Treat as more sensitive\nuntil confirmed]
+    C --> D
     B --> D[Minimize what's\ncollected/stored]
     D --> E[Encrypt at rest\n+ in transit]
     E --> F[Keep out of logs,\nerrors, analytics]
     F --> G[Define retention\n+ deletion story]
     G --> H[Restrict access\nto minimum needed]
+    H --> T[Verify on the running system:\nsearch logs, run a deletion,\nread encryption, try access]
+    T --> V[Verify independently—\nengineering-loop.md step 4]
 ```
 
 
@@ -515,8 +575,9 @@ Onboard an agent to an unfamiliar repo, and wire the guardrail + personas into i
 flowchart TD
     A[Unfamiliar repo] --> B[Detect real stack\nfrom actual files]
     B --> C[Write grounded AGENTS.md]
-    C --> D{Tool supports\na hook mechanism?}
-    D -->|Yes| E[Wire safety-guardrail.md]
+    C --> C2[Install secret-scan.md +\nconfig-protection.md's\ngit pre-commit hooks]
+    C2 --> D{Tool supports\na hook mechanism?}
+    D -->|Yes| E[Wire safety-guardrail.md\n+ secret-scan.md\n+ config-protection.md\nPreToolUse hooks]
     D -->|No| F[Say so explicitly—\ndon't fake it]
     E --> G{Tool supports\nsub-agents?}
     F --> G
@@ -534,10 +595,15 @@ Document a codebase module by module from real dependency structure
 
 ```mermaid
 flowchart TD
-    A[Document a codebase] --> B[Find real module boundaries\nfrom the dependency graph]
-    B --> C[Read each module's\ninterface + tests]
-    C --> D[Write + verify\none doc per module]
-    D --> E{Skill/agent\nrequested?}
+    A[Document a codebase] --> B[Find real module boundaries—\nreal dep tool first, not by hand]
+    B --> S{Doc from a prior\npass already exists?}
+    S -->|Yes| S2[Cheap check: git log\nsince recorded commit—\nmodule path + its deps' paths]
+    S2 -->|Nothing changed| F
+    S2 -->|Real changes| C
+    S -->|No| C[Read module's\ninterface + tests]
+    C --> D[Write + verify doc,\nrecord commit verified against]
+    D --> M[Mention skill/agent\ngeneration as available]
+    M --> E{Human wants\nit generated?}
     E -->|No| F[Done—docs are\nthe deliverable]
     E -->|Yes| G[Generate in tool's format,\ngrounded in verified doc]
     G --> H[Verify generated\nskill with a real question]
@@ -549,15 +615,23 @@ Document a database table by table from the real schema and code usage
 
 ```mermaid
 flowchart TD
-    A[Document a database] --> B[Read real schema /\nmigration history]
+    A[Document a database] --> S{Doc from a prior\npass already exists?}
+    S -->|Yes| S2[Cheap check: migration\nhistory since recorded point]
+    S2 -->|Nothing changed| K2[Reuse doc as-is]
+    S2 -->|Real changes| B
+    S -->|No| B[Read real schema /\nmigration history]
     B --> C[Capture constraints\nper column]
     C --> D[Record relationships,\nenforced or not]
     D --> E[Cross-reference against\nreal code usage]
-    E --> F{Name matches\nreal meaning?}
+    E --> E2{Meaning still\nambiguous?}
+    E2 -->|Yes| E3[Sample real\nstored values]
+    E2 -->|No| F
+    E3 --> F{Name matches\nreal meaning?}
     F -->|No| G[Flag naming mismatch]
     F -->|Yes| H[Write + verify\ntable doc]
     G --> H
-    H --> I{Skill/agent\nrequested?}
+    H --> M[Mention skill/agent\ngeneration as available]
+    M --> I{Human wants\nit generated?}
     I -->|Yes| J[Generate, grounded\nin verified doc]
     I -->|No| K[Done]
 ```
@@ -568,17 +642,31 @@ Analyze and test a third-party API for real, credentials never handled or logged
 
 ```mermaid
 flowchart TD
-    A[Integrate external API] --> B[Phase 1: read all docs\nin batches]
+    A[Integrate external API] --> Z{Docs gated behind\nan unknown login/auth wall?}
+    Z -->|Yes| Z2[Inspect the real gate's\nHTML/response first]
+    Z -->|No| Y
+    Z2 --> Y{Given source is a\ncatalog of many interfaces?}
+    Y -->|Yes| Y2[Surface full scope,\nlet human decide coverage]
+    Y -->|No| B
+    Y2 --> B[Phase 1: read the\ndocs in batches]
     B --> C[Extract endpoints,\nauth, response shapes]
-    C --> D[Phase 2: name env var\nfor the credential]
-    D --> E{Human pastes\nraw key anyway?}
+    C --> D[Phase 2: name env vars\nfor the real credentials]
+    D --> E{Human pastes\nraw key/password anyway?}
     E -->|Yes| F[Treat as compromised,\nrequire rotation]
-    E -->|No| G[Write script reading\nfrom env var, masked output]
+    E -->|No| G[Write script reading\nfrom env vars, masked output]
     F --> G
-    G --> H[Call real API,\ncompare vs docs]
-    H --> I{Asked to link\nto the schema?}
-    I -->|No| J[Done—tested\nand understood]
-    I -->|Yes| K[Phase 3: map fields\nvs mapping/database-mapping.md]
+    G --> S[Sort ALL endpoints:\nread-only vs side-effecting]
+    S --> S1[Batch-test every\nread-only endpoint,\nno per-endpoint ask]
+    S --> S2[Ask ONCE about the whole\nside-effecting set]
+    S2 -->|Confirmed subset| S3[Test only\nthat subset]
+    S1 --> H
+    S3 --> H
+    H[Call real API,\ncompare vs docs] --> H2[Write ONE consolidated doc\nfor everything tested]
+    H2 --> H2b[Offer OpenAPI/Postman export—\nsame verified-vs-doc distinction]
+    H2b --> H3[Offer Phase 3—\nask, don't assume]
+    H3 --> I{Human wants\nschema linking?}
+    I -->|No| J[Done—tested,\ndocumented, understood]
+    I -->|Yes| K[Phase 3: map fields\nvs database-mapping.md]
     K --> L[Propose migration—\nnever apply directly]
 ```
 
