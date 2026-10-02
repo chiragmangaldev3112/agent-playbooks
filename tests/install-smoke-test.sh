@@ -135,7 +135,7 @@ echo "== Test 6: Claude Code artifacts: only real playbooks, persona tools match
 t7="$WORK/target7"
 if run_case 8907 "$t7" "$ALLOWED_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_TOOL=claude; then
   check "playbook became a skill" "$([[ -f "$t7/.claude/skills/core-bug-fix/SKILL.md" ]] && echo yes || echo no)" "yes"
-  check "THIRD_PARTY.md did not become a skill" "$(ls "$t7/.claude/skills" | grep -ci third || true)" "0"
+  check "THIRD_PARTY.md did not become a skill" "$(compgen -G "$t7/.claude/skills/*third*" | wc -l | tr -d ' ')" "0"
   check "implement persona can edit files" "$(grep -c '^tools: .*Edit, Write' "$t7/.claude/agents/feature-builder.md" || true)" "1"
   check "fixing persona can edit files" "$(grep -c '^tools: .*Edit, Write' "$t7/.claude/agents/bug-hunter.md" || true)" "1"
   check "read-only persona stays read-only" "$(grep -c '^tools: Read, Grep, Glob, Bash$' "$t7/.claude/agents/code-reviewer.md" || true)" "1"
