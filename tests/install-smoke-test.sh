@@ -143,6 +143,47 @@ else
   check "claude-tool install exit code" "failed" "succeeded"
 fi
 
+echo "== Test 7: Windows (Git Bash): a jq that writes CRLF line endings must not break the install =="
+# jq.exe on Windows ends every line with \r unless given --binary; the stray \r
+# made base64 reject the release ("base64: invalid input") for a real user.
+# Imitate it: a jq shim that adds \r unless --binary/-b is passed, and a uname
+# that reports Git Bash. Without the fix in install.sh this case fails.
+winshim="$WORK/winshim"
+mkdir -p "$winshim"
+REAL_JQ="$(command -v jq)"
+cat > "$winshim/jq" <<SHIM
+#!/usr/bin/env bash
+# Imitates jq.exe: CRLF output unless --binary/-b is given. With
+# WIN_JQ_NO_BINARY=1 it imitates a jq too old to know --binary.
+args=(); binary=0
+for a in "\$@"; do
+  if [[ "\$a" == "-b" || "\$a" == "--binary" ]]; then binary=1; else args+=("\$a"); fi
+done
+if [[ \$binary -eq 1 ]]; then
+  if [[ -n "\${WIN_JQ_NO_BINARY:-}" ]]; then echo "jq: Unknown option --binary" >&2; exit 2; fi
+  exec "$REAL_JQ" "\${args[@]}"
+fi
+"$REAL_JQ" "\${args[@]}" | sed \$'s/\$/\\r/'
+exit "\${PIPESTATUS[0]}"
+SHIM
+printf '#!/usr/bin/env bash\necho MINGW64_NT-10.0-26100\n' > "$winshim/uname"
+chmod +x "$winshim/jq" "$winshim/uname"
+t8="$WORK/target8"
+if run_case 8908 "$t8" "$ALLOWED_SIGNERS_LINE" "" env PATH="$winshim:$PATH"; then
+  check "Windows-style jq: AGENTS.md installed intact" "$(cat "$t8/AGENTS.md" 2>/dev/null || echo MISSING)" "$(cat "$FIXTURE/src/AGENTS.md")"
+  check "Windows-style jq: playbook installed" "$([[ -f "$t8/agent-playbooks/core/bug-fix.md" ]] && echo yes || echo no)" "yes"
+else
+  check "Windows-style jq install exit code (stderr: $LAST_STDERR)" "failed" "succeeded"
+fi
+
+echo "== Test 8: Windows (Git Bash) with a jq that does not know --binary: output is stripped of CR instead =="
+t9="$WORK/target9"
+if run_case 8909 "$t9" "$ALLOWED_SIGNERS_LINE" "" env PATH="$winshim:$PATH" WIN_JQ_NO_BINARY=1; then
+  check "old-jq fallback: AGENTS.md installed intact" "$(cat "$t9/AGENTS.md" 2>/dev/null || echo MISSING)" "$(cat "$FIXTURE/src/AGENTS.md")"
+else
+  check "old-jq fallback install exit code (stderr: $LAST_STDERR)" "failed" "succeeded"
+fi
+
 echo
 echo "== $PASS passed, $FAIL failed =="
 [[ $FAIL -eq 0 ]]

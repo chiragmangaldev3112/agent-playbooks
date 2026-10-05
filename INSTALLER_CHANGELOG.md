@@ -10,6 +10,23 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.2.2 — 2026-10-05
+**Install failed on Windows (Git Bash).** A user running
+`bash install.sh` from PowerShell got "base64: invalid input" and "could
+not decode file 'AGENTS.md'". Cause: `jq.exe` on Windows ends every output
+line with CRLF, so every value read with `jq -r` carried a stray `\r`. That
+broke base64 decoding first, and would equally have broken the manifest
+signature check and each file's hash.
+
+- On Git Bash, MSYS and Cygwin, `jq` is now called with `--binary` (plain LF
+  output, the jq manual's advice for piping its output to other programs).
+  A jq too old to know that flag has its output stripped of `\r` instead.
+  macOS and Linux are untouched.
+- The base64 decode also drops any `\r` as a second guard.
+- `tests/install-smoke-test.sh` has two new cases that imitate Windows jq
+  (CRLF output; and a jq without `--binary`), which fail without this fix.
+  Not run on a real Windows machine yet: please try it and report back.
+
 ## 2.2.1 — 2026-10-02
 Two fixes found by running a full install of the real content with
 `AGENT_PLAYBOOKS_TOOL=claude`/`cursor`/`antigravity` and reading every

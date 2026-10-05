@@ -20,7 +20,8 @@
 # natively; Windows does not --
 # run this via WSL or Git Bash, not from a plain Command
 # Prompt/PowerShell session (same constraint as this repo's other bash
-# scripts, e.g. media/demo-video.md's).
+# scripts, e.g. media/demo-video.md's). Git Bash needs jq installed too
+# (winget install jqlang.jq); see README.md "Windows".
 #
 # Usage:
 #   ./install.sh                       # installs into the current directory
@@ -134,6 +135,22 @@ SIGNING_NAMESPACE="agent-playbooks-release"
 for cmd in curl jq base64 ssh-keygen; do
   command -v "$cmd" >/dev/null || { echo "Error: '$cmd' is required and was not found." >&2; exit 1; }
 done
+
+# Windows (Git Bash, MSYS, Cygwin): jq.exe ends every output line with CRLF
+# unless told not to. The stray \r made base64 reject the release ("invalid
+# input") and would equally corrupt the manifest signature and each file hash.
+# --binary keeps plain LF line endings (the jq manual's own advice for piping
+# jq's output to other programs on Windows). Other systems are untouched.
+# A jq that does not know --binary gets its output stripped of \r instead.
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|MSYS*|CYGWIN*)
+    if command jq --binary -n . >/dev/null 2>&1; then
+      jq() { command jq --binary "$@"; }
+    else
+      jq() { command jq "$@" | tr -d '\r'; }
+    fi
+    ;;
+esac
 
 sha256_of_file() {
   if command -v sha256sum >/dev/null 2>&1; then
@@ -255,7 +272,7 @@ while IFS=$'\t' read -r relpath content_b64; do
   esac
   outpath="$WORKDIR/$relpath"
   mkdir -p "$(dirname "$outpath")"
-  printf '%s' "$content_b64" | base64 -d > "$outpath" || {
+  printf '%s' "$content_b64" | tr -d '\r' | base64 -d > "$outpath" || {
     echo "Error: could not decode file '$relpath' from the fetched release." >&2
     exit 1
   }
