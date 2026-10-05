@@ -49,7 +49,15 @@ chmod +x install.sh
 ./install.sh .
 ```
 
-> **On Windows?** Those are bash commands: `curl -fsSL` and `chmod` do not work in PowerShell (there `curl` is a different tool). Open **Git Bash** or **WSL** and run them there, or see [Windows](#windows) below.
+**Windows, in PowerShell** (the commands above are bash and fail in PowerShell). Needs [Git for Windows](https://git-scm.com/download/win), which provides bash:
+
+```powershell
+winget install jqlang.jq          # once. Then close and reopen PowerShell
+curl.exe -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
+& "C:\Program Files\Git\bin\bash.exe" install.sh .
+```
+
+More Windows options (Git Bash, WSL): [Windows](#windows).
 
 💬 Then ask your agent: *"Fix this bug — reproduce it first, write a
 regression test, implement the fix, and verify the result."*
@@ -126,6 +134,8 @@ curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks
 chmod +x install.sh
 ./install.sh /path/to/your/project   # or no path, for the current directory
 ```
+
+**Windows, in PowerShell:** use `curl.exe` (not `curl`) and run the script with Git's bash, see [Windows](#windows) for the three lines.
 
 > [!TIP]
 > Takes under a minute. No account, no signup, no config file to hand-write.
