@@ -49,6 +49,8 @@ chmod +x install.sh
 ./install.sh .
 ```
 
+> **On Windows?** Those are bash commands: `curl -fsSL` and `chmod` do not work in PowerShell (there `curl` is a different tool). Open **Git Bash** or **WSL** and run them there, or see [Windows](#windows) below.
+
 💬 Then ask your agent: *"Fix this bug — reproduce it first, write a
 regression test, implement the fix, and verify the result."*
 
@@ -128,9 +130,39 @@ chmod +x install.sh
 > [!TIP]
 > Takes under a minute. No account, no signup, no config file to hand-write.
 
-Needs a shell that can run bash — macOS and Linux have this natively.
-**On Windows**, run it via WSL or Git Bash, not a plain Command
-Prompt/PowerShell session.
+Needs a shell that can run bash, plus `curl`, `jq`, `base64` and `ssh-keygen`
+(the installer checks and tells you which one is missing). macOS and Linux
+have this natively, apart from `jq` on some systems (`brew install jq` or
+`apt install jq`).
+
+<a id="windows"></a>
+### Windows
+
+The installer is a bash script, so it does not run in plain PowerShell or
+Command Prompt (`curl -fsSL` and `chmod` fail there, and `./install.sh`
+is not a PowerShell program). Use one of these:
+
+**Git Bash** (comes with [Git for Windows](https://git-scm.com/download/win)):
+open *Git Bash* from the Start menu and run the same three commands as
+above. Git Bash has `curl`, `base64` and `ssh-keygen` but not `jq`, so install
+that once from PowerShell and reopen Git Bash:
+
+```powershell
+winget install jqlang.jq
+```
+
+**WSL** (Ubuntu or similar): run `sudo apt install jq` once, then the same
+three commands inside the WSL terminal. Give it a Linux path or a
+`/mnt/c/...` path to your project.
+
+**From PowerShell, without opening another window** (use `curl.exe`, with
+the `.exe`, so PowerShell does not pick its own `curl` alias; adjust the
+path if Git is installed elsewhere):
+
+```powershell
+curl.exe -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
+& "C:\Program Files\Git\bin\bash.exe" install.sh .
+```
 
 By default you get the current latest release. To install a specific past
 version instead — see **[CHANGELOG.md](CHANGELOG.md)** for the full list

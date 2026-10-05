@@ -15,3 +15,5 @@ agent-playbooks solves two problems for teams using AI coding agents: every tool
 ## Install
 
 curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh && chmod +x install.sh && ./install.sh /path/to/your/project
+
+On Windows run the commands in Git Bash or WSL, not PowerShell (curl and chmod differ there), and install jq first (winget install jqlang.jq). Details: https://github.com/chiragmangaldev3112/agent-playbooks#windows
