@@ -88,6 +88,31 @@ flowchart TD
     D -->|Info arrives| B
 ```
 
+### `core/finish-work.md`
+
+Take finished work to "checked, documented, committed, pushed, in review", with a yes before each step that changes history or leaves the machine
+
+```mermaid
+flowchart TD
+    A[Work is done] --> B[Read the real repo state:\nbranch, remote, changes]
+    B --> C{Safe to finish?}
+    C -->|Nothing changed, rebase or merge\nin progress, on default branch,\nwrong remote| Z[Stop, say why]
+    C -->|Yes| D[Run the project's own checks,\nshow real output]
+    D -->|Failed or not run| Y[Stop: not a pass,\noffer to fix]
+    D -->|Passed| E[Update changelog and\ndocs the change made untrue]
+    E --> F[Scan every commit on the\nbranch for secrets]
+    F -->|Secret found| X[Stop: never commit,\nrotate if it was pushed]
+    F -->|Clean| G{Ask: commit?}
+    G -->|Yes| H[Stage by name,\nsubject + body]
+    H --> I{Ask: push?}
+    I -->|Yes| J[Push the branch,\nnever forced]
+    J --> K{Ask: raise request,\nmerge, or stop?}
+    K -->|Raise| L[Fill every field,\nread it back]
+    K -->|Merge| M[Only if allowed;\nfull suite on the result]
+    L --> N[Report what was checked,\nwhat was not]
+    M --> N
+```
+
 
 ## Quality
 

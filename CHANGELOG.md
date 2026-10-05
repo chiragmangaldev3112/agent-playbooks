@@ -8,6 +8,33 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.30.0 — 2026-10-05
+New playbook `core/finish-work.md`: take finished work to "checked,
+documented, committed, pushed, and in review or merged" with the person's
+explicit yes before the commit, before the push, and before choosing a
+pull or merge request. It exists because the usual wrap-up is a checklist
+people forget, and an agent left alone either stops too early (unrun
+tests reported as fine) or goes too far (commits on the default branch,
+pushes without asking).
+
+- Reads the real repository state first, and stops on states that make
+  finishing unsafe: nothing changed, a rebase or merge in progress,
+  conflicts, a detached HEAD, commits on the default branch, a remote that
+  is not where the project's code may live, or unrelated changes in the tree.
+- Runs the project's own checks and shows the real output of a failure; a
+  check that was not run or could not be found is never a pass, and a quick
+  smoke run is not the full suite.
+- Updates the changelog and every document the change made untrue, then
+  re-runs the checks so the report covers the final state.
+- Scans the added lines of every commit on the branch for secrets (not only
+  the net diff: a key added and removed later is still pushed) and never
+  prints the value.
+- Opens a request only with every field filled in (description from the
+  template, work item, assignee, reviewer, labels, milestone) and reads it
+  back; never handles a credential, never force-pushes, never skips a hook.
+- `core/engineering-loop.md` routes "finish this", "commit and push" and
+  "raise a PR" to it.
+
 ## 1.29.0 — 2026-10-02
 Made "verify the real result" an explicit closing step in the playbooks
 that ended at "Report," prompted by LinkedIn feedback: a reader keeps

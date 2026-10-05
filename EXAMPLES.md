@@ -47,6 +47,11 @@ ask about styling details that don't change what gets built.
 — one report with no repro steps becomes Incomplete with a specific ask
 for what's missing, not silently left untouched.
 
+### `core/finish-work.md`
+**Scenario:** a bug fix is done in the working tree and the person wants it in review.
+**You say:** "Finish this and raise a PR."
+**What happens:** reads the real repo state, runs the project's own build and tests and shows the actual output, writes the missing changelog entry, scans every commit on the branch for secrets, then stops to ask before committing, again before pushing, and again before opening the pull request, which it fills in completely and reads back. A test run it could not do is reported as unverified, not as passed.
+
 ## Quality
 
 ### `quality/code-review.md`

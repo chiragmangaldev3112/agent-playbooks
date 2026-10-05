@@ -11,7 +11,7 @@
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/issues"><img src="https://img.shields.io/github/issues/chiragmangaldev3112/agent-playbooks" alt="Issues"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
   <br>
-  <img src="https://img.shields.io/badge/37_Playbooks-blueviolet" alt="37 Playbooks">
+  <img src="https://img.shields.io/badge/38_Playbooks-blueviolet" alt="38 Playbooks">
   <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
   <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
 </p>
@@ -52,7 +52,7 @@ chmod +x install.sh
 💬 Then ask your agent: *"Fix this bug — reproduce it first, write a
 regression test, implement the fix, and verify the result."*
 
-**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 37 playbooks (all but `safety/config-protection.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
+**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 38 playbooks (all but `safety/config-protection.md` and `core/finish-work.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
 
 ---
 
@@ -347,7 +347,7 @@ own:
 | "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
 | 🚫 Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all 37 files before
+That's the whole interface. You don't need to read all 38 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
@@ -376,6 +376,7 @@ you'd say, here's what happens" example for every single one, see
 | `core/feature-development.md` | Test-first feature workflow |
 | `core/clarify-before-building.md` | Resolve a genuinely ambiguous request before implementation starts |
 | `core/issue-triage.md` | Sort a new bug/enhancement report into a category and status |
+| `core/finish-work.md` | Take finished work to "checked, documented, committed, pushed, in review": run the project's real checks, update docs and changelog, scan the history for secrets, and ask before the commit, the push and the merge request |
 
 </details>
 
