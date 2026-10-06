@@ -10,6 +10,23 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.4.0 — 2026-10-06
+**`--update`: replace an existing install with the latest release.**
+
+Before, an install into a folder that already had `AGENTS.md` or
+`agent-playbooks/` stopped with "not overwriting it", and the only way forward
+was to rename them by hand. `./install.sh --update` (or
+`AGENT_PLAYBOOKS_UPDATE=1`) now does that safely: the release is fetched and
+its signature and per-file hashes are verified first, then the current
+`AGENTS.md` and `agent-playbooks/` are renamed to `*.bak-<timestamp>` (never
+deleted) and the new ones moved in. If that move fails, the originals are put
+back. A bad signature, a tampered file or an unreachable server changes
+nothing. The script prints the backup location and a `diff -r` command. A plain
+install still refuses, and its message now points to `--update`. Uses only
+`date` and `mv`, so it runs the same on macOS, Linux, WSL and Git Bash.
+Smoke tests 12-15 cover refusal without the flag, replace with backup, a bad
+signature leaving everything untouched, and `--update` on an empty folder.
+
 ## 2.3.1 — 2026-10-06
 **A third trusted release-signing key**, so content 1.32.0 and later can be released.
 

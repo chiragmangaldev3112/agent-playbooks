@@ -183,6 +183,26 @@ and what changed in each:
 # or: AGENT_PLAYBOOKS_VERSION=1.3.0 ./install.sh /path/to/your/project
 ```
 
+**Updating an existing install to the latest release:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/install.sh -o install.sh
+bash install.sh --update /path/to/your/project
+# or: AGENT_PLAYBOOKS_UPDATE=1 bash install.sh /path/to/your/project
+```
+
+A plain install refuses to touch an existing `AGENTS.md` or `agent-playbooks/`.
+With `--update`, the new release is fetched and its signature and file hashes
+are verified first. Only then are your current `AGENTS.md` and `agent-playbooks/`
+renamed to `AGENTS.md.bak-<timestamp>` and `agent-playbooks.bak-<timestamp>`
+(never deleted) and the new ones put in place; if that step fails, your
+originals are restored. The script prints the backup name and a `diff -r`
+command to see what changed, and your local edits stay in the backup until you
+copy them over and delete it. A bad signature or an unreachable server changes
+nothing. Generated files for your AI tool (such as `.claude/skills`) are
+rewritten as thin pointers to the new playbooks. It works the same on macOS,
+Linux, WSL and Git Bash.
+
 **Installing just one playbook instead of the full set:**
 
 ```bash

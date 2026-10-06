@@ -28,6 +28,9 @@
 #   ./install.sh /path/to/repo         # installs into that directory instead
 #   ./install.sh --version 1.0.5       # pins to that release instead of latest
 #   ./install.sh --version=1.0.5 /path # flag and target dir together, any order
+#   ./install.sh --update              # replace an existing install with the latest
+#                                      # release; the old AGENTS.md and agent-playbooks/
+#                                      # are kept next to it as *.bak-<timestamp>
 #   ./install.sh --only bug-fix        # just that playbook (+ what it needs)
 #   ./install.sh --only bug-fix,code-review,core/engineering-loop.md
 #
@@ -78,6 +81,8 @@ set -euo pipefail
 
 requested_version="${AGENT_PLAYBOOKS_VERSION:-}"
 only_requested="${AGENT_PLAYBOOKS_ONLY:-}"
+update_mode=0
+[[ "${AGENT_PLAYBOOKS_UPDATE:-}" == "1" ]] && update_mode=1
 positional=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -85,6 +90,7 @@ while [[ $# -gt 0 ]]; do
     --version=*) requested_version="${1#--version=}"; shift ;;
     --only) only_requested="${2:?--only needs a value, e.g. --only bug-fix}"; shift 2 ;;
     --only=*) only_requested="${1#--only=}"; shift ;;
+    --update) update_mode=1; shift ;;
     *) positional+=("$1"); shift ;;
   esac
 done
@@ -183,15 +189,19 @@ if [[ ! -w "$TARGET_DIR" ]]; then
   exit 1
 fi
 
-if [[ -e "$TARGET_DIR/AGENTS.md" ]]; then
-  echo "AGENTS.md already exists at $TARGET_DIR/AGENTS.md -- not overwriting it." >&2
-  echo "Merge by hand, or remove it first if you want a clean copy." >&2
-  exit 1
-fi
-if [[ -e "$TARGET_DIR/agent-playbooks" ]]; then
-  echo "$TARGET_DIR/agent-playbooks already exists -- not overwriting it." >&2
-  echo "Remove or rename it first if you want a clean copy." >&2
-  exit 1
+if [[ $update_mode -eq 0 ]]; then
+  if [[ -e "$TARGET_DIR/AGENTS.md" ]]; then
+    echo "AGENTS.md already exists at $TARGET_DIR/AGENTS.md -- not overwriting it." >&2
+    echo "Run with --update to replace it (the old one is kept as a backup)," >&2
+    echo "or merge by hand, or remove it first if you want a clean copy." >&2
+    exit 1
+  fi
+  if [[ -e "$TARGET_DIR/agent-playbooks" ]]; then
+    echo "$TARGET_DIR/agent-playbooks already exists -- not overwriting it." >&2
+    echo "Run with --update to replace it (the old one is kept as a backup)," >&2
+    echo "or remove or rename it first if you want a clean copy." >&2
+    exit 1
+  fi
 fi
 
 if [[ ! -f "$ID_FILE" ]]; then
@@ -520,8 +530,32 @@ chmod +x "$STAGE_PLAYBOOKS"/scripts/*.sh 2>/dev/null || true
 
 # The only two writes into $TARGET_DIR itself for AGENTS.md/agent-playbooks/
 # -- both single directory-entry renames, atomic on the same filesystem.
-mv "$STAGE_AGENTS" "$TARGET_DIR/AGENTS.md"
-mv "$STAGE_PLAYBOOKS" "$TARGET_DIR/agent-playbooks"
+#
+# --update: the release was already verified above, so only now are the
+# existing AGENTS.md and agent-playbooks/ moved aside (renamed, never deleted)
+# as *.bak-<timestamp>. If a later move fails, the originals are put back, so
+# an update never leaves the project without its playbooks.
+backup_agents=""
+backup_playbooks=""
+if [[ $update_mode -eq 1 ]]; then
+  stamp="$(date +%Y%m%d-%H%M%S)-$$"
+  if [[ -e "$TARGET_DIR/AGENTS.md" ]]; then
+    backup_agents="$TARGET_DIR/AGENTS.md.bak-$stamp"
+    mv "$TARGET_DIR/AGENTS.md" "$backup_agents"
+  fi
+  if [[ -e "$TARGET_DIR/agent-playbooks" ]]; then
+    backup_playbooks="$TARGET_DIR/agent-playbooks.bak-$stamp"
+    mv "$TARGET_DIR/agent-playbooks" "$backup_playbooks"
+  fi
+fi
+if ! { mv "$STAGE_AGENTS" "$TARGET_DIR/AGENTS.md" && mv "$STAGE_PLAYBOOKS" "$TARGET_DIR/agent-playbooks"; }; then
+  echo "Error: could not move the new files into $TARGET_DIR." >&2
+  rm -rf "$TARGET_DIR/AGENTS.md" "$TARGET_DIR/agent-playbooks" 2>/dev/null || true
+  [[ -n "$backup_agents" ]] && mv "$backup_agents" "$TARGET_DIR/AGENTS.md"
+  [[ -n "$backup_playbooks" ]] && mv "$backup_playbooks" "$TARGET_DIR/agent-playbooks"
+  echo "Your previous files were restored." >&2
+  exit 1
+fi
 
 # Codex CLI and Cursor both read AGENTS.md at the project root natively,
 # confirmed against each tool's own official docs -- nothing more needed
@@ -801,6 +835,10 @@ notice="$(echo "$response" | jq -r '.[0].notice // empty')"
 [[ -n "$notice" ]] && echo "Notice: $notice"
 
 echo "Installed agent-playbooks v$installed_version:"
+if [[ -n "$backup_playbooks$backup_agents" ]]; then
+  echo "  Previous copy kept as: ${backup_playbooks:-$backup_agents}" >&2
+  echo "  Compare with: diff -r \"${backup_playbooks:-$backup_agents}\" \"$TARGET_DIR/agent-playbooks\" (delete the .bak-* items when you are happy)" >&2
+fi
 echo "  $TARGET_DIR/AGENTS.md"
 echo "  $TARGET_DIR/agent-playbooks/"
 echo "  $TARGET_DIR/CLAUDE.md ($claude_md_status -- Claude Code only; every"

@@ -233,6 +233,57 @@ newest_key="$(printf '%s\n' "$signers_block" | tail -1 | cut -d' ' -f2-)"
 printf '%s\n' "$newest_key" > "$WORK/newest.pub"
 check "newest trusted key has the expected fingerprint" "$(ssh-keygen -lf "$WORK/newest.pub" 2>/dev/null | awk '{print $2}')" "SHA256:0+6g7WwxRhZMx84WpICeN6d5MdtLhmowi+Fylz20bUE"
 
+echo "== Test 12: a plain install over an existing one is refused and points to --update =="
+t13="$WORK/target13"
+mkdir -p "$t13/agent-playbooks"
+printf 'old agents\n' > "$t13/AGENTS.md"
+printf '0.0.1\n' > "$t13/agent-playbooks/VERSION"
+if run_case 8913 "$t13" "$ALLOWED_SIGNERS_LINE" ""; then
+  check "install over an existing copy should fail" "succeeded" "failed"
+else
+  check "existing AGENTS.md left untouched" "$(cat "$t13/AGENTS.md")" "old agents"
+  check "the message mentions --update" "$(grep -q -- '--update' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
+fi
+
+echo "== Test 13: --update replaces an existing install and keeps the old one as a backup =="
+t14="$WORK/target14"
+mkdir -p "$t14/agent-playbooks"
+printf 'old agents\n' > "$t14/AGENTS.md"
+printf '0.0.1\n' > "$t14/agent-playbooks/VERSION"
+printf 'my local note\n' > "$t14/agent-playbooks/MINE.txt"
+if run_case 8914 "$t14" "$ALLOWED_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_UPDATE=1; then
+  check "update: new AGENTS.md in place" "$(cat "$t14/AGENTS.md")" "$(cat "$FIXTURE/src/AGENTS.md")"
+  check "update: new version in place" "$(tr -d '[:space:]' < "$t14/agent-playbooks/VERSION")" "9.9.9"
+  check "update: old playbooks folder kept as a backup" "$(compgen -G "$t14/agent-playbooks.bak-*/MINE.txt" | wc -l | tr -d ' ')" "1"
+  check "update: old AGENTS.md kept as a backup" "$(cat "$t14"/AGENTS.md.bak-* 2>/dev/null)" "old agents"
+  check "update: tells where the backup is" "$(grep -q 'Previous copy kept as' <<< "$LAST_STDERR" && echo yes || echo no)" "yes"
+  check "update: no staging or lock leftovers" "$(compgen -G "$t14/.*staging*" | wc -l | tr -d ' ')$([[ -e "$t14/.agent-playbooks.install-lock" ]] && echo lock)" "0"
+else
+  check "--update exit code" "failed" "succeeded"
+fi
+
+echo "== Test 14: --update with a bad signature leaves the existing install untouched =="
+t15="$WORK/target15"
+mkdir -p "$t15/agent-playbooks"
+printf 'old agents\n' > "$t15/AGENTS.md"
+printf '0.0.1\n' > "$t15/agent-playbooks/VERSION"
+if run_case 8915 "$t15" "$WRONG_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_UPDATE=1; then
+  check "update with a wrong key should fail" "succeeded" "failed"
+else
+  check "update refused: AGENTS.md untouched" "$(cat "$t15/AGENTS.md")" "old agents"
+  check "update refused: playbooks untouched" "$(tr -d '[:space:]' < "$t15/agent-playbooks/VERSION")" "0.0.1"
+  check "update refused: no backup made" "$(compgen -G "$t15/*.bak-*" | wc -l | tr -d ' ')" "0"
+fi
+
+echo "== Test 15: --update on a folder with no install just installs =="
+t16="$WORK/target16"
+if run_case 8916 "$t16" "$ALLOWED_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_UPDATE=1; then
+  check "update into an empty folder installs" "$(tr -d '[:space:]' < "$t16/agent-playbooks/VERSION" 2>/dev/null)" "9.9.9"
+  check "update into an empty folder makes no backup" "$(compgen -G "$t16/*.bak-*" | wc -l | tr -d ' ')" "0"
+else
+  check "update into an empty folder exit code" "failed" "succeeded"
+fi
+
 echo
 echo "== $PASS passed, $FAIL failed =="
 [[ $FAIL -eq 0 ]]
