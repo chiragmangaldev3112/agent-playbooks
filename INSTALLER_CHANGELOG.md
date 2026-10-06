@@ -10,6 +10,32 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.3.0 — 2026-10-06
+Better generated skills, and room for supporting files in the playbook content.
+
+- **Skill descriptions say what a playbook is, not only when to use it.** The
+  model picks a skill from its description alone, and the old one was just the
+  playbook's "Trigger" words. It is now `Title: why it exists (the first sentence
+  of its Rule). Use when: <trigger>`, for Claude Code skills and for Cursor rules
+  and Antigravity skills alike. The four playbooks that had no usable description
+  (the two review playbooks under `media/`, `secret-scan`, `config-protection`)
+  got hand-written ones; before, two were cut off mid-sentence and two began with a
+  file path.
+- **Claude Code skills carry a `name`**, matching their folder, and the playbooks
+  whose job is to commit and push, release, or run unattended
+  (`core/finish-work`, `change-types/release`, `autonomy/mission-mode`,
+  `autonomy/standing-permission`) are marked `disable-model-invocation: true`, so
+  only a person starts them with `/name`. The router still sends the model to read
+  them when a request matches.
+- **Files under `reference/` are supporting text, never a skill or a rule.** The
+  playbook content now keeps shared detail there (for example
+  `quality/reference/test-code-standard.md`); a playbook that points to one still
+  brings it along under `--only`, because `--only` already follows one-hop
+  references. Older installers would have turned each reference file into a skill
+  of its own, which is why this ships alongside content 1.32.0.
+- `tests/install-smoke-test.sh` has seven new checks for all of the above, on
+  Claude Code, Cursor, Antigravity and `--only` (29 in total, all passing).
+
 ## 2.2.2 — 2026-10-05
 **Install failed on Windows (Git Bash).** A user running
 `bash install.sh` from PowerShell got "base64: invalid input" and "could

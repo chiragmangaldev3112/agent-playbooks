@@ -8,7 +8,34 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
-## 1.31.0 — 2026-10-06
+## 1.32.0 — 2026-10-06
+Splits the oversized testing playbooks, gives the test-code standard one home,
+and adds a lint so structure, links, routing and size stay right. No behaviour
+changes to what the playbooks ask for; 1.31.0 was pushed to the source repo but
+never published as a release, so 1.32.0 is the first release that contains it.
+
+- **One home for the test-code standard.** `quality/reference/test-code-standard.md`
+  now holds the standard that `frontend-testing.md` step 14 and
+  `backend-testing.md` step 8 each carried a copy of: start from what the project
+  has, read data-dependent values from real state, one data layer, one tag
+  vocabulary, and the code-quality bar for test code. Every playbook that writes
+  tests points to it instead of to the two steps. `quality/reference/flow-shapes.md`
+  holds the "model the flow's actual shape" list. Reference files are supporting
+  text, not playbooks: they are not skills and are linked from the playbooks that
+  need them.
+- **Smaller playbooks.** `frontend-testing.md` goes from 42.7 KB to 30.7 KB and
+  `backend-testing.md` from 25.3 KB to 23.6 KB, so a skill that loads the whole
+  file costs less context. A 30 KB budget per playbook is now enforced.
+- **Playbook lint** (`maintainer/check-playbooks.py`, source repo only): every
+  workflow playbook has the standard sections, a Trigger line and a flow diagram;
+  every relative link resolves; every playbook is listed in `AGENTS.md` and the
+  README and routed from the loop; reference files are linked; `VERSION` matches
+  the newest changelog entry; the public repo's playbook counts match when asked.
+  Deliberate exceptions need a written reason in `maintainer/playbook-lint.json`,
+  and a stale exception fails. It runs in the pre-commit hook and before packaging
+  a release, with 12 tests that seed one defect each.
+
+## 1.31.0 — 2026-10-06 (never published on its own; shipped in 1.32.0)
 Development work now follows standard architecture, and three gaps in the
 playbooks that write test code are closed. The test gaps were reported from real
 use of the Playwright and API testing flows: tests typed values that depend on data

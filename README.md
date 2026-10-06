@@ -278,7 +278,7 @@ the same text everywhere:
 
 | Tool | What gets generated | Why |
 |---|---|---|
-| **Claude Code** | `.claude/skills/*/SKILL.md` (one per playbook, invocable via `/name`) + `.claude/agents/*.md` (the 6 personas) | Discoverable/invocable, not just background text |
+| **Claude Code** | `.claude/skills/*/SKILL.md` (one per playbook, invocable via `/name`; each description says what the playbook is, why it exists and when to use it, and the few that commit, push, release or run unattended are marked user-invoked only so the model cannot start them on its own) + `.claude/agents/*.md` (the 6 personas) | Discoverable/invocable, not just background text |
 | **Cursor** | `.cursor/rules/*.mdc` (Agent Requested mode) | Explicit `@name` mention, on top of the `AGENTS.md` it already reads natively |
 | **Antigravity** | `.agents/skills/*/SKILL.md` | Its own docs never confirm it reads `AGENTS.md` automatically, unlike Cursor/Codex CLI — so this is the reliable path, not an assumption |
 | **Codex CLI** | nothing extra | Reads `AGENTS.md` at the root natively — confirmed, this is the tool the convention originated from |

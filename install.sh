@@ -554,8 +554,36 @@ pb_dir="$TARGET_DIR/agent-playbooks"
 # one exists, otherwise a short hand-written fallback for the handful of
 # files that don't have one (the router, the two autonomy overviews, the
 # demo/memory/guardrail utility files).
+# A playbook's title, minus the word "playbook" (the "what").
+playbook_title() {
+  sed -n '1s/^# //p' "$1" 2>/dev/null | sed -E 's/ [Pp]laybook.*$//; s/:.*$//'
+}
+
+# The first sentence of the "## Rule" section (the "why it exists"), trimmed
+# to a sane length at a word boundary; empty when a file has no Rule section.
+playbook_rule() {
+  local rule
+  rule="$(awk '/^## Rule/{r=1; next} r&&/^## /{exit} r{ if ($0=="") { if (line!="") exit } else line=line $0 " " } END{print line}' "$1" 2>/dev/null || true)"
+  rule="$(echo "$rule" | sed -E 's/([.!?])[[:space:]].*$/\1/; s/[[:space:]]+$//')"
+  if [[ ${#rule} -gt 170 ]]; then
+    rule="${rule:0:167}"
+    rule="${rule% *}..."
+  fi
+  echo "$rule"
+}
+
+# Which generated Claude skills only a person should start. A skill's
+# description lets the model load it on its own; for a playbook whose job is
+# to commit and push, release, or run unattended, that is the wrong default.
+user_invoked_only() {
+  case "$1" in
+    core-finish-work|change-types-release|autonomy-mission-mode|autonomy-standing-permission) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 extract_description() {
-  local f="$1" trig base
+  local f="$1" trig base title rule
   # Join the whole Trigger paragraph (it usually wraps across several
   # physical lines in the source), not just its first line, then trim to
   # a sane length -- a description cut off mid-sentence at the source
@@ -566,7 +594,19 @@ extract_description() {
     if [[ ${#trig} -gt 220 ]]; then
       trig="${trig:0:217}..."
     fi
-    echo "$trig" | sed 's/"/\\"/g'
+    title="$(playbook_title "$f")"
+    rule="$(playbook_rule "$f")"
+    # What it is, why it exists, then when to use it: the model chooses a skill
+    # from this text alone, and "Trigger words" on their own say only when.
+    local full="$title"
+    [[ -n "$rule" ]] && full="$full: $rule"
+    full="$full Use when: $trig"
+    if [[ ${#full} -gt 420 ]]; then
+      full="${full:0:417}"
+      full="${full% *}..."
+    fi
+    full="${full%"${full##*[![:space:]]}"}"  # no trailing space
+    echo "$full" | sed 's/"/\\"/g'
     return
   fi
   base="$(basename "$f" .md)"
@@ -577,6 +617,10 @@ extract_description() {
     demo-video) echo "Generate a narrated screen-recording demo from a script, free tools only." ;;
     memory-hygiene) echo "Do not trust a recalled fact about code without re-checking it against the current source." ;;
     safety-guardrail) echo "A real, enforced block on destructive shell commands." ;;
+    secret-scan) echo "A real, enforced block on writing or committing real secrets and credentials." ;;
+    config-protection) echo "A real, enforced block on editing an existing linter or formatter config to make a failing check pass." ;;
+    doc-review) echo "Turn a document (PDF, Word, spreadsheet, ticket export, notes) into a verified report: summary, key points, queries it raises, and fix-or-build action items." ;;
+    video-review) echo "Turn a recording (bug repro, feedback video, spec walkthrough) into a verified report: summary, key points, bugs and gaps, and fix-or-build action items." ;;
     *) sed -n '3p' "$f" 2>/dev/null | cut -c1-200 | sed 's/"/\\"/g' ;;
   esac
 }
@@ -596,10 +640,13 @@ generate_claude_artifacts() {
     slug="$(echo "${slug//\//-}" | tr '[:upper:]' '[:lower:]')"
     desc="$(extract_description "$f")"
     mkdir -p "$skills_dir/$slug"
-    printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \
-      "$desc" "$relpath" > "$skills_dir/$slug/SKILL.md"
+    local invoke_line=""
+    user_invoked_only "$slug" && invoke_line=$'disable-model-invocation: true\n'
+    # shellcheck disable=SC2016 # the backticks are literal Markdown in the generated file
+    printf -- '---\nname: %s\ndescription: "%s"\n%s---\n\nFollow `%s` exactly, as written there.\n' \
+      "$slug" "$desc" "$invoke_line" "$relpath" > "$skills_dir/$slug/SKILL.md"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" ! -path "*/reference/*" -print0)
 
   # Fourth field is the tool list. roles.md's default access includes
   # editing files; only the two roles it marks read/run (Code Reviewer,
@@ -667,7 +714,7 @@ generate_cursor_artifacts() {
     printf -- '---\ndescription: "%s"\nalwaysApply: false\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$rules_dir/$slug.mdc"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" ! -path "*/reference/*" -print0)
   echo "Generated $count Cursor rules (.cursor/rules/*.mdc, Agent Requested mode --" >&2
   echo "Cursor semantically matches on 'description' the same way Claude Skills do)." >&2
   echo "AGENTS.md is also read natively by Cursor on its own, confirmed in its docs." >&2
@@ -691,7 +738,7 @@ generate_antigravity_artifacts() {
     printf -- '---\ndescription: "%s"\n---\n\nFollow `%s` exactly, as written there.\n' \
       "$desc" "$relpath" > "$skills_dir/$slug/SKILL.md"
     count=$((count + 1))
-  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" -print0)
+  done < <(find "$pb_dir" -name "*.md" ! -name "README.md" ! -name "EXAMPLES.md" ! -name "CHANGELOG.md" ! -name "THIRD_PARTY.md" ! -path "*/examples/*" ! -path "*/evals/*" ! -path "*/reference/*" -print0)
   echo "Generated $count Antigravity Skills (.agents/skills/*/SKILL.md)." >&2
   echo "Unlike Cursor/Codex CLI, Antigravity's own docs never confirm it reads" >&2
   echo "AGENTS.md automatically -- these generated Skills are the reliable path." >&2
