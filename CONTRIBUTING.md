@@ -47,8 +47,8 @@ time (see [README.md](README.md#how-this-is-distributed)). So:
 
 ## Why you can't fully test signature verification locally with the real key
 
-`install.sh`'s `ALLOWED_SIGNERS` is the maintainer's real public key,
-hardcoded. There's no way to sign a fixture that verifies against it
+`install.sh`'s `ALLOWED_SIGNERS` holds the maintainer's real public keys
+(three, kept so older releases stay installable), hardcoded. There's no way to sign a fixture that verifies against it
 without the private half, which is intentionally never in this repo, CI,
 or anywhere but the maintainer's machine. The smoke test works around
 this with `AGENT_PLAYBOOKS_ALLOWED_SIGNERS`, an env var `install.sh`

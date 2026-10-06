@@ -10,6 +10,27 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.3.1 — 2026-10-06
+**A third trusted release-signing key**, so content 1.32.0 and later can be released.
+
+The private half of the previous signing key is no longer available to the
+maintainer, so a release could not be signed. A new key was generated on
+2026-10-06 and its public half is added to `ALLOWED_SIGNERS` next to the two
+existing keys, so every release signed by either earlier key still installs.
+Releases from 1.32.0 on are signed with the new key (fingerprint
+`SHA256:0+6g7WwxRhZMx84WpICeN6d5MdtLhmowi+Fylz20bUE`).
+
+- `install.sh` trusts three keys now; the comment above `ALLOWED_SIGNERS` says
+  which key signed which releases and when a line may be dropped.
+- `tests/install-smoke-test.sh` pins the trusted set (three well-formed lines, and
+  the newest key's fingerprint), so a mistyped or truncated key cannot ship: it
+  would make every release unverifiable. 32 checks, all passing.
+- README and CONTRIBUTING describe the three keys and how to confirm the newest.
+
+Until content 1.32.0 is published (signed with the new key), nothing a user installs
+changes. An installer older than 2.3.1 cannot verify a release signed with the new
+key, so install from `main` or v2.3.1 or later.
+
 ## 2.3.0 — 2026-10-06
 Better generated skills, and room for supporting files in the playbook content.
 

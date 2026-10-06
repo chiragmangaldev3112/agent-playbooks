@@ -250,9 +250,12 @@ Here's exactly how:
    writes nothing to your project.
 
 You don't need to do anything for this — it runs on every install. To
-check it yourself: the public key is the `ALLOWED_SIGNERS` line near the
-top of `install.sh`, and the verification logic is the block right before
-any file gets copied into your project.
+check it yourself: the public keys are the `ALLOWED_SIGNERS` lines near the
+top of `install.sh` (three: the original key, the one from the 2026-09-29
+rotation, and the one rotated in on 2026-10-06 that signs releases from 1.32.0
+on, with fingerprint `SHA256:0+6g7WwxRhZMx84WpICeN6d5MdtLhmowi+Fylz20bUE`; you
+can confirm it with `ssh-keygen -lf` on the key), and the verification logic is
+the block right before any file gets copied into your project.
 
 <details>
 <summary>🔎 What changed vs. before, and why it matters (click to expand)</summary>

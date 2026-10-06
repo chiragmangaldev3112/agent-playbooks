@@ -221,6 +221,18 @@ else
   check "--only with a reference install exit code" "failed" "succeeded"
 fi
 
+echo "== Test 11: the real trusted release keys are the three we expect =="
+# The default ALLOWED_SIGNERS is what every real install trusts. Read it out of install.sh (not the
+# test override) and pin it: three well-formed lines, and the newest key's fingerprint is the one the
+# maintainer generated on 2026-10-06. A mistyped or truncated key would make every release unverifiable.
+# shellcheck disable=SC2016 # the ${...} in the sed pattern is literal text from install.sh, not an expansion
+signers_block="$(awk '/^ALLOWED_SIGNERS=/{p=1} p{print} /\}"$/{if(p) exit}' "$REPO_DIR/install.sh" | sed 's/^ALLOWED_SIGNERS="\${AGENT_PLAYBOOKS_ALLOWED_SIGNERS:-//; s/}"$//')"
+check "three trusted keys" "$(printf '%s\n' "$signers_block" | grep -c '^release@agent-playbooks ssh-ed25519 ')" "3"
+check "every line is well formed" "$(printf '%s\n' "$signers_block" | grep -cE '^release@agent-playbooks ssh-ed25519 [A-Za-z0-9+/=]+ agent-playbooks-release$')" "3"
+newest_key="$(printf '%s\n' "$signers_block" | tail -1 | cut -d' ' -f2-)"
+printf '%s\n' "$newest_key" > "$WORK/newest.pub"
+check "newest trusted key has the expected fingerprint" "$(ssh-keygen -lf "$WORK/newest.pub" 2>/dev/null | awk '{print $2}')" "SHA256:0+6g7WwxRhZMx84WpICeN6d5MdtLhmowi+Fylz20bUE"
+
 echo
 echo "== $PASS passed, $FAIL failed =="
 [[ $FAIL -eq 0 ]]
