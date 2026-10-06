@@ -436,7 +436,7 @@ you'd say, here's what happens" example for every single one, see
 | `quality/receiving-code-review.md` | How the person being reviewed responds — verify feedback against the codebase before implementing it, resolve every unclear item first |
 | `quality/security-review.md` | Language-agnostic security checklist |
 | `quality/architecture-review.md` | Design-level review: visibility, failure containment, access boundaries, operational control |
-| `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers; test code that reads data-dependent values from real state, keeps raw queries out of tests, and tags every test from one vocabulary (smoke, sanity, regression, environment, and more) |
+| `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers; test code that reads data-dependent values from real state, keeps raw queries out of tests, and tags every test from one vocabulary (smoke, sanity, regression, environment, and more), gives each suite a short run command (a table of the standard commands for pytest, Playwright, Cypress, Jest, JUnit, Cucumber, .NET and Go), and keeps API endpoints in their own file |
 | `quality/exploratory-qa.md` | Given a URL with no other direction: map the app's real journeys first, then test each one |
 | `quality/docs-sync.md` | Verify doc claims against real code, run the project's real linter |
 | `quality/observability.md` | Instrument a feature so its failures surface before a user reports them |

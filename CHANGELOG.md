@@ -8,6 +8,26 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.32.2 — 2026-10-06
+The run-commands note in `quality/reference/test-code-standard.md` now covers
+the standard selection commands for every common runner (pytest, Playwright,
+Cypress, Jest and Vitest, JUnit 5, TestNG, Cucumber, .NET, Go) in one table,
+with how to leave tags out and how to preview a selection.
+
+## 1.32.1 — 2026-10-06
+Testing playbooks: short run commands and API endpoints in their own file.
+No other behaviour changes.
+
+- **Short run commands per suite.** `quality/reference/test-code-standard.md`
+  now says each suite gets one short command defined once in the project (a
+  Makefile target, npm script or alias) and wired into CI. For pytest:
+  `pytest -o addopts="" -s -v` for all, with `-m smoke`, `-m sanity` or
+  `-m regression` to select a suite. Markers are registered once.
+- **API endpoints in their own file.** Paths, methods and request builders live
+  in one `endpoints` module per API area, imported by tests and the request
+  client, never typed as strings inside a test. Stated in the reference and in
+  `quality/backend-testing.md` step 8.
+
 ## 1.32.0 — 2026-10-06
 Splits the oversized testing playbooks, gives the test-code standard one home,
 and adds a lint so structure, links, routing and size stay right. No behaviour
