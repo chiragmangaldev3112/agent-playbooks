@@ -8,6 +8,34 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.32.3 — 2026-10-06
+Test code now logs its steps, shared endpoints are defined once, and the test-code standard gains a structure and hygiene section.
+
+- **A reusable `step()` in the shared logger.** `quality/reference/test-code-standard.md`
+  and `quality/backend-testing.md` now say the suite's logger file exports
+  `step(name)` and every test calls it for each action, so a run prints the
+  steps it took in order. It wraps the runner's own step where there is one.
+  This replaces the earlier rule that kept the logger to abnormal cases only;
+  those cases stay in the logger too. Step names carry no secrets or guest data.
+- **Endpoints used by several tests are defined once.** The endpoints-file rule
+  now says an endpoint shared by more than one test is imported, never repeated
+  in each test file, and to search the endpoints file before adding a path.
+- **New section 6, "Structure and hygiene", in the test-code standard.** Tests
+  stand alone and run in any order or in parallel; one behaviour per named test;
+  fixtures for setup and login; one request client and one settings module;
+  specific assertions; conditions instead of sleeps; retries that do not hide
+  flakiness; evidence saved on failure; a fixed folder layout; one CI command
+  that exits non-zero.
+- **New `quality/reference/test-checklist.md`: 62 full-stack checks** a senior
+  tester walks for any feature or release (functional, input and data, UI,
+  API and integration, security, reliability and performance, process), each
+  marked covered, not applicable with a reason, or a reported gap. Linked from
+  `backend-testing.md` and `exploratory-qa.md`. It adds checks the playbooks did
+  not name: session and token expiry, logout, Unicode and special characters,
+  empty and loading states, back button and deep links, browser matrix,
+  webhooks and notifications, backward compatibility and API versioning,
+  caching, CORS and headers, audit trail, and failure and recovery.
+
 ## 1.32.2 — 2026-10-06
 The run-commands note in `quality/reference/test-code-standard.md` now covers
 the standard selection commands for every common runner (pytest, Playwright,
