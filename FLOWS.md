@@ -52,7 +52,7 @@ flowchart TD
     B -->|Yes| C[Ask, don't guess]
     B -->|No / resolved| D[Write failing test]
     D --> E[Confirm it fails\nfor the right reason]
-    E --> F[Implement minimum code]
+    E --> F[Implement minimum code,\nin the right layer, to the\nproject's architecture]
     F --> G[Run full suite,\nconfirm new test passes]
     G -->|New test still fails| F
     G -->|Passes, no regressions| H[Report]

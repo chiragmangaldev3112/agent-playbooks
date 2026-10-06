@@ -30,7 +30,10 @@ confirm it now passes, and only then reports it fixed.
 **What happens:** writes a failing test from the spec first (including
 an empty-table edge case), confirms it fails for the right reason, then
 implements the minimum to pass — no speculative "export as JSON too"
-option nobody asked for.
+option nobody asked for. It first finds how the project is laid out (where
+the closest existing export lives, which layer owns file generation) and
+puts the code in that layer rather than in the button's click handler,
+without adding a new library or folder structure unasked.
 
 ### `core/clarify-before-building.md`
 **Scenario:** a request that could mean two different things.
@@ -98,7 +101,9 @@ shouldn't see by default.
 **What happens:** tests by role/label the way a user would find things
 (not internal class names), checks keyboard/focus behavior on open and
 close, and confirms a new test actually fails before the fix and passes
-after.
+after. Tests are tagged (smoke, regression, and where they may run), and a
+paginated table is walked to its real last page instead of clicking "next"
+twice.
 
 ### `quality/backend-testing.md`
 **Scenario:** a new `/orders` POST endpoint.
@@ -106,7 +111,9 @@ after.
 **What happens:** reads the real request schema first — every
 `required: true` field becomes a missing-field test case straight off
 the spec, not from memory — plus a concurrency case and an
-idempotency check for retried requests.
+idempotency check for retried requests. Seeding and cleanup go through a
+named data-layer function rather than SQL typed inside the test, and each
+test carries a suite tag so smoke can be run on its own.
 
 ### `quality/exploratory-qa.md`
 **Scenario:** a client hands over a staging URL with no test plan.

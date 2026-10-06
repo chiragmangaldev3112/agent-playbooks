@@ -8,6 +8,80 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.31.0 — 2026-10-06
+Development work now follows standard architecture, and three gaps in the
+playbooks that write test code are closed. The test gaps were reported from real
+use of the Playwright and API testing flows: tests typed values that depend on data
+(pagination was the example: hard-coded page numbers) in as literals,
+generated tests put raw query text straight into test functions, and nothing
+tagged tests, so smoke could not be run on its own. All three are now one
+test-code standard, held in `quality/frontend-testing.md` step 14 and
+`quality/backend-testing.md` step 8 and linked from every playbook that
+writes tests. It is written to apply to any stack, and it starts from what the
+project already has: its own runner, tags, environment setting and helpers
+are reused and extended, and the standard fills gaps instead of replacing
+conventions.
+
+- **Nothing that depends on data, environment or time is typed in.** Counts,
+  dropdown options, tabs and wizard steps, sort order, totals, dates, ids,
+  hosts and credentials are read at run time from the UI's own total, the API
+  response, the source of truth, the clock the app uses or configuration. Any
+  "more results" mechanism (numbered pages, offsets, cursors, infinite scroll,
+  "load more", streamed chunks, batched jobs) is walked by its own end signal
+  through one shared helper, with a round cap so a broken mechanism fails
+  instead of hanging, and size-independent assertions (full pages, a partial
+  last page, no duplicate or skipped item, the total adds up, past-the-end
+  behaves as documented). `backend-testing.md` step 3 gets the same rule for
+  list endpoints.
+- **No raw query text in tests, for any store.** SQL, a document or key-value
+  store, a cache, a queue, file or object storage or a third-party sandbox:
+  seeding, reading state back and cleanup are named, typed functions in one
+  module per entity, with bound parameters, preferring the app's own API, ORM
+  or factories, a read-only account for assertions where possible, cleanup
+  scoped to what the run created, and never against production.
+- **Every test is tagged from one defined vocabulary** (the project's own if
+  it has one). Dimensions: suite (`@smoke`, `@sanity`, `@regression`,
+  narrowest tag, broader runs select several), level, quality attribute,
+  priority, environment (`@local` through `@prod`, with `@prod-safe` only
+  for a test that reads and changes nothing), data and side effects,
+  lifecycle (`@quarantine` with a reason), cadence, and area or team. Names
+  are defined once, unknown or missing suite tags fail the build, issue links
+  go in an annotation rather than a tag, selection is wired to CI (smoke on
+  every change, sanity after a deploy, regression on a schedule) and the
+  environment comes from one setting. Equivalents are named for Playwright,
+  pytest, JUnit 5, TestNG, Cucumber, Cypress, .NET and runners without tags.
+  The Playwright specifics (a tag must start with `@` and is inherited from a
+  `describe`, `--grep` as OR and AND, `--grep-invert`, a `TEST_ENV` config
+  variable, annotations, tags in `--list --reporter=json`) were run against
+  Playwright 1.63; the other runners were not run.
+- **Development follows the project's architecture, or standard architecture
+  where none is defined.** A new "Build to the architecture" section in
+  `core/feature-development.md` (a feature, and the same for a fix, a refactor
+  or a test helper): discover the layers, boundaries, closest existing feature,
+  decision records and enforced rules before coding, and name the layers touched
+  in the plan; put each piece of code in the layer it belongs in (presentation
+  holds no business rules or queries, business logic knows nothing of transport
+  or UI, data access only in the data layer, other systems behind one adapter,
+  configuration from the environment, dependencies one way with no cycles); where
+  nothing is defined, apply the standard principles (separation of concerns,
+  explicit contracts at boundaries, external systems behind interfaces, shared
+  logic in one place without premature abstraction, one way to handle errors and
+  logging, idempotency and transactions where state changes, security at the
+  boundary, observability); never introduce a new framework, library, pattern or
+  folder convention without asking; keep the change inside the architecture and
+  route restructuring through `refactoring.md`; record decisions a reader could
+  not infer; and check dependency direction and deviations before reporting. The
+  loop (`core/engineering-loop.md` steps 2 and 3), `bug-fix.md` (fix in the
+  layer where the cause lives), `refactoring.md`, `code-review.md` (step 4 now
+  checks the right layer), `architecture-review.md`, `project-bootstrap.md`
+  (records the architecture it found) and the Feature Builder role point to it.
+- **Linked from the loop and every test-writing playbook.**
+  `core/engineering-loop.md` step 3 states the standard for any step that
+  writes test code, and `core/bug-fix.md`, `core/feature-development.md`,
+  `change-types/refactoring.md`, `quality/security-review.md`,
+  `quality/exploratory-qa.md`, `mapping/third-party-api-integration.md` and
+  the Test Writer role in `autonomy/roles.md` point to it.
+
 ## 1.30.0 — 2026-10-05
 New playbook `core/finish-work.md`: take finished work to "checked,
 documented, committed, pushed, and in review or merged" with the person's

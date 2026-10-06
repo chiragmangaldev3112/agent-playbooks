@@ -415,7 +415,7 @@ you'd say, here's what happens" example for every single one, see
 |---|---|
 | `core/engineering-loop.md` | Router + independent-verification rule — start every task here |
 | `core/bug-fix.md` | Reproduce-before-fix workflow |
-| `core/feature-development.md` | Test-first feature workflow |
+| `core/feature-development.md` | Test-first feature workflow, built to the project's own architecture (standard architecture principles where none is defined) |
 | `core/clarify-before-building.md` | Resolve a genuinely ambiguous request before implementation starts |
 | `core/issue-triage.md` | Sort a new bug/enhancement report into a category and status |
 | `core/finish-work.md` | Take finished work to "checked, documented, committed, pushed, in review": run the project's real checks, update docs and changelog, scan the history for secrets, and ask before the commit, the push and the merge request |
@@ -433,7 +433,7 @@ you'd say, here's what happens" example for every single one, see
 | `quality/receiving-code-review.md` | How the person being reviewed responds — verify feedback against the codebase before implementing it, resolve every unclear item first |
 | `quality/security-review.md` | Language-agnostic security checklist |
 | `quality/architecture-review.md` | Design-level review: visibility, failure containment, access boundaries, operational control |
-| `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers |
+| `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers; test code that reads data-dependent values from real state, keeps raw queries out of tests, and tags every test from one vocabulary (smoke, sanity, regression, environment, and more) |
 | `quality/exploratory-qa.md` | Given a URL with no other direction: map the app's real journeys first, then test each one |
 | `quality/docs-sync.md` | Verify doc claims against real code, run the project's real linter |
 | `quality/observability.md` | Instrument a feature so its failures surface before a user reports them |
