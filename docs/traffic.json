@@ -1,6 +1,14 @@
 {
-  "generated_at": null,
-  "note": "Placeholder: .github/workflows/traffic.yml hasn't run yet. Add the TRAFFIC_PAT secret (see that file's header comment) and run it once from the Actions tab to populate this for real.",
-  "window_14d": {"views": 0, "views_uniques": 0, "clones": 0, "clones_uniques": 0},
-  "all_time_retained": {"since": null, "views": 0, "clones": 0}
+  "generated_at": "2026-10-10T08:30:13.513173+00:00",
+  "window_14d": {
+    "views": 233,
+    "views_uniques": 42,
+    "clones": 196,
+    "clones_uniques": 80
+  },
+  "all_time_retained": {
+    "since": "2026-09-25",
+    "views": 233,
+    "clones": 196
+  }
 }

@@ -1,16 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="860" height="200" viewBox="0 0 860 200" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">
   <style>
     .bg { fill: #ffffff; }
-    .title { fill: #1f2328; font-size: 13px; font-weight: 600; }
+    .grid { stroke: #e8e8ec; stroke-width: 1; }
     .label { fill: #6e7781; font-size: 11px; }
+    .title { fill: #1f2328; font-size: 13px; font-weight: 600; }
+    .views-fg { fill: #6b46c1; stroke: #6b46c1; }
+    .clones-fg { fill: #10a37f; stroke: #10a37f; }
+    .views-area { fill: #6b46c1; fill-opacity: 0.20; opacity: 0; animation: fadein 1s ease-out 0.6s forwards; }
+    .clones-area { fill: #10a37f; fill-opacity: 0.15; opacity: 0; animation: fadein 1s ease-out 0.75s forwards; }
     @media (prefers-color-scheme: dark) {
       .bg { fill: #0d1117; }
-      .title { fill: #e6edf3; }
+      .grid { stroke: #2a2f37; }
       .label { fill: #8b949e; }
+      .title { fill: #e6edf3; }
+      .views-fg { fill: #a78bfa; stroke: #a78bfa; }
+      .clones-fg { fill: #34d399; stroke: #34d399; }
+      .views-area { fill: #a78bfa; fill-opacity: 0.20; }
+      .clones-area { fill: #34d399; fill-opacity: 0.15; }
     }
+    .views-line { fill: none; stroke-width: 2; stroke-dasharray: 891; stroke-dashoffset: 891; animation: draw 1.4s ease-out forwards; }
+    .clones-line { fill: none; stroke-width: 2; stroke-dasharray: 891; stroke-dashoffset: 891; animation: draw 1.4s ease-out 0.15s forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    @keyframes fadein { to { opacity: 1; } }
+    .dot { animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { r: 3; opacity: 1; } 50% { r: 5; opacity: 0.6; } }
   </style>
   <rect class="bg" width="860" height="200" rx="8"/>
-  <text x="430" y="96" text-anchor="middle" class="title">First daily run pending</text>
-  <text x="430" y="118" text-anchor="middle" class="label">This chart fills in automatically once .github/workflows/traffic.yml runs</text>
-  <text x="430" y="134" text-anchor="middle" class="label">(needs a TRAFFIC_PAT secret — see that file's header comment — then "Run workflow" once)</text>
+  <text x="46" y="16" class="title">GitHub traffic — 2026-09-25 to 2026-10-08</text>
+  <text x="844" y="16" text-anchor="end" class="label"><tspan class="views-fg">● 233 views</tspan>   <tspan class="clones-fg">● 196 clones</tspan></text>
+  <line class="grid" x1="46" y1="16.0" x2="844" y2="16.0"/><line class="grid" x1="46" y1="94.0" x2="844" y2="94.0"/><line class="grid" x1="46" y1="172.0" x2="844" y2="172.0"/>
+  <path class="views-area" d="M 46.0,172.0 L 107.4,172.0 L 168.8,172.0 L 230.2,172.0 L 291.5,86.5 L 352.9,88.7 L 414.3,110.0 L 475.7,65.2 L 537.1,110.0 L 598.5,154.9 L 659.8,146.4 L 721.2,148.5 L 782.6,152.8 L 844.0,159.2 L 844.0,172.0 L 46.0,172.0 Z"/>
+  <path class="clones-area" d="M 46.0,172.0 L 107.4,172.0 L 168.8,172.0 L 230.2,172.0 L 291.5,101.5 L 352.9,159.2 L 414.3,165.6 L 475.7,131.4 L 537.1,163.5 L 598.5,172.0 L 659.8,92.9 L 721.2,16.0 L 782.6,127.1 L 844.0,172.0 L 844.0,172.0 L 46.0,172.0 Z"/>
+  <path class="views-line views-fg" d="M 46.0,172.0 L 107.4,172.0 L 168.8,172.0 L 230.2,172.0 L 291.5,86.5 L 352.9,88.7 L 414.3,110.0 L 475.7,65.2 L 537.1,110.0 L 598.5,154.9 L 659.8,146.4 L 721.2,148.5 L 782.6,152.8 L 844.0,159.2"/>
+  <path class="clones-line clones-fg" d="M 46.0,172.0 L 107.4,172.0 L 168.8,172.0 L 230.2,172.0 L 291.5,101.5 L 352.9,159.2 L 414.3,165.6 L 475.7,131.4 L 537.1,163.5 L 598.5,172.0 L 659.8,92.9 L 721.2,16.0 L 782.6,127.1 L 844.0,172.0"/>
+  <circle class="dot views-fg" cx="844.0" cy="159.2" r="3"/>
+  <circle class="dot clones-fg" cx="844.0" cy="172.0" r="3"/>
+  <text x="46" y="192" class="label">14 day(s) retained · updates daily via .github/workflows/traffic.yml</text>
 </svg>
