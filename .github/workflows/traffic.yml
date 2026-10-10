@@ -1,0 +1,90 @@
+name: Traffic
+
+# Fetches real GitHub traffic (page views + git clones) for this repo and
+# commits the result as public, README-facing assets -- GitHub's own Traffic
+# API only ever returns a rolling 14-day window (nothing older is kept), so
+# this is what retains history past that window and turns it into something
+# a visitor can actually see without needing push access themselves.
+#
+# Runs daily, and on-demand via "Run workflow" above (use that right after
+# merging this, so the README isn't waiting a full day for its first data).
+#
+# Requires a secret the default GITHUB_TOKEN does NOT have permission for:
+# the Traffic API needs push access to the repo, and confirmed directly
+# (GitHub CLI, this repo, this session) that an ordinary GITHUB_TOKEN gets a
+# plain 403 ("Must have push access to repository"). Add a fine-grained
+# personal access token, scoped to ONLY this one repository with
+# "Administration: Read-only" permission (Settings -> Developer settings ->
+# Personal access tokens -> Fine-grained tokens), as a repo secret named
+# TRAFFIC_PAT (Settings -> Secrets and variables -> Actions). Without it,
+# this workflow says so plainly in the run log and does nothing else --
+# it never fails the run or writes fake/stale data over real history.
+on:
+  schedule:
+    - cron: "17 6 * * *" # once daily; an arbitrary off-the-hour minute, not a stampede time every other workflow in the world uses
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: traffic-assets
+  cancel-in-progress: false
+
+jobs:
+  update-traffic-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch traffic from the GitHub API
+        id: fetch
+        env:
+          TOKEN: ${{ secrets.TRAFFIC_PAT }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -uo pipefail
+          if [[ -z "$TOKEN" ]]; then
+            echo "No TRAFFIC_PAT secret is set -- the Traffic API needs push access, which the" >&2
+            echo "default GITHUB_TOKEN doesn't have (confirmed: a plain GITHUB_TOKEN call gets" >&2
+            echo "403 'Must have push access to repository'). See this file's own header comment" >&2
+            echo "for how to add one. Nothing fetched or written this run." >&2
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          views_status=$(curl -sS -o views.json -w '%{http_code}' \
+            -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPO/traffic/views")
+          clones_status=$(curl -sS -o clones.json -w '%{http_code}' \
+            -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPO/traffic/clones")
+          if [[ "$views_status" != "200" || "$clones_status" != "200" ]]; then
+            echo "Traffic API call failed (views: $views_status, clones: $clones_status)." >&2
+            echo "Response bodies (if any) are in views.json/clones.json in this run's logs." >&2
+            cat views.json clones.json >&2 || true
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Generate the committed assets
+        if: steps.fetch.outputs.ok == 'true'
+        run: python3 scripts/generate-traffic-assets.py views.json clones.json docs
+
+      - name: Commit, if anything actually changed
+        if: steps.fetch.outputs.ok == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/traffic.json docs/traffic-history.json docs/views-badge.json docs/clones-badge.json docs/traffic-chart.svg
+          if git diff --cached --quiet; then
+            echo "No change in traffic data since the last run -- nothing to commit."
+            exit 0
+          fi
+          # [skip ci]: belt-and-braces alongside the GITHUB_TOKEN-push-doesn't-
+          # retrigger-workflows default behavior -- explicit rather than relied
+          # on implicitly, the same discipline this project's own playbooks
+          # already ask for elsewhere.
+          git commit -m "Update traffic assets [skip ci]"
+          git push
