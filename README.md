@@ -10,10 +10,12 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/chiragmangaldev3112/agent-playbooks" alt="License"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/issues"><img src="https://img.shields.io/github/issues/chiragmangaldev3112/agent-playbooks" alt="Issues"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
+  <a href="https://github.com/chiragmangaldev3112/agent-playbooks/network/members"><img src="https://img.shields.io/github/forks/chiragmangaldev3112/agent-playbooks?style=social" alt="Forks"></a>
   <br>
   <img src="https://img.shields.io/badge/38_Playbooks-blueviolet" alt="38 Playbooks">
   <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
   <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
+  <img src="https://img.shields.io/github/contributors/chiragmangaldev3112/agent-playbooks" alt="Contributors">
 </p>
 
 <h1 align="center">🤖 Agent Playbooks</h1>
@@ -40,7 +42,8 @@
   <img src="https://img.shields.io/badge/Antigravity-supported-ff6f00" alt="Antigravity">
   <img src="https://img.shields.io/badge/GitHub_Copilot-supported-0969da" alt="GitHub Copilot">
   <img src="https://img.shields.io/badge/Codex_CLI-supported-10a37f" alt="Codex CLI">
-  <img src="https://img.shields.io/badge/%2B_9_more_tools-see_below-lightgrey" alt="9 more tools">
+  <img src="https://img.shields.io/badge/Gemini_CLI-supported-4285f4" alt="Gemini CLI">
+  <img src="https://img.shields.io/badge/%2B_8_more_tools-see_below-lightgrey" alt="8 more tools">
 </p>
 
 ```bash
@@ -66,8 +69,42 @@ regression test, implement the fix, and verify the result."*
 
 ---
 
+<a id="traffic"></a>
+## 📈 Traffic & Growth
+
+Real numbers, not vanity claims — this chart is regenerated daily by
+[`.github/workflows/traffic.yml`](.github/workflows/traffic.yml) from
+GitHub's own Traffic API (which only ever keeps a rolling 14-day window
+itself; this repo's own history goes back further because that workflow
+retains what GitHub discards) and the growth line below comes straight
+from GitHub's real stargazer timestamps, not a mocked-up image.
+
+<p align="center">
+  <img src="docs/traffic-chart.svg" alt="Daily GitHub views and clones, animated on load" width="100%">
+</p>
+
+<p align="center">
+  <a href="https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/docs/traffic.json"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/docs/views-badge.json" alt="Views (14d)"></a>
+  <a href="https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/docs/traffic.json"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/chiragmangaldev3112/agent-playbooks/main/docs/clones-badge.json" alt="Clones (14d)"></a>
+</p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=chiragmangaldev3112/agent-playbooks&type=Date&theme=dark">
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=chiragmangaldev3112/agent-playbooks&type=Date">
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=chiragmangaldev3112/agent-playbooks&type=Date" width="100%">
+</picture>
+
+**If a playbook saved you a round-trip, a ⭐ [star](https://github.com/chiragmangaldev3112/agent-playbooks/stargazers)
+is how the next person finds this instead of guessing their way through
+the same problem** — and a 🍴 [fork](https://github.com/chiragmangaldev3112/agent-playbooks/fork)
+is genuinely the fastest way to try editing a playbook's wording yourself
+before proposing it back (see [Contributing](#contributing-and-security)).
+
+---
+
 ## 🗺️ Table of contents
 
+- [📈 Traffic & Growth](#traffic)
 - [🤔 Why This Exists](#why)
 - [✨ What You Get, at a Glance](#what-you-get-at-a-glance)
 - [🚀 Quick Start / Install](#install)
@@ -306,6 +343,7 @@ the same text everywhere:
 | **Antigravity** | `.agents/skills/*/SKILL.md` | Its own docs never confirm it reads `AGENTS.md` automatically, unlike Cursor/Codex CLI — so this is the reliable path, not an assumption |
 | **Codex CLI** | nothing extra | Reads `AGENTS.md` at the root natively — confirmed, this is the tool the convention originated from |
 | **GitHub Copilot** | one `.github/copilot-instructions.md` pointer | Copilot has no semantic per-file matching, so one blanket file beats 30 always-on ones |
+| **Gemini CLI** | one `GEMINI.md` pointer | Reads `GEMINI.md` by default, not `AGENTS.md` — unlike Codex CLI, picking up `AGENTS.md` needs a per-user `context.fileName` setting this installer can't make for you, so a pointer file is the reliable path |
 | **Anything else / skip** | nothing extra | Falls back to `AGENTS.md` alone — paste it into your tool's context manually if it doesn't read project files |
 
 Every generated file is a **thin pointer** back to the real playbook in
@@ -323,16 +361,17 @@ AGENT_PLAYBOOKS_TOOL=cursor      ./install.sh /path/to/your/project   # Cursor
 AGENT_PLAYBOOKS_TOOL=antigravity ./install.sh /path/to/your/project   # Antigravity
 AGENT_PLAYBOOKS_TOOL=codex       ./install.sh /path/to/your/project   # Codex CLI (nothing extra generated)
 AGENT_PLAYBOOKS_TOOL=copilot     ./install.sh /path/to/your/project   # GitHub Copilot
+AGENT_PLAYBOOKS_TOOL=gemini      ./install.sh /path/to/your/project   # Gemini CLI
 AGENT_PLAYBOOKS_TOOL=none        ./install.sh /path/to/your/project   # AGENTS.md + CLAUDE.md only
 ```
 
 The table above is only the tools this installer generates real artifacts
 for. `agent-playbooks/README.md` — installed with every copy — documents
 how to wire `AGENTS.md` itself into 15 tools total, including GitHub
-Copilot CLI, OpenAI Codex's cloud/IDE surface, Gemini CLI, Devin CLI,
-Factory Droid, Grok Build, Kimi Code, OpenCode, Pi, and Hermes Agent —
-most of them read `AGENTS.md` automatically with no generation step
-needed at all; check that file for the exact mechanism per tool. It also
+Copilot CLI, OpenAI Codex's cloud/IDE surface, Devin CLI, Factory Droid,
+Grok Build, Kimi Code, OpenCode, Pi, and Hermes Agent — most of them read
+`AGENTS.md` automatically with no generation step needed at all; check that
+file for the exact mechanism per tool. It also
 covers how you actually *invoke* a playbook once it's wired in: most
 tools match one by relevance automatically from plain language, no
 command needed, but several also support asking for one directly by

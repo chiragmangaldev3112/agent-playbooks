@@ -10,6 +10,21 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.5.0 — 2026-10-10
+**Gemini CLI gets a generated pointer file, closing a real cross-tool gap.**
+
+Before, the tool menu covered Claude Code, Cursor, Antigravity, Codex CLI,
+and GitHub Copilot; everything else fell back to `AGENTS.md` alone with a
+manual pointer the project's own `README.md` documents by hand. Gemini CLI
+reads `GEMINI.md` by default, not `AGENTS.md` — unlike Codex CLI, it needs an
+explicit `context.fileName` setting to pick up `AGENTS.md`, which this
+installer has no way to edit on the user's behalf (that's a per-user, not
+per-project, `settings.json`). `AGENT_PLAYBOOKS_TOOL=gemini` (menu option 6)
+now generates a one-line `GEMINI.md` pointing at `AGENTS.md`, the same
+minimal-pointer shape Copilot already gets — never overwriting an existing
+one. Smoke tests added: the file is generated and points at `AGENTS.md`, and
+a pre-existing `GEMINI.md` is left untouched. 48 checks, all passing.
+
 ## 2.4.0 — 2026-10-06
 **`--update`: replace an existing install with the latest release.**
 

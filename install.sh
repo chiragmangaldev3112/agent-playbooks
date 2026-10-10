@@ -34,8 +34,8 @@
 #   ./install.sh --only bug-fix        # just that playbook (+ what it needs)
 #   ./install.sh --only bug-fix,code-review,core/engineering-loop.md
 #
-# Set AGENT_PLAYBOOKS_TOOL=claude|cursor|antigravity|codex|copilot|none to
-# skip the interactive tool prompt (e.g. for a non-interactive/CI install).
+# Set AGENT_PLAYBOOKS_TOOL=claude|cursor|antigravity|codex|copilot|gemini|none
+# to skip the interactive tool prompt (e.g. for a non-interactive/CI install).
 #
 # Set AGENT_PLAYBOOKS_VERSION=1.0.5 (or --version 1.0.5) to install a
 # specific past release instead of whatever's currently latest. See
@@ -800,6 +800,27 @@ EOF
   echo "separate .instructions.md per playbook)." >&2
 }
 
+generate_gemini_artifacts() {
+  local out="$TARGET_DIR/GEMINI.md"
+  if [[ -e "$out" ]]; then
+    echo "Skipped: $out already exists -- not overwriting it." >&2
+    return
+  fi
+  cat > "$out" <<'EOF'
+This project uses Agent Playbooks for engineering process. Before any
+non-trivial task (bug fix, feature, review, release, etc.), read
+`AGENTS.md` at the project root, then follow
+`agent-playbooks/core/engineering-loop.md` -- it classifies the request
+and routes it to the matching playbook under `agent-playbooks/`.
+EOF
+  echo "Generated $out. Gemini CLI reads GEMINI.md by default, not AGENTS.md" >&2
+  echo "(it can be configured to via its own context.fileName setting, but" >&2
+  echo "that's a per-user settings.json edit this installer won't make for" >&2
+  echo "you) -- this one-line pointer is the reliable path, the same reason" >&2
+  echo "Antigravity gets generated Skills instead of relying on AGENTS.md" >&2
+  echo "alone." >&2
+}
+
 tool_choice="${AGENT_PLAYBOOKS_TOOL:-}"
 if [[ -z "$tool_choice" && -t 0 ]]; then
   echo "" >&2
@@ -810,14 +831,16 @@ if [[ -z "$tool_choice" && -t 0 ]]; then
   echo "  3) Antigravity" >&2
   echo "  4) Codex CLI (reads AGENTS.md natively already -- nothing to generate)" >&2
   echo "  5) GitHub Copilot" >&2
-  echo "  6) Other / skip" >&2
-  read -r -p "Enter 1-6 [6]: " tool_num || tool_num=""
+  echo "  6) Gemini CLI" >&2
+  echo "  7) Other / skip" >&2
+  read -r -p "Enter 1-7 [7]: " tool_num || tool_num=""
   case "$tool_num" in
     1) tool_choice="claude" ;;
     2) tool_choice="cursor" ;;
     3) tool_choice="antigravity" ;;
     4) tool_choice="codex" ;;
     5) tool_choice="copilot" ;;
+    6) tool_choice="gemini" ;;
     *) tool_choice="none" ;;
   esac
 fi
@@ -828,6 +851,7 @@ case "$tool_choice" in
   cursor) generate_cursor_artifacts ;;
   antigravity) generate_antigravity_artifacts ;;
   copilot) generate_copilot_artifacts ;;
+  gemini) generate_gemini_artifacts ;;
   codex|none|*) : ;;
 esac
 
@@ -848,6 +872,7 @@ case "$tool_choice" in
   cursor) echo "  $TARGET_DIR/.cursor/rules/ (generated)" ;;
   antigravity) echo "  $TARGET_DIR/.agents/skills/ (generated)" ;;
   copilot) echo "  $TARGET_DIR/.github/copilot-instructions.md (generated, unless it already existed)" ;;
+  gemini) echo "  $TARGET_DIR/GEMINI.md (generated, unless it already existed)" ;;
   codex) echo "  (nothing extra -- Codex CLI reads AGENTS.md natively)" ;;
   none) : ;;
 esac

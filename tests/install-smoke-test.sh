@@ -211,6 +211,21 @@ if run_case 8911 "$t11" "$ALLOWED_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_TOOL=anti
 else
   check "antigravity install exit code" "failed" "succeeded"
 fi
+t11b="$WORK/target11b"
+if run_case 8917 "$t11b" "$ALLOWED_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_TOOL=gemini; then
+  check "gemini: GEMINI.md generated" "$([[ -f "$t11b/GEMINI.md" ]] && echo yes || echo no)" "yes"
+  check "gemini: GEMINI.md points at AGENTS.md" "$(grep -c 'AGENTS.md' "$t11b/GEMINI.md" || true)" "1"
+else
+  check "gemini install exit code" "failed" "succeeded"
+fi
+t11c="$WORK/target11c"
+mkdir -p "$t11c"
+echo "pre-existing" > "$t11c/GEMINI.md"
+if run_case 8918 "$t11c" "$ALLOWED_SIGNERS_LINE" "" env AGENT_PLAYBOOKS_TOOL=gemini; then
+  check "gemini: a pre-existing GEMINI.md is not overwritten" "$(cat "$t11c/GEMINI.md")" "pre-existing"
+else
+  check "gemini (existing GEMINI.md) install exit code" "failed" "succeeded"
+fi
 
 echo "== Test 10: --only pulls in a referenced reference file =="
 t12="$WORK/target12"

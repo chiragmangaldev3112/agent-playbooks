@@ -1,4 +1,8 @@
 supabase/.temp/
 
+# Python bytecode cache (scripts/generate-traffic-assets.py)
+__pycache__/
+*.pyc
+
 # OS noise
 .DS_Store
