@@ -8,6 +8,97 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.33.0 — 2026-10-10
+Project standards as defaults, and a fix to the Claude Code command guard.
+
+- **Fix: the Claude Code destructive-command hook could be bypassed.** The
+  one-line `grep`/`sed` shim shown in `safety/safety-guardrail.md` cut the
+  command at its first comma or closing brace, so `echo a, b; git push --force
+  origin main` reached the guard as `echo a` and was allowed. New
+  `scripts/claude-code-guardrail-hook.sh` reads the command with a JSON parser
+  (jq, else python3) and passes the whole command on, like the secret and
+  config hooks already do. New `evals/claude-code-guardrail-hook.eval.sh`
+  keeps the case from returning. `project/project-bootstrap.md` now tells the
+  installer to copy and wire the adapter.
+- **Config protection can cover a project's own quality gates.** The built-in
+  list names only linter and formatter configs, so a project whose gate is the
+  compiler config or an architecture test had nothing protected. An optional
+  `.protected-configs` file at the project root (a file name, or a path from
+  the root, per line) is now read by `scripts/block-config-edit.sh`, in both
+  the git hook and the Claude Code hook. New
+  `evals/config-protection-extra.eval.sh`.
+- **Fix: the secret-scan pre-commit snippet scanned the working file, not what
+  was staged.** A secret staged and then removed from the working copy
+  committed without complaint (confirmed by running the snippet literally). The
+  two inline pre-commit snippets (secret scan, config protection) are replaced
+  by one shipped `scripts/git-pre-commit.sh` that scans the staged content
+  (`git show :file`), reads names with `-z` (a protected file with a non-ASCII
+  name used to slip past), keeps reasons in a `mktemp` file instead of fixed
+  `/tmp` paths, exports the project root so `.protected-configs` is read from
+  the checkout being committed in, and finds its scripts through its own real
+  path. Before, a linked worktree or a branch cut before the scripts were
+  committed blocked every commit with a false "matches a known secret format".
+  It now says the scripts are missing. An optional `.never-commit` file lists
+  paths that must never be staged. New `evals/git-pre-commit.eval.sh`; the key
+  case was mutation-checked against the old behaviour.
+- **Fix: a `.protected-configs` path entry could fail open** when the project
+  root and the file path were spelled through different symlinks (macOS `/tmp`
+  is `/private/tmp`). Both sides are now resolved to real paths; eval added.
+- **Fix: `evals/lib.sh` wrote to a fixed `/tmp/eval_stderr.$$`** and so failed
+  in sandboxes with their own scratch directory. It uses `mktemp`.
+- **`safety/safety-guardrail.md` states what the deny list does not cover**
+  (`reset --hard`, branch deletion, merges, deploys, publishing) and that a
+  multi-line command is flattened on purpose and can be blocked in error. The
+  verify section now starts with feeding the adapter its JSON, which proves the
+  wiring without running anything dangerous. Wiring snippets quote
+  `$CLAUDE_PROJECT_DIR`. `safety/config-protection.md` records that deleting a
+  protected file is not caught.
+- **`autonomy/roles.md` no longer points at a README section that is not in the
+  installed tree.** It says plainly how a persona becomes a Claude Code agent
+  file (the frontmatter fields) and how to tag a persona the project defines.
+- **`project/project-bootstrap.md` rewritten where a literal run was wrong or
+  silent:** one destination for the hook scripts and all of them copied together
+  (`.claude/hooks/` for Claude Code); the single pre-commit hook and its
+  per-clone install line; which actions the guardrail does not catch; the
+  playbook version and location recorded in `AGENTS.md`; the verify personas
+  kept next to the area personas; a "Hands off to" line, tier tags and a
+  mechanical ownership check (every folder has one owner, every named path
+  exists); the parent run as the main-thread agent with the `Agent` tool; no
+  lint command named as such; every storage mode run; a dated baseline; and a
+  known-answer trial of each generated persona.
+- **New `scripts/check-ownership.py`** and `evals/check-ownership.eval.sh`: the
+  persona ownership check the bootstrap asks for, done on a `<path> <owner>`
+  table because persona files are prose and every real overlap was at file or
+  subfolder level. A line is a file, a folder or a `*` glob (so one file can be
+  split out of a folder), the most specific line wins, `human` and `none` are
+  owners that need no agent file, and an owner matches `<name>.md` or a
+  prefixed `*-<name>.md`. Run against a real project's table of 935 files.
+- **Fix: the command guard silently turned itself off** when neither `jq` nor
+  `python3` was installed (it exited 0). It now stops with a message.
+  `evals/claude-code-guardrail-no-parser.eval.sh`.
+- **Bootstrap, second round:** a written persona walk is allowed when a persona
+  cannot be spawned (marked UNVERIFIED, run later); the report lists the
+  ownership and trial results; check for an existing pre-commit hook or
+  `core.hooksPath` before linking; consider protecting the guard's own wiring
+  (`.claude/settings.json`); record a version mismatch; a persona that both owns
+  and reviews never reviews its own diff. The guardrail doc now says a heredoc
+  is blocked like any other command text and that a one-line mention can also
+  trip the multi-line rule.
+- **New `quality/reference/project-standards.md`.** The defaults a project
+  starts from, each paired with the check that keeps it true: layers held by a
+  failing architecture test, a README in every folder, files under 500 lines,
+  shared constants and one error shape, a tracked id on every request, tests
+  laid out like the source with one `support/` folder, every user-facing word
+  in a typed language catalog, one theme, docs that follow the feature, and
+  verification on a scratch instance. Linked from the feature-development,
+  architecture-review, refactoring and backend-testing playbooks.
+- **Refactoring: prove a split only moved code** by comparing the sorted
+  non-blank lines before and after, with the full suite run after each step.
+- **Project bootstrap writes a "Standards" section into `AGENTS.md`, and
+  generates area personas plus one parent persona** for a project with several
+  distinct areas, each grounded in the folders it owns and the commands that
+  check it. Before this the bootstrap produced only the six generic personas.
+
 ## 1.32.3 — 2026-10-06
 Test code now logs its steps, shared endpoints are defined once, and the test-code standard gains a structure and hygiene section.
 
