@@ -233,7 +233,7 @@ build/fix work without dulling review.
 keep review on the strongest one" — or nothing at all, since that's
 already the installed default.
 **What happens:** each persona is tagged *verify* or *implement* — Code
-Reviewer, Manual/Exploratory Tester, Product Owner/Blind Tester, and Bug
+Reviewer, Manual/Exploratory Tester, Product Owner / Blind Tester, and Bug
 Hunter (it also fixes, but it's the persona named for independently
 re-confirming someone else's fix) default to the strongest model; Feature
 Builder, Test Writer, and Project Bootstrapper default to a lighter one,
@@ -257,7 +257,7 @@ it seems.
 tester saw how the code actually works.
 **You say:** "Set up a builder and a tester for this feature who don't
 see each other's work."
-**What happens:** a Product Owner/Blind Tester agrees the requirement
+**What happens:** a Product Owner / Blind Tester agrees the requirement
 and writes the spec to the requirements store; a Builder reads only that
 spec and builds on a new branch; the tester writes and runs tests from
 the same spec alone, never the Builder's diff, and reports only which

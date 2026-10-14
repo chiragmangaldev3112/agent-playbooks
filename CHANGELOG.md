@@ -8,6 +8,15 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.39.3 — 2026-10-14
+Fresh reverification pass: two more unspaced "Owner/Blind" instances of
+the Product Owner / Blind Tester persona name, introduced in the two
+most recent rounds (`requirements-store.md`'s artifact-view section,
+`EXAMPLES.md`'s blind-build-verify entry) — the same naming-drift pattern
+from earlier in this persona's history, caught again by the same
+repo-wide grep this time rather than a manual read-through.
+
+
 ## 1.39.2 — 2026-10-14
 Audited all 41 playbooks for a report step with no `writing-style.md`
 citation — 33 already had one; 8 didn't.

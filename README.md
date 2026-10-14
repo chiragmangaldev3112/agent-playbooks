@@ -387,7 +387,7 @@ one you want.
 By default, the seven personas in `.claude/agents/*.md` (see
 `autonomy/roles.md`) are split by what they actually do — a role that
 *checks* someone else's work (Code Reviewer, Manual/Exploratory Tester,
-Product Owner/Blind Tester, and Bug Hunter — it also fixes, but it's
+Product Owner / Blind Tester, and Bug Hunter — it also fixes, but it's
 also the persona named for independently re-running a repro to confirm
 someone else's fix, so it takes the stricter tier) gets the strongest
 model, a role that only
@@ -543,7 +543,7 @@ you'd say, here's what happens" example for every single one, see
 | Playbook | What it's for |
 |---|---|
 | `autonomy/mission-mode.md` | Standing-objective autonomous operation, with an explicit autonomy dial |
-| `autonomy/roles.md` | Reusable personas (Bug Hunter, Feature Builder, Product Owner/Blind Tester, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project Bootstrapper) |
+| `autonomy/roles.md` | Reusable personas (Bug Hunter, Feature Builder, Product Owner / Blind Tester, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project Bootstrapper) |
 | `autonomy/standing-permission.md` | A written, bounded grant letting the agent skip per-action confirmation for explicitly named actions only |
 | `autonomy/blind-build-verify.md` | A builder and a tester that never see each other's work — code vs. test cases, each from the same spec only |
 | `autonomy/requirements-store.md` | Where that spec lives: a local, DB-less knowledge base by default, with an optional pluggable database backend |
@@ -583,7 +583,7 @@ you'd say, here's what happens" example for every single one, see
 ## 🧑‍🚀 Creating Your Own Bot (a Custom Persona), With a Demo
 
 The seven built-in personas in `autonomy/roles.md` (Bug Hunter, Feature
-Builder, Product Owner/Blind Tester, Code Reviewer, Test Writer,
+Builder, Product Owner / Blind Tester, Code Reviewer, Test Writer,
 Manual/Exploratory Tester, Project Bootstrapper) cover the common cases.
 A new one is six things written down:
 
