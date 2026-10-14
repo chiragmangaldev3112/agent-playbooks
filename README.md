@@ -12,7 +12,7 @@
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/network/members"><img src="https://img.shields.io/github/forks/chiragmangaldev3112/agent-playbooks?style=social" alt="Forks"></a>
   <br>
-  <img src="https://img.shields.io/badge/38_Playbooks-blueviolet" alt="38 Playbooks">
+  <img src="https://img.shields.io/badge/41_Playbooks-blueviolet" alt="41 Playbooks">
   <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
   <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
   <img src="https://img.shields.io/github/contributors/chiragmangaldev3112/agent-playbooks" alt="Contributors">
@@ -65,7 +65,7 @@ More Windows options (Git Bash, WSL): [Windows](#windows).
 💬 Then ask your agent: *"Fix this bug — reproduce it first, write a
 regression test, implement the fix, and verify the result."*
 
-**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 38 playbooks (all but `safety/config-protection.md` and `core/finish-work.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
+**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 41 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md` and `autonomy/test-case-tracker.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
 
 ---
 
@@ -338,7 +338,7 @@ the same text everywhere:
 
 | Tool | What gets generated | Why |
 |---|---|---|
-| **Claude Code** | `.claude/skills/*/SKILL.md` (one per playbook, invocable via `/name`; each description says what the playbook is, why it exists and when to use it, and the few that commit, push, release or run unattended are marked user-invoked only so the model cannot start them on its own) + `.claude/agents/*.md` (the 6 personas) | Discoverable/invocable, not just background text |
+| **Claude Code** | `.claude/skills/*/SKILL.md` (one per playbook, invocable via `/name`; each description says what the playbook is, why it exists and when to use it, and the few that commit, push, release or run unattended are marked user-invoked only so the model cannot start them on its own) + `.claude/agents/*.md` (the 7 personas) | Discoverable/invocable, not just background text |
 | **Cursor** | `.cursor/rules/*.mdc` (Agent Requested mode) | Explicit `@name` mention, on top of the `AGENTS.md` it already reads natively |
 | **Antigravity** | `.agents/skills/*/SKILL.md` | Its own docs never confirm it reads `AGENTS.md` automatically, unlike Cursor/Codex CLI — so this is the reliable path, not an assumption |
 | **Codex CLI** | nothing extra | Reads `AGENTS.md` at the root natively — confirmed, this is the tool the convention originated from |
@@ -384,12 +384,13 @@ one you want.
 
 <br>
 
-By default, the six personas in `.claude/agents/*.md` (see
+By default, the seven personas in `.claude/agents/*.md` (see
 `autonomy/roles.md`) are split by what they actually do — a role that
 *checks* someone else's work (Code Reviewer, Manual/Exploratory Tester,
-and Bug Hunter — it also fixes, but it's also the persona named for
-independently re-running a repro to confirm someone else's fix, so it
-takes the stricter tier) gets the strongest model, a role that only
+Product Owner/Blind Tester, and Bug Hunter — it also fixes, but it's
+also the persona named for independently re-running a repro to confirm
+someone else's fix, so it takes the stricter tier) gets the strongest
+model, a role that only
 *does* work a check will independently catch mistakes in (Feature
 Builder, Test Writer, Project Bootstrapper) gets a lighter/faster one.
 Override any of that — one persona, one whole tier, or "just use one
@@ -542,8 +543,11 @@ you'd say, here's what happens" example for every single one, see
 | Playbook | What it's for |
 |---|---|
 | `autonomy/mission-mode.md` | Standing-objective autonomous operation, with an explicit autonomy dial |
-| `autonomy/roles.md` | Reusable personas (Bug Hunter, Feature Builder, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project Bootstrapper) |
+| `autonomy/roles.md` | Reusable personas (Bug Hunter, Feature Builder, Product Owner/Blind Tester, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project Bootstrapper) |
 | `autonomy/standing-permission.md` | A written, bounded grant letting the agent skip per-action confirmation for explicitly named actions only |
+| `autonomy/blind-build-verify.md` | A builder and a tester that never see each other's work — code vs. test cases, each from the same spec only |
+| `autonomy/requirements-store.md` | Where that spec lives: a local, DB-less knowledge base by default, with an optional pluggable database backend |
+| `autonomy/test-case-tracker.md` | A shared, downloadable CSV of test cases with two independent status columns (tester's and anyone else's), optionally rendered as a live editable table |
 
 </details>
 
@@ -578,10 +582,10 @@ you'd say, here's what happens" example for every single one, see
 <a id="creating-your-own-bot-a-custom-persona-with-a-demo"></a>
 ## 🧑‍🚀 Creating Your Own Bot (a Custom Persona), With a Demo
 
-The six built-in personas in `autonomy/roles.md` (Bug Hunter, Feature
-Builder, Code Reviewer, Test Writer, Manual/Exploratory Tester, Project
-Bootstrapper) cover the common cases. A new one is six things written
-down:
+The seven built-in personas in `autonomy/roles.md` (Bug Hunter, Feature
+Builder, Product Owner/Blind Tester, Code Reviewer, Test Writer,
+Manual/Exploratory Tester, Project Bootstrapper) cover the common cases.
+A new one is six things written down:
 
 1. **Name** — the job, not a person ("Dependency Auditor," not "Dave").
 2. **One-line remit** — what it does, when it's used.

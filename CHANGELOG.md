@@ -8,6 +8,262 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.38.1 — 2026-10-14
+`EXAMPLES.md` worked examples for the three new blind-build-verify
+playbooks (missed when they were added in 1.35.0), and a stale "six
+built-in personas" mention there fixed too — caught during the sync
+pass into the public repo's own docs, where the same mismatch was found.
+
+## 1.38.0 — 2026-10-14
+New `quality/reference/mongodb-standards.md`: schema design, indexing,
+sharding, read/write concern + transactions, and document/aggregation
+limits, each grounded in MongoDB's own Server Manual, wired into both
+development and testing — not left as a reference nobody reads.
+
+- **Schema design**: access-pattern-first modeling, the named Attribute/
+  Bucket/Subset/Outlier patterns, and the unbounded-array-growth edge
+  case called out explicitly, with a check that actually grows the field
+  past normal size rather than asserting from the schema alone.
+- **Indexing**: the ESR rule (Equality, Sort, Range — MongoDB's own
+  compound-index field-order guidance) and `explain("executionStats")` as
+  the real check, not "the index exists so it must be used."
+- **Sharding**: shard key cardinality/hotspot guidance and the hard
+  requirement that a populated collection needs an index starting with
+  the shard key before it can be sharded at all.
+- **Read/write concern + transactions**: the documented pairing
+  requirement (`readConcern: "majority"` only guarantees anything when
+  paired with `writeConcern: "majority"`) and a check that actually
+  forces a failover scenario rather than reasoning about concern names.
+- **Document/aggregation limits**: the 16 MiB output-document limit,
+  1000-stage pipeline limit, 100 MB per-stage memory budget, and
+  `allowDiskUse` behavior — each with a note to verify against the
+  project's actual server version, since these have changed across
+  releases.
+- **Wired in, not just documented**: `quality/backend-testing.md` step 1
+  now names the concrete MongoDB edge cases to generate test cases for;
+  `change-types/database-migration.md` gained a MongoDB-specific section
+  (schema-version fields, `$jsonSchema` validators as a go-forward check,
+  not a backfill substitute) since Mongo has no engine-enforced migration
+  system the rest of that playbook's expand/migrate/contract logic can
+  lean on the way a relational `ALTER TABLE` would.
+
+## 1.37.0 — 2026-10-14
+API contracts (REST/HTTP/GraphQL), microservice resilience patterns, and
+two concurrency/database topics (indexing, deadlocks) — each tied to a
+named source, and wired into where the logic actually gets checked, not
+left as reference-only.
+
+- **`quality/reference/project-standards.md` section 4**: named standards
+  for the API contract itself — RFC 9110 (IETF Internet Standard, STD 97)
+  for HTTP semantics/status codes, Fielding's dissertation and Microsoft's
+  REST API Guidelines for REST (said honestly as "spirit of REST," not
+  strict compliance), and the GraphQL Foundation's official specification
+  (current: September 2025 edition) for GraphQL.
+- **`quality/reference/infra-standards.md` section 4**: the Twelve-Factor
+  App methodology and Chris Richardson's microservices.io pattern catalog
+  as named references for *how* to build microservices, not just whether
+  to. New circuit-breaker subsection (Michael Nygard, *Release It!*, 2007)
+  with a concrete check (force the breaker open against a dependency made
+  to fail, confirm fail-fast instead of unbounded retry).
+- **`core/feature-development.md`**: "Build to the architecture" now
+  explicitly includes resilience logic for a microservices change (a
+  service-to-service call needs a circuit breaker/timeout, not just the
+  right file location) — closes the gap where infra-standards.md's new
+  patterns were documented but nothing actually checked a diff against
+  them during ordinary feature work.
+- **`change-types/database-migration.md`**: new Indexing section (composite
+  index column order — equality before range — and "prove it with
+  `EXPLAIN`, don't trust that `CREATE INDEX` succeeding means it's used")
+  and new Deadlocks section (Coffman, Elphick & Shoshani's 1971 four
+  conditions, consistent lock ordering to break circular wait, and
+  catch-and-retry on the engine's own deadlock detection) — both topics
+  the file previously only mentioned in passing inside the concurrency
+  step, now with their own named grounding and a concrete check each.
+
+## 1.36.0 — 2026-10-14
+Named, verifiable standards (not invented convention) wired into the
+coding, review, testing, and security playbooks: a per-stack style-guide
+table, OOP/import/build-tooling sections, a new infra/platform reference
+file, and security/testing checklists tied to their named industry
+standards.
+
+- **`quality/reference/project-standards.md`**: new per-stack style-guide
+  table (§1) naming the actual official or de-facto-standard guide for
+  C#/.NET, Java, Python, Go, TypeScript, JS/Node, Dart/Flutter, Swift,
+  Kotlin, Angular, React/React Native/Expo, NestJS, Next.js, and more —
+  stated honestly where no single official guide exists (JS/Node,
+  React/RN, NestJS, Next.js) rather than presenting a community
+  convention as official. New §10 (base interfaces and OOP principles —
+  SOLID (Robert C. Martin), GRASP (Craig Larman, *Applying UML and
+  Patterns*, 1997) as the named fallback, the same pattern §1 already
+  uses for style) and §11 (build tooling/transpiler conventions, only
+  where the stack actually needs one). §1 also gained an imports-
+  resolution-convention bullet. Every citation researched against its
+  current primary source, not recalled from memory.
+- **New: `quality/reference/infra-standards.md`.** Kubernetes manifests
+  (kubernetes.io's own "Configuration Good Practices"), CI/CD and GitOps
+  (OpenGitOps's four CNCF-defined principles), load balancing/reliability
+  (the AWS/GCP/Azure Well-Architected Frameworks' reliability pillars),
+  monorepo-vs-polyrepo and monolith-vs-microservices (named as real
+  trade-offs with cited reference points — Potvin & Levenberg's Google
+  monorepo paper, Fowler's "MonolithFirst" — not a solved question),
+  systemd service units (the `systemd.unit(5)`/`systemd.service(5)` man
+  pages), Docker/container images, LLM-specific security (OWASP Top 10
+  for LLM Applications, NIST AI RMF), and network security/zero trust
+  (NIST SP 800-207).
+- **`quality/security-review.md`**: the existing checklist is now tied to
+  the named standards it already matched in spirit (OWASP Top 10, CWE
+  Top 25), plus pointers to OWASP WSTG (testing methodology), the OWASP
+  API Security Top 10, and OWASP MASTG (mobile) — and to the new
+  LLM-security section for an LLM-backed feature specifically, which the
+  original web-app-shaped checklist doesn't cover.
+- **`quality/frontend-testing.md`**: tied to Playwright's own official
+  best-practices page, the W3C WebDriver spec (what Selenium/WebdriverIO
+  actually implement — Selenium itself isn't a standard), and WCAG 2.2
+  (the current W3C Recommendation) for the accessibility step.
+- **`core/bug-fix.md`, `core/feature-development.md`,
+  `quality/code-review.md`**: each now points directly at
+  `project-standards.md`'s per-stack table and OOP section — the fix
+  step, the build step, and the review step all check the same named
+  standard now, not just the build step transitively.
+- **`autonomy/roles.md`, `~/.claude/agents/product-owner-blind-tester.md`**:
+  wired the Product Owner / Blind Tester persona (added in 1.35.0) as an
+  actual Claude Code sub-agent — `model: opus` per its verify tag, tools
+  scoped to exclude `Grep`/`Glob` on source — closing the gap where the
+  other six personas had agent files and this one didn't.
+
+## 1.35.0 — 2026-10-14
+A blind builder/tester split, the spec store it reads from, and a
+shared test-case tracker — three new `autonomy/` playbooks, plus a
+plan-presentation step added to the core loop.
+
+- **New: `autonomy/blind-build-verify.md`.** A Builder and a Product
+  Owner / Blind Tester role that never see each other's work — the builder
+  reads only its task's entry from the requirements store, the tester
+  writes tests only from that same spec, neither reads the other's
+  output. States plainly, per tool, what actually enforces that
+  isolation (a Claude Code `tools:` scope plus a separate `git worktree`
+  is the strongest available here) versus what's instruction-only on a
+  tool with no sub-agent/path-scoping mechanism — same honesty
+  `safety/safety-guardrail.md` already applies to its own enforcement
+  claims, not a new standard invented for this file.
+- **New: `autonomy/requirements-store.md`.** The shared spec both roles
+  read: a local, git-tracked, database-free knowledge base by default —
+  plain files, `grep`-able, no server or credential to manage — with an
+  optional pluggable database backend (a client's own Postgres, graph
+  DB, or tracker) behind the same four operations (`read`/`list`/
+  `query`/`write`/`link`) either way, so swapping backends later doesn't
+  mean rewriting the roles built on top of it.
+- **New: `autonomy/test-case-tracker.md`.** A shared CSV of test cases
+  with two independent status columns — the tester's own, and anyone
+  else's (a reviewer, the requester, another agent) — plus notes and a
+  solution field, always exportable as plain CSV regardless of tool, and
+  optionally rendered as an editable live table (Claude Code's Artifact
+  tool with its `db` capability, or whichever equivalent another tool
+  offers) that syncs back to the same file rather than becoming a second,
+  divergent source of truth. Specifies concrete UI bar for the live
+  rendering (status as a colored badge, the two columns visually grouped
+  apart, inline editing, a one-click download, filter by status, no
+  horizontal scroll at phone width) rather than leaving "friendly" vague.
+- **`core/engineering-loop.md` step 2**: planning now includes presenting
+  the plan to the requester before implementing, for anything beyond the
+  trivial change the step already exempts, with an explicit (requester-
+  stated, not assumed) option to skip the approval pause and go straight
+  to building and the independent verify step.
+- **`autonomy/roles.md`**: new "Product Owner / Blind Tester" persona, and
+  a note on Feature Builder's isolation when paired with it.
+- **`quality/frontend-testing.md`, `quality/backend-testing.md`,
+  `core/feature-development.md`**: cross-referenced the new test-case
+  tracker as the standard way to record case status whenever more than
+  one person tracks it over time — ordinary development and testing
+  work, not only inside the new blind-build-verify flow.
+
+## 1.34.0 — 2026-10-10
+The three Claude Code hooks fail closed, a wider blocklist, more secret/config
+coverage, and a duplicate-code + named-style-guide check in the defaults.
+
+- **Fix: two of the three Claude Code hooks let a call through on exactly the
+  failure they exist to catch.** `claude-code-secret-hook.sh` and
+  `claude-code-config-protection-hook.sh` each had their own JSON-reading
+  code, never brought in line with 1.33.0's fix to the guardrail hook: on
+  input that wasn't valid JSON they exited 5 (`set -e` tripping on `python3`
+  reading nothing), and with neither `jq` nor `python3` installed they exited
+  127 (command not found) — both are non-blocking exits in Claude Code, so a
+  secret write or a config edit proceeded instead of being checked. New
+  `scripts/hook-lib.sh`, shared by all three adapters, reads the tool call once
+  and fails closed (exit 2, with a reason) on anything it cannot parse or run:
+  invalid JSON, empty input, neither parser present, or the sibling checker
+  script missing or crashing. Confirmed by actually running all three adapters
+  this way, not assumed from the guardrail fix alone — new
+  `evals/claude-code-hooks-fail-closed.eval.sh` (46 cases) covers every
+  adapter the same way, including a Windows install with only a `python`
+  binary (no `python3`) and a partial copy missing `hook-lib.sh` itself.
+- **The parser can now be `python` or the Windows `py -3` launcher, not only
+  `python3`.** A stock Windows Python install often has no `python3` on PATH
+  at all, which used to mean "no parser" there even with Python installed.
+- **`scripts/block-dangerous.sh` widens from one target (`/`) to every
+  top-level system and home folder** (`/usr`, `/etc`, `/var`, `/home`,
+  `/Users`, `/System`, `/bin`, `/opt`, and more, plus `~`/`$HOME` and their
+  `/*` spellings) — `rm -rf /usr` and `rm -rf ~/*` both passed clean before
+  this, confirmed by running them. Also blocks `TRUNCATE TABLE` (alongside the
+  existing `DROP TABLE`/`DROP DATABASE`), a device format (`mkfs`), and macOS
+  `diskutil erase`/`partition`/`reformat`. A path *inside* one of the new
+  folders (`rm -rf /usr/local/share/foo`) still passes, confirmed in the
+  widened eval. The pattern-matching logic itself is unchanged, refactored
+  into two small shared helpers (`all_match`, `check`) so the per-clause and
+  per-pipeline-group checks aren't five near-identical blocks; the old
+  behavior was differential-tested against the new script over several
+  thousand generated commands (verbs × targets × joiners).
+- **`scripts/detect-secrets.sh` adds eleven more token shapes**: Anthropic and
+  OpenAI (project, service-account, and legacy) API keys, a GitLab personal
+  access token, a Hugging Face token, an npm token, a SendGrid key, a Slack
+  incoming-webhook URL, a Stripe webhook secret, and a DigitalOcean token. Also
+  fixed: `--file` on a path that doesn't exist, isn't readable, or is a
+  directory used to exit 0 ("no secret found") — it now blocks, since a check
+  that couldn't read its input never looked. New look-alike cases (a bare
+  `sk-ant-` prefix, a placeholder Slack webhook) keep passing, so a tightened
+  pattern doesn't start crying wolf on ordinary text.
+- **`scripts/block-config-edit.sh` adds around twenty-five more config
+  filenames**, covering stacks the built-in list missed entirely: Python
+  (`.flake8`, `.pylintrc`, `mypy.ini`, `.coveragerc`), Go (`.golangci.yml`),
+  Ruby (`.rubocop.yml`), Java/C++ style enforcement (`checkstyle.xml`,
+  including a project pointing it at Google's own `google_checks.xml`,
+  `.clang-format`, `.clang-tidy`), Rust (`rustfmt.toml`, `clippy.toml`), Swift
+  (`.swiftlint.yml`), Kotlin (`detekt.yml`), Scala (`.scalafmt.conf`), plus
+  `.editorconfig`, `.eslintignore`/`.prettierignore`, `.yamllint`,
+  `.hadolint.yaml`, and `.pre-commit-config.yaml`.
+- **`quality/reference/project-standards.md` section 1 adds a duplicate-code
+  check** (the project's own detector, or a language-general one like
+  `jscpd`/`pylint`/PMD's CPD where it has none) and **a named-style-guide
+  fallback** for a project with no formatting convention of its own — Google's
+  style guides, PEP 8, Effective Go, Airbnb's JS guide, or the language's own
+  official one — wired to the same "enforce it with a test" discipline the
+  rest of the section already requires, not a substitute for it.
+- `safety/safety-guardrail.md`, `safety/secret-scan.md`, and
+  `safety/config-protection.md` document the shared `hook-lib.sh`, the
+  fail-closed behavior, and the widened lists; each points at the eval that
+  proves its own claim rather than just asserting it.
+- **Three of `media/doc-review.md` and `media/video-review.md`'s own scripts
+  had zero regression coverage** — each one's documented historical bug
+  (found and fixed in a past manual verification pass, per the playbook's own
+  "What's actually been verified" section) had nothing guarding it from
+  silently coming back. New `evals/render-doc-pages.eval.sh` (the `pdftoppm`
+  double-suffix filename bug), `evals/doc-page-index.eval.sh` (the page/line
+  mapping, checked against a real `cupsfilter`-built multi-page PDF), and
+  `evals/extract-media.eval.sh` (a silently-empty `frame_last.png`, a stale
+  `frames/`/`audio.wav` left over from a previous run, and the
+  no-audio-stream crash) — 36 cases total, each confirmed to actually go red
+  when its guarded bug is reintroduced before being left green. The
+  `frame_last.png` case specifically needed a real 1fps synthetic clip to
+  reproduce: a 5-second clip at normal frame rates never actually hit the
+  bug at production's own retry margins, which a first draft of this eval
+  didn't catch — probing for the real failing margin (confirmed at 0.01–0.02s
+  on ordinary clips, and reliably at the production code's own first margin,
+  0.5s, on a 1fps one) is what makes the eval a real regression guard instead
+  of one that passes whether or not the retry logic is even still there.
+  `evals/README.md` updated: 32 prose-only playbooks now, not 33
+  (`video-review.md` joins the script-backed, eval-covered list).
+
 ## 1.33.0 — 2026-10-10
 Project standards as defaults, and a fix to the Claude Code command guard.
 

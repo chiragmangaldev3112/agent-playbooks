@@ -222,7 +222,7 @@ listed hard stop rather than improvising past it.
 **Scenario:** wanting a recurring dependency-vulnerability check.
 **You say:** "I want something that regularly checks for vulnerable
 dependencies."
-**What happens:** rather than one of the six built-in personas, a new
+**What happens:** rather than one of the seven built-in personas, a new
 one gets defined in four lines (name, remit, which playbook it follows,
 access level) — a "Dependency Auditor" that's read-only for the audit
 itself, matching the existing template rather than inventing a new format.
@@ -233,15 +233,15 @@ build/fix work without dulling review.
 keep review on the strongest one" — or nothing at all, since that's
 already the installed default.
 **What happens:** each persona is tagged *verify* or *implement* — Code
-Reviewer, Manual/Exploratory Tester, and Bug Hunter (it also fixes, but
-it's the persona named for independently re-confirming someone else's fix)
-default to the strongest model; Feature Builder, Test Writer, and Project
-Bootstrapper default to a lighter one, since a verify-tagged pass
-independently re-checks their work anyway. Override one persona
-(`AGENT_PLAYBOOKS_MODEL_CODE_REVIEWER=haiku`), a whole tier
-(`AGENT_PLAYBOOKS_MODEL_VERIFY`/`AGENT_PLAYBOOKS_MODEL_IMPLEMENT`), or set
-both tier variables to the same value for one model everywhere — set at
-install time, not something to configure after the fact.
+Reviewer, Manual/Exploratory Tester, Product Owner/Blind Tester, and Bug
+Hunter (it also fixes, but it's the persona named for independently
+re-confirming someone else's fix) default to the strongest model; Feature
+Builder, Test Writer, and Project Bootstrapper default to a lighter one,
+since a verify-tagged pass independently re-checks their work anyway.
+Override one persona (`AGENT_PLAYBOOKS_MODEL_CODE_REVIEWER=haiku`), a
+whole tier (`AGENT_PLAYBOOKS_MODEL_VERIFY`/`AGENT_PLAYBOOKS_MODEL_IMPLEMENT`),
+or set both tier variables to the same value for one model everywhere —
+set at install time, not something to configure after the fact.
 
 ### `autonomy/standing-permission.md`
 **Scenario:** tired of re-approving test runs and feature-branch commits.
@@ -251,6 +251,38 @@ branches without asking each time."
 action types — a later request to merge to `main` or deploy still gates
 normally, since it was never named in the grant, no matter how related
 it seems.
+
+### `autonomy/blind-build-verify.md`
+**Scenario:** want a test suite that can't quietly pass because the
+tester saw how the code actually works.
+**You say:** "Set up a builder and a tester for this feature who don't
+see each other's work."
+**What happens:** a Product Owner/Blind Tester agrees the requirement
+and writes the spec to the requirements store; a Builder reads only that
+spec and builds on a new branch; the tester writes and runs tests from
+the same spec alone, never the Builder's diff, and reports only which
+checks failed — never the expected values — back to the Builder on a
+fail.
+
+### `autonomy/requirements-store.md`
+**Scenario:** the blind-tester flow above needs one place to hold the
+spec, readable by the tester and the builder but writable only by the
+tester.
+**You say:** nothing extra — this is the shared store
+`blind-build-verify.md` already reads from and writes to.
+**What happens:** a local, git-tracked file per requirement by default
+(no database, no server) — or, if the project already runs one, the same
+four operations (`read`/`list`/`query`/`write`/`link`) point at a real
+database instead, without changing how either role uses it.
+
+### `autonomy/test-case-tracker.md`
+**Scenario:** a tester and a human reviewer both need to track the same
+set of test cases over time, without one overwriting the other's calls.
+**You say:** "Track these test cases somewhere we can both update."
+**What happens:** a CSV with two independent status columns (the
+tester's own, and the reviewer's), notes and a solution field, always
+downloadable — and, in Claude Code, optionally rendered as a friendly
+editable table that syncs back to the same file.
 
 ## Safety
 

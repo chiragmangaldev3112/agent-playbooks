@@ -474,7 +474,7 @@ Reusable personas, and when delegating to one is worth it
 flowchart TD
     A{Need to delegate?} -->|Can't state the exact ask,\nor can't verify the answer| B[Do it directly]
     A -->|Can do both| C{Existing persona fits?}
-    C -->|Yes| D[Use it: Bug Hunter,\nFeature Builder, Code Reviewer,\nTest Writer, Manual Tester,\nProject Bootstrapper]
+    C -->|Yes| D[Use it: Bug Hunter,\nFeature Builder, Product Owner/\nBlind Tester, Code Reviewer,\nTest Writer, Manual Tester,\nProject Bootstrapper]
     C -->|No| E[Define new role: name, remit,\nplaybook, access, model tier,\nhow its work gets checked]
     E --> T[Trial on tasks with\nknown answers]
     T -->|Wrong or invented findings| E
@@ -490,7 +490,7 @@ flowchart TD
     A[Generating a persona's\nsub-agent at install] --> B{Persona-specific env var set?\nAGENT_PLAYBOOKS_MODEL_-PERSONA-}
     B -->|Yes| C[Use that model—\nwins over everything below]
     B -->|No| D{Persona tagged\nverify or implement?}
-    D -->|verify: Code Reviewer,\nManual/Exploratory Tester,\nBug Hunter| E{AGENT_PLAYBOOKS_MODEL_VERIFY set?}
+    D -->|verify: Code Reviewer,\nManual/Exploratory Tester,\nBug Hunter, Product Owner/\nBlind Tester| E{AGENT_PLAYBOOKS_MODEL_VERIFY set?}
     D -->|implement: Feature Builder,\nTest Writer, Project Bootstrapper| F{AGENT_PLAYBOOKS_MODEL_IMPLEMENT set?}
     E -->|Yes| C
     E -->|No| G[Default: opus]
@@ -512,6 +512,28 @@ flowchart TD
     E -->|No| F[Proceed without asking]
     F --> G[Log action + which\ngrant line covered it]
     D --> H[Ask for confirmation]
+```
+
+### `autonomy/blind-build-verify.md`
+
+A builder and a tester that never see each other's work — code vs. test cases, each from the same spec only
+
+```mermaid
+flowchart TD
+    A[Request arrives] --> B[Product Owner / Blind Tester:\nagree acceptance criteria]
+    B --> C[Write spec to\nrequirements store]
+    C --> D[Present plan to requester]
+    D -->|Wants to review the plan| E[Discuss, revise,\nrecord the decision]
+    D -->|Skip straight to review| F
+    E --> F[Builder reads its task's\nspec only, builds on a new branch]
+    F --> G[Tester writes test cases\nfrom the spec, into the tracker]
+    G --> H[Tester runs tests against\nthe Builder's branch]
+    H -->|Fail| I[Tester reports which checks\nfailed, not expected values]
+    I --> F
+    H -->|Pass| J{Matches AGENTS.md rule 5?}
+    J -->|Yes| K[Stop, ask for\nconfirmation]
+    J -->|No| L[Report]
+    K -->|Approved| L
 ```
 
 
