@@ -8,6 +8,111 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.39.1 — 2026-10-14
+Actually wired 1.39.0's generic Builder/Tester/Reviewer workflow into the
+playbooks it was built for, and gave `requirements-store.md` the same
+optional live-artifact view `test-case-tracker.md` already has.
+
+- **Closed the gap where the generic workflow existed but nothing pointed
+  at it.** `core/bug-fix.md`, `core/feature-development.md`,
+  `change-types/refactoring.md`, `database-migration.md`,
+  `dependency-upgrades.md`, `performance.md`, and `incident-response.md`
+  each now point to `autonomy/roles.md`'s standard workflow for who plays
+  Builder/Tester/Reviewer and their access levels, instead of each
+  playbook's own prose being the only word on it (or, for several of
+  these, no word on it at all). `quality/backend-testing.md` and
+  `frontend-testing.md` are named as the Tester role's own discipline.
+  `autonomy/blind-build-verify.md` now says explicitly it's that same
+  workflow escalated to full isolation, not a disconnected special case.
+  `change-types/release.md` deliberately skipped — it decides how an
+  already-built change ships, it doesn't implement anything itself.
+- **`autonomy/requirements-store.md`**: new "Rendering a live view"
+  section, matching `test-case-tracker.md`'s pattern exactly — a Claude
+  Code Artifact dashboard (status, `relates_to`, and the new
+  `touches_docs` links rendered as clickable paths into
+  `codebase-mapping.md`'s module docs, closing that loop) with the flat
+  files as the durable source the artifact syncs back to.
+- Caught `frontend-testing.md` hitting its byte budget again from the
+  Tester-role pointer; dropped it there since `backend-testing.md`
+  already carries the same note and `roles.md`'s table is the real
+  source of truth either way — not worth re-fighting the ceiling a
+  second time this session.
+
+## 1.39.0 — 2026-10-14
+A generic Builder/Tester/Test-runner/Reviewer workflow referenced by every
+implementing playbook instead of duplicated in each one, a leak-detection
+technique for `blind-build-verify.md`, and three pieces closing the gap
+between our mapping playbooks and a proper "knowledge base that follows
+the code."
+
+- **`autonomy/roles.md`**: new "The standard workflow: Builder → Tester →
+  Reviewer" section — the default shape for *any* implementing task (bug
+  fix, feature, refactor), not just `blind-build-verify.md`'s isolation
+  case. Refined to four roles after review: Builder (writes code), Tester
+  (understands the requirement, writes cases), Test runner (executes them
+  — a command, not a persona), Reviewer (verifies the whole claim, not
+  just the diff). One place defines the access levels; playbooks that
+  implement now point here instead of restating their own.
+- **`autonomy/blind-build-verify.md`**: new "Detecting a leak, not just
+  preventing one" section — hidden marker values planted in test cases
+  (a technique straight from the Dark-Factory-style builder/tester setups
+  this flow was modeled on), searched for in the Builder's diff before
+  recording a PASS. Tool-level isolation stops the easy path; this
+  catches a determined bypass tool-level enforcement alone can't.
+- **`mapping/codebase-mapping.md`**: new step 6, an "Open questions"
+  section for a claim that can't be cited — instead of either omitting it
+  or writing it down as confident fact. `mapping/database-mapping.md`
+  inherits the same convention by cross-reference. (Renumbered steps 7–11
+  accordingly; fixed every internal and cross-file step-number reference
+  the renumbering touched, including `database-mapping.md`'s "steps
+  6–8" citation, now "steps 7–9".)
+- **`autonomy/requirements-store.md`**: new `touches_docs` frontmatter
+  field linking a requirement to the module/table docs it actually
+  affects (filled in from the real diff, not guessed from the spec up
+  front) — the same requirement↔page link a Miles/Vigil-style knowledge
+  base keeps, as a frontmatter list and a grep rather than a graph
+  database, for the same reason `relates_to` already is one.
+- **`autonomy/mission-mode.md`**: new worked example objective — keeping
+  `codebase-mapping.md`'s docs current proactively, on a schedule,
+  instead of only the reactive staleness check that fires when a task
+  next needs the doc. Cross-referenced from `codebase-mapping.md` itself.
+- **`change-types/incident-response.md`**: step 4's restoration check was
+  self-confirmed by the same person who did the rollback, with no
+  independence requirement — added: a second responder confirms
+  independently where one's available; where genuinely solo, that's
+  stated explicitly in the write-up rather than left looking equivalent
+  to an independent check.
+
+## 1.38.2 — 2026-10-14
+Closed a real independent-verification gap in the mapping and bootstrap
+playbooks: each let the same pass that produced the content also declare
+it correct, exactly what `core/engineering-loop.md`'s core rule exists to
+prevent.
+
+- **`mapping/codebase-mapping.md`**: step 5 (verifying a module doc's
+  citations) and step 8 (verifying a generated skill/agent) now both
+  require a separate pass — a different agent instance, or a fresh
+  instance reading cold — to spot-check a sample before either is
+  reported as verified, rather than the authoring pass re-reading its own
+  work and calling that a check.
+- **`mapping/database-mapping.md`**: inherits the fix automatically,
+  since its own verification steps already defer to
+  `codebase-mapping.md`'s steps 5 and 6–8 by name.
+- **`project/project-bootstrap.md`**: step 8's verification (test/lint
+  commands, hook tests, persona trials) was entirely self-checked by the
+  bootstrapping pass itself — the highest-stakes instance of this gap,
+  since every other playbook treats the `AGENTS.md` this step produces as
+  ground truth. A separate pass now re-runs a sample of step 8's checks
+  before the bootstrap is reported done.
+- Audited every playbook in the repo for whether it cites
+  `core/engineering-loop.md`'s independent-verification rule (or
+  addresses independence some other way); the above three were the real
+  gaps. Reference files, pure-judgment playbooks with nothing to
+  implement (`core/clarify-before-building.md`), script-enforced safety
+  checks, and `media/demo-video.md` (narrates an already-verified
+  feature) were checked and correctly don't need it.
+
+
 ## 1.38.1 — 2026-10-14
 `EXAMPLES.md` worked examples for the three new blind-build-verify
 playbooks (missed when they were added in 1.35.0), and a stale "six
