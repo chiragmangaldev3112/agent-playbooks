@@ -8,6 +8,20 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.39.2 — 2026-10-14
+Audited all 41 playbooks for a report step with no `writing-style.md`
+citation — 33 already had one; 8 didn't.
+
+- **`autonomy/mission-mode.md`, `core/finish-work.md`,
+  `mapping/codebase-mapping.md`, `mapping/database-mapping.md`,
+  `project/project-audit.md`, `project/project-bootstrap.md`,
+  `quality/code-review.md`, `quality/docs-sync.md`**: each report step
+  now cites `quality/writing-style.md` directly, matching the convention
+  the other 33 playbooks already follow — AGENTS.md rule 7 states this
+  applies to any prose output from any playbook, but the per-playbook
+  citation is what makes it discoverable without already knowing the
+  rule exists.
+
 ## 1.39.1 — 2026-10-14
 Actually wired 1.39.0's generic Builder/Tester/Reviewer workflow into the
 playbooks it was built for, and gave `requirements-store.md` the same
