@@ -65,7 +65,12 @@ More Windows options (Git Bash, WSL): [Windows](#windows).
 💬 Then ask your agent: *"Fix this bug — reproduce it first, write a
 regression test, implement the fix, and verify the result."*
 
+**[▶ Watch the teaser](https://chiragmangaldev3112.github.io/agent-playbooks/teaser.html)** — a ~95-second tour of the engineering-loop discipline: one `AGENTS.md`, classify-route-verify, bug-fix, feature-development, code review, independent verification, the safety guardrail, blind build/verify, and codebase mapping.
+
+<!-- Commented out, not deleted -- the older, longer narrated walkthrough. Un-comment to bring it back
+alongside or instead of the teaser above; its own file (docs/demo.html) and release asset are untouched.
 **[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 41 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md` and `autonomy/test-case-tracker.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
+-->
 
 ---
 
