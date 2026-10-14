@@ -313,11 +313,12 @@ Here's exactly how:
 
 You don't need to do anything for this — it runs on every install. To
 check it yourself: the public keys are the `ALLOWED_SIGNERS` lines near the
-top of `install.sh` (three: the original key, the one from the 2026-09-29
-rotation, and the one rotated in on 2026-10-06 that signs releases from 1.32.0
-on, with fingerprint `SHA256:0+6g7WwxRhZMx84WpICeN6d5MdtLhmowi+Fylz20bUE`; you
-can confirm it with `ssh-keygen -lf` on the key), and the verification logic is
-the block right before any file gets copied into your project.
+top of `install.sh` (four: the original key, the one from the 2026-09-29
+rotation, the one rotated in on 2026-10-06 that signed releases from 1.32.0
+through 1.39.4, and the one rotated in on 2026-10-14 that signs releases
+from 1.39.5 on, with fingerprint `SHA256:+It7ItlCgVSSOIgCbIMneVnms0E3uknzeXfQIBdOv0k`;
+you can confirm it with `ssh-keygen -lf` on the key), and the verification
+logic is the block right before any file gets copied into your project.
 
 <details>
 <summary>🔎 What changed vs. before, and why it matters (click to expand)</summary>

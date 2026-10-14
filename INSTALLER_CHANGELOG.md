@@ -10,6 +10,18 @@ immutable URL — see README.md's "Two different version numbers" section.
 This file exists mainly so the repo's Releases reflect real, distinct
 states of the installer rather than being empty.
 
+## 2.5.1 — 2026-10-14
+**Fourth trusted release-signing key**, rotated in today. Releases from
+1.39.5 on are signed with it; the third key (which signed 1.32.0 through
+1.39.4) stays listed, since those releases must stay installable. Real
+installs hit this directly: `install.sh` correctly refused the first
+attempt at fetching 1.39.5 with "release manifest signature verification
+failed," because the new key's public half hadn't been added to
+`ALLOWED_SIGNERS` yet when that release went out — that's the
+verification working as designed, not a bug, but it meant real users
+got blocked until this shipped. Fingerprint:
+`SHA256:+It7ItlCgVSSOIgCbIMneVnms0E3uknzeXfQIBdOv0k`.
+
 ## 2.5.0 — 2026-10-10
 **Gemini CLI gets a generated pointer file, closing a real cross-tool gap.**
 
