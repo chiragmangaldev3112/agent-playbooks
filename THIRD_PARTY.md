@@ -10,18 +10,19 @@ you redistribute anything or build on it commercially.
 
 | Tool | Used for | Where | Licence (verify upstream) |
 |---|---|---|---|
-| [jq](https://jqlang.github.io/jq/) | Parsing the check-in response and hook input | `install.sh`, `scripts/claude-code-secret-hook.sh` | MIT |
+| [jq](https://jqlang.github.io/jq/) | Parsing the check-in response and hook input | `install.sh`, `scripts/hook-lib.sh` (sourced by all three Claude Code hook adapters) | MIT |
 | [curl](https://curl.se/) | Calling the check-in endpoint | `install.sh` | curl licence (MIT-style) |
 | [FFmpeg](https://ffmpeg.org/) | Screen capture, muxing, captions | `demo-video.md`, `scripts/assemble.sh`, `scripts/record-screen.sh`, `scripts/captions.sh` | LGPL 2.1+ or GPL 2+, depending on your build |
 | [espeak-ng](https://github.com/espeak-ng/espeak-ng) | Offline text to speech | `demo-video.md`, `scripts/narrate.sh` | GPL 3.0 |
 | [Piper](https://github.com/OHF-Voice/piper1-gpl) (original [rhasspy/piper](https://github.com/rhasspy/piper) is archived) | Neural text to speech | `demo-video.md`, `scripts/narrate.sh` | The original rhasspy/piper was MIT; current releases are GPL 3.0. Each voice model carries its own licence |
 | [whisper.cpp](https://github.com/ggml-org/whisper.cpp) or [openai-whisper](https://github.com/openai/whisper) | Speech to text for video review | `scripts/transcribe.sh`, `scripts/extract-media.sh` | MIT (both). Model weights have their own terms |
-| [Poppler](https://poppler.freedesktop.org/) (`pdftotext`, `pdftoppm`, `pdfinfo`) | PDF text and page rendering | `scripts/extract-doc-text.sh`, `scripts/render-doc-pages.sh`, `scripts/doc-page-index.sh` | GPL 2 or 3 |
+| [Poppler](https://poppler.freedesktop.org/) (`pdftotext`, `pdftoppm`, `pdfinfo`) | PDF text and page rendering | `scripts/extract-doc-text.sh` (`pdftotext`), `scripts/render-doc-pages.sh` (`pdftoppm`, `pdfinfo`, and `pdftotext` as a fallback) | GPL 2 or 3 |
 | [Pandoc](https://pandoc.org/) | Document text extraction | `scripts/extract-doc-text.sh` | GPL 2+ |
 | [LibreOffice](https://www.libreoffice.org/) | Rendering office documents to PDF | `scripts/render-doc-pages.sh` | MPL 2.0 |
 | [ShellCheck](https://www.shellcheck.net/) | Linting the shell scripts | Referenced in the playbooks | GPL 3.0 |
 | [markitdown](https://github.com/microsoft/markitdown) | Spreadsheet text extraction (`pip install 'markitdown[all]'`) | `scripts/extract-doc-text.sh` | MIT |
 | [Playwright](https://playwright.dev/) | Browser driven UI testing examples | `quality/frontend-testing.md`, `demo-video.md` | Apache 2.0 |
+| [playwright-cli](https://github.com/microsoft/playwright-cli) (`npm install -g @playwright/cli`) | Named as a concrete, low-setup option for driving a real browser when no project-specific browser automation exists yet | `quality/exploratory-qa.md` | Apache 2.0 |
 | [Google Chrome](https://www.google.com/chrome/) or [Chromium](https://www.chromium.org/) | Headless rendering/recording of the teaser's Canvas animation to mp4, driven directly over the Chrome DevTools Protocol | `teaser/record.mts`, `teaser/chrome.ts` | Chrome is proprietary freeware; Chromium is BSD-style |
 | [tsx](https://github.com/privatenumber/tsx) | Runs `record.mts` directly, no build step | `teaser/package.json`, `teaser/record.mts` | MIT |
 

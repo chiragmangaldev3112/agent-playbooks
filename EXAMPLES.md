@@ -127,6 +127,18 @@ destructive flows over static pages, then hands each prioritized flow to
 producing one report with a coverage map (tested / tested-lightly /
 explicitly skipped, with a reason) plus findings, not a bare bug list.
 
+### `quality/design-review.md`
+**Scenario:** a new marketing landing page built from a brief, no
+existing design system in the repo.
+**You say:** "Build the new landing page from this brief."
+**What happens:** writes a short `DESIGN.md` from the brief before
+building, runs a deterministic check for generic-looking layout tells
+(purple gradients, bounce easing, near-zero border-radius variety) and
+fixes what it finds, then screenshots the result at 375px/768px/1280px,
+fixes the top issues from a real look at those screenshots (capped at
+three rounds, not open-ended polishing), and reports the detector result
+plus the screenshots rather than just saying "it looks good."
+
 ### `quality/docs-sync.md`
 **Scenario:** a README that hasn't been touched in a year.
 **You say:** "Check if the README is still accurate."
@@ -154,6 +166,18 @@ audience, where subtler AI-sounding patterns matter more), a follow-up
 pass through [github.com/blader/humanizer](https://github.com/blader/humanizer)
 catches what this playbook's own checklist doesn't name explicitly — used
 after, not instead of, the checks above.
+
+### `quality/token-efficiency.md`
+**Scenario:** a long-running debugging session that's read several large
+log files and is about to need its context compacted.
+**You say:** "Keep going — fix the actual issue."
+**What happens:** before reading on, greps each log for the specific
+error rather than re-reading the whole file; when context needs to
+shrink, the user's own earlier statement of what "fixed" means stays
+pinned along with the most recent turns, only the superseded tool output
+gets pruned, and a tool result never ends up separated from the call
+that produced it — if something genuinely can't be kept, that's said
+explicitly rather than silently dropped.
 
 ## Change types
 

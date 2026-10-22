@@ -8,6 +8,106 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.41.0 — 2026-10-22
+Added `quality/token-efficiency.md` — a new, 43rd playbook, and a
+repo-wide discipline like `writing-style.md` rather than a task type: read
+narrow before reading wide, reuse a script before regenerating it,
+summarize a large tool result before carrying it forward unless the full
+result is itself the evidence a later independent check needs, and the
+invariants for shrinking a long session without losing a user's own
+stated words or orphaning a tool result from its call. Added as
+`AGENTS.md` rule 9 and in `engineering-loop.md`'s classify list, the same
+place rule 7/`writing-style.md` is wired.
+
+Looked at two external repos researching this (`0x7067/claude-jev`,
+`tamaratran/fast-jev-compaction`) that both depend on a single paid,
+closed, waitlisted third-party classifier API with vendor-only speed/cost
+claims and no independent benchmark — not adopted as a dependency for
+that reason; this playbook is the free, model-agnostic version of the
+same compaction-invariant idea, usable with nothing but a grep and the
+host's own context window.
+
+Also wired `engineering-loop.md` steps 3 and 4 to `autonomy/roles.md`'s
+existing "Model tier per persona" section explicitly: step 3
+(Implement) now names that section's **implement** tier as the default
+even in a single-session flow with no sub-agent delegation; step 4
+(Verify) now names the **verify** tier, and the user's own configured
+ceiling (`AGENT_PLAYBOOKS_MODEL_VERIFY`/`_IMPLEMENT`, already defined in
+`roles.md`, now actually cited from the loop that runs every task)
+explicitly as what "strongest available" means — the loop never
+second-guesses that choice upward, only reaches lighter within it where
+a step doesn't need the ceiling.
+
+Ran `maintainer/check-playbooks.py` as the independent structural check
+on everything in 1.40.0/1.41.0 together and fixed what it found: added
+`DESIGN.md` to the linter's known-non-playbook-filename list (a false
+positive — `design-review.md` names it as a project artifact to create,
+not a playbook here); added the missing `README.md` listing for
+`token-efficiency.md`; and trimmed `frontend-testing.md` back under the
+30720-byte budget after this and the previous entry's additions pushed
+it 841 bytes over, rather than filing a budget exception for growth that
+was trimmable. Also independently re-verified: every one of the 43
+playbooks is referenced from at least one other file (no orphans), every
+backtick-quoted `.md`/`.sh` path in the repo resolves to a real file (no
+broken links), and `AGENTS.md`'s table lists exactly the 43 files on
+disk, no more and no fewer.
+
+## 1.40.0 — 2026-10-22
+Added `quality/design-review.md` — a new, 42nd playbook — for whether a
+UI actually looks deliberate, not just whether it renders: a deterministic
+check for generic/AI-looking layout problems, then a bounded multi-viewport
+screenshot self-review (capped rounds, not open-ended polishing). Wired it
+into the loop so there's no dead end reaching it: `engineering-loop.md`
+step 1 routes to it directly, `feature-development.md` step 7 hands a
+UI-visible feature to it before reporting done, `code-review.md` step 4
+checks a UI-visible diff went through it before sign-off, and
+`autonomy/roles.md`'s Code Reviewer and Manual/Exploratory Tester entries
+both point at it instead of improvising an ad hoc visual check.
+
+Also, independently of the new playbook:
+- `feature-development.md` gained a new step 3: before writing new code,
+  check whether it already exists in the codebase, the standard library,
+  the platform, or an installed dependency, in that order — a real
+  security/validation/data-loss concern still gets handled in full
+  regardless of which rung it lands on. Subsequent steps renumbered 4-9.
+- `core/finish-work.md` step 4 now asks for a deferred-work marker (the
+  project's own convention, or a plain comment naming what and why) when
+  a shortcut was taken to fit scope or time, instead of leaving it only in
+  the report for someone to later rediscover in the code.
+- `quality/code-review.md` gained a step naming correctness-then-quality
+  as two separate re-reads of the diff for a high-stakes change
+  (security-sensitive, data-destructive, hard-to-reverse) rather than one
+  pass judging both at once; steps renumbered to 11 total.
+- `quality/frontend-testing.md` and `quality/exploratory-qa.md` now name
+  a concrete, low-setup browser-automation CLI option for evidence
+  capture when a project has no automation of its own yet, instead of
+  leaving "use a real browser" tool-agnostic with nothing to actually
+  reach for.
+- `THIRD_PARTY.md` gained a row for that CLI tool.
+
+Each of the above was checked against a real external project during
+research, credited here rather than in the playbook text itself (the
+instructional prose stays tool-agnostic and original, not a restatement
+of any one project's wording): the code-minimalism step against
+dietrichgebert/ponytail's reuse-before-writing ladder; the deferred-work
+marker against the same project's debt-ledger convention;
+the two-stage review step against obra/superpowers' stated two-stage
+review shape (its own exact subagent mechanics were unconfirmed from the
+README alone, so this entry states only the part that was verifiable —
+two separate re-reads, not an unverified implementation detail); the
+design-review playbook's deterministic-detector-plus-screenshot shape
+against pbakaus/impeccable and leonxlnx/taste-skill; its optional
+DESIGN.md template idea against voltagent/awesome-design-md; and the
+named CLI tool is microsoft/playwright-cli itself, used directly rather
+than as inspiration. A broader pass over 13 external agent-tooling repos
+also surfaced a real gap not acted on in this change — no playbook here
+owns context-window compaction policy (what survives when a long session
+needs to shrink) — noted for a future addition, not invented here on
+thin verification. One researched repo (a watermark/provenance-metadata
+stripping tool) was reviewed and explicitly not adopted: its core function
+raises real copyright-management-information and provenance-regulation
+risk, and it is not referenced anywhere in this repo.
+
 ## 1.39.3 — 2026-10-14
 Fresh reverification pass: two more unspaced "Owner/Blind" instances of
 the Product Owner / Blind Tester persona name, introduced in the two
