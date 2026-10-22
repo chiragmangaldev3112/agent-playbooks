@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-21T12:01:18.899655+00:00",
+  "generated_at": "2026-10-22T12:03:59.813496+00:00",
   "window_14d": {
-    "views": 165,
-    "views_uniques": 32,
-    "clones": 506,
-    "clones_uniques": 179
+    "views": 164,
+    "views_uniques": 30,
+    "clones": 494,
+    "clones_uniques": 170
   },
   "all_time_retained": {
     "since": "2026-09-25",
-    "views": 383,
-    "clones": 681
+    "views": 391,
+    "clones": 690
   }
 }
