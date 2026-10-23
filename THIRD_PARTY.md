@@ -23,6 +23,10 @@ you redistribute anything or build on it commercially.
 | [markitdown](https://github.com/microsoft/markitdown) | Spreadsheet text extraction (`pip install 'markitdown[all]'`) | `scripts/extract-doc-text.sh` | MIT |
 | [Playwright](https://playwright.dev/) | Browser driven UI testing examples | `quality/frontend-testing.md`, `demo-video.md` | Apache 2.0 |
 | [playwright-cli](https://github.com/microsoft/playwright-cli) (`npm install -g @playwright/cli`) | Named as a concrete, low-setup option for driving a real browser when no project-specific browser automation exists yet | `quality/exploratory-qa.md` | Apache 2.0 |
+| [k6](https://k6.io/) | Named as a concrete, low-setup option for load/throughput testing an API endpoint under realistic concurrency | `quality/backend-testing.md` | AGPL 3.0 (core); cloud service is separate |
+| [autocannon](https://github.com/mcollina/autocannon) | Named as a concrete, low-setup Node-based alternative for the same load-testing check | `quality/backend-testing.md` | MIT |
+| [Artillery](https://www.artillery.io/) | Named as a concrete, low-setup alternative for the same load-testing check | `quality/backend-testing.md` | MPL 2.0 (core); cloud service is separate |
+| [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) | Named as a concrete option for asserting a Core Web Vitals performance budget in CI | `quality/frontend-testing.md` | Apache 2.0 |
 | [Google Chrome](https://www.google.com/chrome/) or [Chromium](https://www.chromium.org/) | Headless rendering/recording of the teaser's Canvas animation to mp4, driven directly over the Chrome DevTools Protocol | `teaser/record.mts`, `teaser/chrome.ts` | Chrome is proprietary freeware; Chromium is BSD-style |
 | [tsx](https://github.com/privatenumber/tsx) | Runs `record.mts` directly, no build step | `teaser/package.json`, `teaser/record.mts` | MIT |
 | [GitHub CLI](https://cli.github.com/) (`gh`) | Pulling a repo's own open Dependabot/security alerts directly | `quality/vulnerability-watch.md` | MIT |

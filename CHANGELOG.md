@@ -8,6 +8,353 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.46.5 — 2026-10-23
+A systematic audit of every "step N"/"section N" cross-reference added
+in the 1.44.0–1.46.4 batch (`check-playbooks.py` only verifies that a
+linked *file* exists, never that a cited step/section number inside it
+is actually accurate) found and fixed three real, confirmed-wrong
+citations:
+
+- `safety/sensitive-data.md` cited `infra-standards.md` section 3 for
+  multi-region guidance that section never actually had — added it
+  (data residency as a verified technical constraint: the real region
+  of a record, its backups, and any replication/CDN path, not an
+  assumption from the provider's region name).
+- `reference/load-testing-standards.md` cited `backend-testing.md` step
+  3 for the N+1 GraphQL pattern; that content is actually in step 1.
+- `reference/ai-llm-standards.md` cited `backend-testing.md` step 4 for
+  flaky-test handling; that content is actually in step 5.
+
+Every other citation in the new batch (checked against the target
+file's real step/section numbers directly, not assumed) came back
+accurate.
+
+## 1.46.4 — 2026-10-23
+Finished the in-progress 1.44.0–1.46.3 batch, which had left
+`backend-testing.md` and `frontend-testing.md` both over the byte budget
+with no reference-file split yet and no EXAMPLES.md entry check:
+
+- Added `quality/reference/load-testing-standards.md`: data-volume vs.
+  concurrency as two different questions one load pass answers together,
+  named tools (`k6`/`autocannon`/`Artillery`) over hand-rolled scripts,
+  asserting throughput + p50/p95/p99 (never just a mean) + error rate,
+  server-resource monitoring as part of the same run rather than a
+  separate activity, the connection-pool leak check, and — per explicit
+  request — a load-testing report that always produces the same PDF+zip
+  deliverable other standalone passes do, never just a CI pass/fail
+  line. Added its own field adaptation to `qa-report-format.md` (field 2
+  becomes concurrency level, field 9 becomes a link to raw tool output).
+  Moved the equivalent inline detail out of `backend-testing.md` step 3
+  to make room.
+- Moved the newly-added translation/RTL-layout testing detail out of
+  `frontend-testing.md` step 12 into `reference/project-standards.md`
+  section 6 — the testing side of that section's existing catalog/`Intl`
+  architecture, rather than a separate inline block.
+- Tightened frontend-testing.md's pre-existing edge-case and breakpoint
+  prose by hand after the splits still left it over budget, then
+  recorded a documented size-budget exception for the small remainder —
+  15 steps of independently-verified detail, not restatable supporting
+  material.
+- Updated the Flow diagrams in `backend-testing.md`, `frontend-testing.md`,
+  `exploratory-qa.md`, and `database-migration.md`, which the 1.44–1.46.3
+  batch had left stale against their own updated Process sections.
+- Confirmed `EXAMPLES.md` needs no new entries for this batch — it holds
+  one example per playbook, and this batch added reference files, not
+  playbooks.
+
+## 1.46.3 — 2026-10-23
+Closed the last two items from the one-by-one standards pass:
+
+- `frontend-testing.md`'s responsive step gained translation-specific
+  layout testing: pseudo-localization (artificially lengthened strings
+  catching a layout that only holds for short English text),
+  genuine RTL mirroring (alignment/icon direction/reading order, not just
+  `dir="rtl"` set while the inside still reads left-to-right), and
+  asserting a formatted date/number/currency against the locale library's
+  real output rather than a hand-typed string. The architecture side
+  (catalog, key fallback, `Intl` usage) was already solid in
+  `project-standards.md` section 6; this was the missing testing side.
+- `sensitive-data.md` step 3 gained data-residency as a verified technical
+  constraint (which region a record, its backups, and any pipeline it
+  flows through actually run in) rather than a policy-document-only
+  concern — confirmed entirely absent beforehand, cross-linked to
+  `infra-standards.md` section 3's multi-region guidance.
+
+## 1.46.2 — 2026-10-23
+Continuing the one-by-one standards pass:
+
+- `project-standards.md` section 11 gained a build-time bundle-size
+  budget (distinct from and complementary to `frontend-testing.md`'s
+  runtime Core Web Vitals budget — this one fails the build before a
+  browser ever measures the regression) and named code-splitting
+  (route-based, dynamic `import()`) as the fix to reach for once that
+  budget actually fails, not a default to apply speculatively.
+  Previously zero coverage of either.
+- `test-code-standard.md` gained section 9: coverage percentage as a
+  signal to investigate rather than a target (100% coverage with no real
+  assertions is the same hollow-test problem this file already guards
+  against elsewhere); mutation testing (Stryker/PIT/mutmut) as the
+  stronger, costlier check for whether existing tests actually catch an
+  injected fault; and consumer-driven contract testing (Pact) as the
+  cross-service counterpart to the in-process contract-test point
+  `project-standards.md` section 1 already makes. All three confirmed
+  entirely absent beforehand.
+
+## 1.46.1 — 2026-10-23
+One-by-one continuation of the infra/ops standards pass, each item
+confirmed absent by grep first:
+
+- `infra-standards.md` gained section 9, Secrets management at runtime —
+  distinct from `secret-scan.md`'s commit-time scanner: a dedicated
+  secrets manager/KMS over plain config at rest, fetch at runtime rather
+  than baked into an image (ties to section 6's Docker point), rotation
+  as an exercised capability, and a scanner check against *deployed*
+  config, not just source.
+- `release.md` step 2 now names canary and blue-green deployment
+  explicitly as the two industry-standard patterns behind "staged
+  rollout," per this repo's own named-source-over-invented-convention
+  discipline — the substance was already there, just unlabeled.
+- `observability.md` step 1 now names SLI/SLO/error-budget (Google's SRE
+  workbook terms) for the signal/threshold pair it already asks for, and
+  ties a release that would spend down an error budget to a signal worth
+  surfacing before the fact.
+- `infra-standards.md` section 3 gained backup/restore as its own
+  reliability claim — RPO/RTO stated explicitly, and a check that an
+  actual timed restore runs on a schedule, since a successful backup job
+  proves the backup step ran, not that the file is restorable.
+- `test-checklist.md` check 34 (API versioning) now names the
+  `Deprecation`/`Sunset` response headers (RFC 8594) instead of relying
+  on docs alone to carry a deprecation notice.
+
+## 1.46.0 — 2026-10-23
+A broad pass across backend, infra/CI-CD, and AI/LLM topics, each item
+confirmed absent by grep before being added:
+
+- `platform-testing.md` gained a WordPress section (section 7) for when
+  the detected stack is WordPress specifically — unrendered shortcodes/
+  placeholders, plugin/theme PHP warnings, empty-field headings, the
+  WordPress-specific soft-404/robots/sitemap defaults, and which page
+  builder rendered the page — additional to the generic checks, not a
+  replacement, and conditional on stack detection rather than assumed.
+- Added `quality/reference/caching-standards.md`: cache-aside/write-
+  through/TTL-only invalidation strategies, stampede protection
+  (lock/single-flight, probabilistic early expiration, stale-while-
+  revalidate), and a testing checklist (stale-read, stampede under real
+  concurrency, cache-down degradation, key-namespace collision, TTL
+  sanity). Zero prior coverage anywhere in the repo.
+- `backend-testing.md` step 3 gained: JWT/OAuth token-lifecycle testing
+  (expired-token rejection, `alg: none` rejection, refresh-token reuse
+  detection, revocation enforcement — "login works" proves none of
+  these); a connection-pool leak check (released on every exit path,
+  including error paths a happy-path load test won't exercise); and
+  links to the new caching and AI/LLM reference files.
+- `database-migration.md` gained an Isolation levels section alongside
+  its existing Indexing/Deadlocks ones — the ANSI levels, each engine's
+  real default, serialization-failure-as-a-distinct-retry-case, and a
+  forced-concurrent-transaction test the same way the Deadlocks check
+  already requires.
+- `infra-standards.md` section 2 (CI/CD) gained pipeline supply-chain
+  security (pin third-party Actions by SHA, build provenance via SLSA/
+  Sigstore), CI credential least-privilege (short-lived/OIDC over static
+  secrets), and branch protection actually blocking merges on required
+  checks — confirmed entirely absent beforehand.
+- Added `quality/reference/ai-llm-standards.md`: the correctness/quality
+  counterpart to `infra-standards.md` section 7's existing LLM security
+  coverage — retrieval precision/recall, chunking strategy as a
+  correctness parameter, embedding-model versioning as a breaking-schema-
+  change, groundedness/citation-support checking, why an exact-string
+  assertion against LLM output is the same anti-pattern as asserting on
+  implementation details, and an eval-harness/golden-dataset/LLM-as-
+  judge-with-calibration discipline.
+
+## 1.45.0 — 2026-10-23
+Message brokers had exactly one checklist line (`test-checklist.md`
+check 37) and no actual concepts behind it — confirmed absent by grep:
+no mention anywhere of RabbitMQ, Kafka, exchanges, partitions, consumer
+groups, offsets, or delivery semantics. Added
+`quality/reference/messaging-standards.md`: RabbitMQ's exchange/routing/
+ack model, Kafka's partitioned-log/consumer-group/offset model, the
+at-most-once/at-least-once/"exactly-once" distinction (and why
+"exactly-once" is usually at-least-once plus an idempotent consumer, not
+a broker guarantee), and a testing checklist — redelivery, idempotent
+reprocessing, poison messages reaching a dead-letter queue/topic instead
+of blocking everything behind them, ordering where it's actually
+guaranteed (per-partition-key for Kafka, single-queue-single-consumer
+for RabbitMQ), Kafka consumer-group rebalance mid-run, and backpressure
+under a slow consumer. Linked from `backend-testing.md` step 5 and
+`test-checklist.md` check 37.
+
+## 1.44.1 — 2026-10-23
+A pass across performance, responsive, and security testing for API,
+GraphQL, and frontend/web — each gap below confirmed absent by grep
+first:
+
+- `security-review.md`'s checklist had no GraphQL-specific entry at all:
+  added one covering unbounded query depth/complexity (a single request
+  can fan out into an exponential number of resolver calls — a DoS
+  distinct from a REST rate limit), unbounded batching, and introspection
+  left enabled in production.
+- `backend-testing.md`'s GraphQL N+1 check only covered functional
+  correctness; added testing that a depth/complexity limit is actually
+  enforced (not just slow), that batching/deduplication holds under
+  concurrent requests, and that introspection is disabled in production.
+- `frontend-testing.md` had zero performance-testing step — Core Web
+  Vitals existed only in `exploratory-qa.md`'s one-time exploratory pass.
+  Added a codified, CI-run performance-budget check (Lighthouse CI or an
+  equivalent `PerformanceObserver` assertion) on a small, deliberately
+  chosen set of pages, using the same sparing-use judgment already
+  applied to visual regression.
+- `frontend-testing.md`'s responsive step covered breakpoints but not
+  orientation change (state surviving a real portrait-to-landscape
+  rotation mid-flow, distinct from a plain resize) or zoom/reflow (400%
+  browser zoom or OS text-scaling must not force horizontal scroll,
+  distinct from a narrower viewport). Added both.
+- Added Lighthouse CI to `THIRD_PARTY.md`.
+
+## 1.44.0 — 2026-10-23
+Added `quality/reference/platform-testing.md`: real testing tools and
+platform-specific checks (confirmed absent anywhere in the repo by grep)
+for native Android (Espresso/UI Automator, permission states, lifecycle
+across rotation/backgrounding/process death), native iOS (XCTest/
+XCUITest, Dynamic Type, background/foreground state restoration),
+Flutter (widget/golden/`integration_test`, platform-conditional UI,
+platform-channel native-side testing), React Native (Jest/RNTL/Detox,
+the JS/native bridge boundary, platform-conditional files), Ionic/
+Capacitor (web-side vs. bridge/plugin failure classes, real-device
+webview performance), and Unity (Edit/Play Mode via Unity Test
+Framework, frame-time profiling, save/scene-transition state integrity,
+per-input-method and per-build-target behavior) — each platform's own
+device/OS matrix named explicitly. Linked from `frontend-testing.md`
+(the existing native-mobile mention) and `exploratory-qa.md`'s coverage
+check. `project-standards.md`'s per-stack style-guide table gained the
+one genuinely missing row, Unity (C#) — Ionic/Capacitor and the other
+named frameworks were already present.
+
+## 1.43.4 — 2026-10-23
+`backend-testing.md` step 3 had "concurrent access to shared state" as a
+one-line mention with no deadlock test and no pointer to
+`database-migration.md`'s existing Deadlocks/Indexing sections — cross-
+linked both so a query added here doesn't re-derive index/lock guidance
+that already exists. Also closed a real, confirmed-absent gap: there was
+no load/throughput/concurrency check at all — a single-request latency
+assertion proves nothing about connection-pool limits, lock contention,
+or an unbounded resource that only show up under realistic concurrent
+load. Added: a load-testing pass (concrete tool options `k6`,
+`autocannon`, `Artillery`) asserting throughput and p50/p95/p99 latency
+against a stated budget, plus server-resource monitoring (CPU, memory,
+connections, DB pool saturation) for the run's duration — the same run
+the throughput assertion already requires, not a separate activity.
+Added the three tools to `THIRD_PARTY.md`.
+
+## 1.43.3 — 2026-10-23
+`backend-testing.md` step 3's query-boundary checks covered pagination
+edge values but never data *volume* — a query tested correct and fast
+against a handful of seed rows can still be a real production incident
+against a table with a lakh (100,000+) rows: a missing index forcing a
+full table scan, or the N+1 pattern already named for GraphQL turning up
+equally over REST once the loop runs thousands of times instead of
+three. Added: seed the queried table to at least the real production
+(or largest-tenant) volume for every endpoint that queries it directly,
+as its own dedicated test run on a schedule or before release
+(`../change-types/performance.md`) if too slow for every commit; assert
+both correctness at that volume and a stated max response time; use an
+EXPLAIN/query-plan check where the database supports it to confirm an
+index is actually used, since a response-time assertion alone can miss
+that regression on a fast dev machine.
+
+## 1.43.2 — 2026-10-23
+Re-verified against the third-party frontend-QA tool's actual source
+(`lib/site-checks.js`, `lib/page-checks.js`, `lib/perf.js`), not just its
+README this time, filtering out everything that's genuinely
+WordPress-specific (builder element-ID locators, plugin-specific fix
+paths, form-plugin inventories) and keeping only the stack-agnostic
+checks a grep confirmed were still absent:
+
+- `exploratory-qa.md` step 6 had no SEO checks at all — added: canonical
+  tag presence/correctness, title/meta-description duplication across
+  pages (via the existing near-miss-vs-majority method), Open Graph
+  tags, JSON-LD validity, a noindex/`Disallow: /` check routed through
+  the existing Test-environment-only classification, and a
+  robots.txt/sitemap reconciliation against the coverage map.
+- Added two protocol-level checks that aren't page content: a permanent
+  (301, not 302/307) HTTP→HTTPS redirect, and no mixed content (an HTTP
+  resource loaded on an HTTPS page) — plus a soft-404 check (a made-up
+  URL must return a real not-found response, not a 200).
+- Expanded the Core Web Vitals bullet to name two more causes the tool
+  checks for: the same script/stylesheet loaded twice, and more than a
+  handful of render-blocking requests before first paint.
+- `qa-report-format.md` section 7's SEO overview gained a Canonical
+  column and the three checks that only make sense compared across the
+  whole table (duplicate titles/descriptions, sitemap reconciliation,
+  redirect permanence); section 5's category list now names SEO,
+  performance and HTTPS/mixed content as categories, since nothing in
+  the example list previously had a home for them.
+
+## 1.43.1 — 2026-10-23
+Two sources, both acted on the same day: a deep source-code read of the
+third-party QA tool's actual `lib/` (not just its README) confirmed one
+more genuine gap, and a real field run of `vulnerability-watch.md`
+against a live Next.js project surfaced three more that only a real
+run — not a design review — could have found.
+
+From the source-code read: `qa-report-format.md` had Severity and
+Status but no axis for *whose problem it is or whether it's actionable
+right now*. Added field 11, **Classification** — First-party,
+Third-party, Test-environment-only, Possible/intermittent, or Blocked by
+site protection — confirmed in the tool's own code as a real,
+implemented distinction (an axe violation inside a third-party iframe
+auto-classifies differently from a first-party one).
+
+From the field run: the lockfile said one thing, `node_modules` said
+another (`next` 14.2.5 declared, 14.2.35 actually installed) — step 1
+trusted the lockfile as ground truth with no cross-check against what's
+actually running. A dev-dependency sweep was skipped by the audit tool's
+own default flag and only caught on self-review — step 4 now says to
+audit dev dependencies explicitly, not just production. And an advisory
+for `sharp` (introduced only by a *future* major of Next) was initially
+treated as applicable to the *current* major, which doesn't even pull
+sharp in yet — step 6 now requires confirming the vulnerable package is
+actually in the currently-resolved tree before an advisory counts as a
+finding against today's installed version.
+
+## 1.43.0 — 2026-10-23
+Compared against a real, independently-built WordPress frontend-QA tool
+(not a spec or a blog post) and found four genuine methodology gaps,
+each confirmed absent by grep before being added:
+
+- `exploratory-qa.md` had **zero** discipline for testing a live,
+  often third-party site without overwhelming it — no backoff on
+  429/403, no way to distinguish "the site's own protection blocked
+  this" from "this is actually broken." Added as its own step: pace
+  requests, use an honest user agent (no stealth/proxies/IP rotation —
+  evading protection is not testing around it), back off and eventually
+  stop on repeated rate-limiting, and classify a protection response as
+  "answered by site protection, not tested" rather than a false defect.
+- The same step adds a concrete, enforceable mechanism for validating a
+  form without ever submitting it: abort POST/PUT/DELETE, refuse a real
+  submit click, read validation through the browser's own
+  `reportValidity()` — the zero-side-effect guarantee the point-of-no-
+  return rule already implied, now made concrete for forms specifically
+  (accidentally creating a real lead/order on someone else's production
+  site is a real harmful side effect, not a theoretical one).
+- `qa-report-format.md` named "Visual consistency" as a check category
+  with no method for avoiding false positives on repeated elements.
+  Added the concrete rule: compare only same-tag/same-class siblings,
+  treat near-miss values as mistakes and far-apart values as deliberate
+  variants, and only name an outlier when a clear majority style exists.
+- Neither `frontend-testing.md` nor `exploratory-qa.md` named Core Web
+  Vitals — the qualitative performance checks already there (a blocking
+  request, a long main-thread task) are the *causes*, not the
+  industry-standard *measurements* (LCP, CLS, TBT, FCP, TTFB) a
+  developer or PM would actually recognize. Named them explicitly.
+
+Also added a **Done when** element to `qa-report-format.md` field 8 —
+the specific, checkable condition that closes each card, so ISSUES.md
+reads as an actionable task list (what to fix, where, and the exact
+condition that means it's finished) rather than a passive record,
+matching the same tool's separate developer-task-list deliverable.
+
+
 ## 1.42.7 — 2026-10-23
 `vulnerability-watch.md`'s handoff to `dependency-upgrades.md` named only
 a version number, dropping step 6's own reachability grep on the floor —
