@@ -12,7 +12,7 @@
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/network/members"><img src="https://img.shields.io/github/forks/chiragmangaldev3112/agent-playbooks?style=social" alt="Forks"></a>
   <br>
-  <img src="https://img.shields.io/badge/43_Playbooks-blueviolet" alt="43 Playbooks">
+  <img src="https://img.shields.io/badge/44_Playbooks-blueviolet" alt="44 Playbooks">
   <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
   <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
   <img src="https://img.shields.io/github/contributors/chiragmangaldev3112/agent-playbooks" alt="Contributors">
@@ -69,7 +69,7 @@ regression test, implement the fix, and verify the result."*
 
 <!-- Commented out, not deleted -- the older, longer narrated walkthrough. Un-comment to bring it back
 alongside or instead of the teaser above; its own file (docs/demo.html) and release asset are untouched.
-**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 43 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md`, `autonomy/test-case-tracker.md`, `quality/design-review.md`, and `quality/token-efficiency.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
+**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 44 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md`, `autonomy/test-case-tracker.md`, `quality/design-review.md`, `quality/token-efficiency.md`, and `quality/vulnerability-watch.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
 -->
 
 ---
@@ -459,7 +459,7 @@ own:
 | "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
 | 🚫 Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all 43 files before
+That's the whole interface. You don't need to read all 44 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
@@ -503,6 +503,7 @@ you'd say, here's what happens" example for every single one, see
 | `quality/receiving-code-review.md` | How the person being reviewed responds — verify feedback against the codebase before implementing it, resolve every unclear item first |
 | `quality/security-review.md` | Language-agnostic security checklist |
 | `quality/architecture-review.md` | Design-level review: visibility, failure containment, access boundaries, operational control |
+| `quality/vulnerability-watch.md` | Is this project actually exposed to a newly-disclosed CVE, or a Dependabot-style sweep of the whole dependency tree — pulls the repo's own GitHub alerts first, falls back to the project's own audit command, queries OSV.dev/GHSA directly for a same-day disclosure, covers transitive dependencies with the same weight as direct ones |
 | `quality/frontend-testing.md` / `quality/backend-testing.md` | Test layering for UI and server code, usable by testers or developers; test code that reads data-dependent values from real state, keeps raw queries out of tests, and tags every test from one vocabulary (smoke, sanity, regression, environment, and more), gives each suite a short run command (a table of the standard commands for pytest, Playwright, Cypress, Jest, JUnit, Cucumber, .NET and Go), keeps API endpoints in their own file (each defined once), logs every step through a shared `step()`, and adds a structure and hygiene section plus a 62-check full-stack checklist (`quality/reference/test-checklist.md`) |
 | `quality/exploratory-qa.md` | Given a URL with no other direction: map the app's real journeys first, then test each one |
 | `quality/design-review.md` | Does a UI actually look deliberate, not generic: a deterministic check for AI-looking layout tells, then a bounded, multi-viewport real-screenshot self-review |

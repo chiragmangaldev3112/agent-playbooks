@@ -8,6 +8,257 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.42.7 — 2026-10-23
+`vulnerability-watch.md`'s handoff to `dependency-upgrades.md` named only
+a version number, dropping step 6's own reachability grep on the floor —
+that file's "check how it's actually used here" step would have had to
+re-derive the exact call sites from scratch. Now carries them forward
+directly, and names explicitly when the target version's changelog shows
+the vulnerable function's own signature or behavior changed, so the
+handoff flags code likely needing its own edit at those exact lines, not
+only a manifest version bump.
+
+## 1.42.6 — 2026-10-23
+Two real gaps in `vulnerability-watch.md`, both found by walking through
+what "is an upgrade actually needed, and will the fix actually work"
+means in practice rather than stopping at a version-range match:
+
+- A version match alone only says the risk *exists* — whether an upgrade
+  is needed *now* depends on whether this codebase actually calls the
+  specific vulnerable function/class/API the advisory names. Added as
+  its own step: grep for real call sites, record what was found (or
+  that none were, and why the search was confident), and let that
+  finding drive urgency rather than treating every version match as
+  equally exploitable.
+- A target fix version can satisfy one advisory and still fail to
+  install, because a different package in the same lockfile declares
+  its own peer/range requirement on the same shared dependency. Added a
+  requirement to actually run the package manager's own dry-run
+  resolver against the proposed version before recording it as the fix,
+  and to name the blocking package when it conflicts rather than
+  recording a version that fails the moment someone tries to use it.
+
+## 1.42.5 — 2026-10-23
+`qa-report-format.md` field 8 (Recommended fix) required a concrete
+action but never said whether it had actually been proven to work — a
+reasoned suggestion and a fix already applied and re-tested against the
+same repro read with identical confidence. Every report built on this
+format (frontend/backend/exploratory-qa/security/architecture/
+project-audit/vulnerability-watch) now states proven vs. reasoned-only
+per fix, the same distinction `security-review.md` already requires for
+findings themselves, extended to the fix side of the same field.
+
+## 1.42.4 — 2026-10-23
+`vulnerability-watch.md` step 6 said to record "the exact patched version
+to upgrade to" with no compatibility judgment behind it — defaulting to
+the newest release can drag in unrelated breaking changes a security
+finding never asked for. Now recommends the lowest version on the
+currently-used major/compatible line that actually contains the fix,
+and flags explicitly when no such version exists and only a new major
+is patched, so `dependency-upgrades.md`'s changelog-read step knows
+which situation it's walking into before it starts.
+
+## 1.42.3 — 2026-10-23
+Checked `vulnerability-watch.md` against how GitHub's own Dependabot
+pipeline and OWASP's dependency-scanning guidance actually work, rather
+than trusting the first draft. Two real gaps: transitive dependencies
+were mentioned only in passing, despite the lockfile being the only
+place they're visible at all and most real exploitable findings living
+several levels deep, not in a top-level declared package — added as its
+own step, weighted equally with direct dependencies. And the "parent
+package's own range can block a transitive fix from applying" case
+(confirmed in GitHub's current docs: Dependabot now opens combined
+parent+child PRs specifically because this was a recurring failure mode)
+was entirely unhandled — added as a new step 2, so a transitive finding
+is handed to dependency-upgrades.md with its parent recorded, not as a
+bump that silently can't apply.
+
+## 1.42.2 — 2026-10-23
+`project-audit.md` step 1 routed "check for vulnerable dependencies" to
+`dependency-upgrades.md` — that file is how a known fix gets applied, not
+how exposure gets found, and predates `vulnerability-watch.md`'s own
+existence. Repointed the detection half to the file that actually owns
+it now, leaving `dependency-upgrades.md` named only for its real job:
+applying a fix (for a found vulnerability, or a routine non-security
+version bump).
+
+## 1.42.1 — 2026-10-23
+Added the `EXAMPLES.md` entry for `vulnerability-watch.md` that 1.42.0
+was missing — every other playbook has a worked example there; the new
+one didn't, found by diffing every playbook file against this file's
+entries directly since `check-playbooks.py` doesn't check that coverage.
+
+## 1.42.0 — 2026-10-23
+Added `quality/vulnerability-watch.md` — a new, 44th playbook, for a gap
+nothing here covered: finding out a project is exposed to a specific
+newly-disclosed CVE (e.g. one just hit the news for PHP), or sweeping a
+repo's actual dependency tree for anything already known and open,
+Dependabot-style. Distinct from `security-review.md` (diff-scoped code
+flaws) and `dependency-upgrades.md` (how to safely bump a version once
+one's needed) — this is the step before either: pull the repo's own
+Dependabot/security alerts first via `gh api`, fall back to the
+project's own audit command, and for a same-day disclosure not yet
+indexed by either, query OSV.dev/GHSA directly and match the advisory's
+affected range against the lockfile's actually-resolved version, never
+the manifest's loose range. Reports in `qa-report-format.md`'s structure
+with its own field adaptation (installed version/range in place of
+screen size, an advisory link in place of a screenshot). Cross-referenced
+from `security-review.md`'s dependency-risk bullet and
+`dependency-upgrades.md`'s trigger.
+
+Also wired `qa-report-format.md`'s PDF+zip structure into
+`security-review.md`, `architecture-review.md`, and `project-audit.md`
+for their own standalone deliverables — previously only the testing
+playbooks (frontend/backend/exploratory-qa) and vulnerability-watch had
+it.
+
+## 1.41.11 — 2026-10-23
+Checked `token-efficiency.md` directly against Anthropic's own published
+context-engineering guidance rather than assuming the earlier grounding
+pass caught everything. Two real gaps: the file's Rule section argued
+purely from cost, never naming **context rot** (recall/precision
+degrading as irrelevant material piles up) as the actual mechanism —
+added that framing. And **structured note-taking** (a persistent,
+on-disk progress file that survives a context reset, distinct from
+in-context compaction) was entirely absent — added as step 7, wired into
+`mission-mode.md`'s perceive step, the long-running-task case it matters
+most for.
+
+Also: `mapping/third-party-api-integration.md` step 3 already stated the
+"process large input in sized batches" discipline independently, without
+citing the file that owns it — added the cross-reference. `doc-review.md`
+and `video-review.md` were checked and left alone: the former already has
+its own validated, more specific token-cost analysis (tested pandoc vs.
+markitdown directly), and the latter has no comparable large-batch
+pattern — citing token-efficiency.md there would be redundant, not a fix.
+
+## 1.41.10 — 2026-10-23
+`feature-development.md` step 2 said "write a failing test first" with
+no pointer to either testing playbook's layer-picking step
+(backend-testing.md step 2's unit/integration/contract,
+frontend-testing.md step 1's component/integration/E2E) — a developer
+following this file alone could default to one flat test kind instead
+of choosing deliberately. Added the cross-reference and the default
+(unit first, E2E only for a genuinely critical path).
+
+## 1.41.9 — 2026-10-23
+`qa-report-format.md` was built from only 32 of the sample report's 74
+pages; re-reading the full PDF found three whole sections missing
+entirely — SEO overview (one row per page: title, meta description,
+H1 count, word count), a page-screenshot gallery with full-size
+originals saved to a `screenshots/` folder (now the zip's own
+convention), and a closing testing-limitations section (run status,
+request/challenge counts, what a read-only pass can't see, the exact
+page list covered). Added all three, a note that a report's own section
+numbers can skip a number when that section had nothing to report
+rather than renumbering around it, the backend-testing.md field
+adaptation (environment/request-response evidence in place of screen
+size/screenshot), and a field-1 note for an issue that recurs across
+more pages than are worth spelling out in full ("(+N more)").
+Also pointed `backend-testing.md` step 7 at the reference directly
+instead of leaving it to inherit through frontend-testing.md alone.
+
+## 1.41.8 — 2026-10-23
+Added `quality/reference/qa-report-format.md` (7th reference file) — a
+concrete PDF report structure (title page with severity stat tiles, a
+fix-first section, per-page/viewport check tables, one ten-field card
+per issue) modeled on a real report sample, plus the requirement to
+generate a companion zip (every screenshot named by issue ID, plus an
+ISSUES.md markdown mirror) alongside the PDF every time, so a developer
+can work from files directly without a PDF viewer. Wired into
+`frontend-testing.md` step 13 and `exploratory-qa.md` step 7 — the two
+places that already define "evidence-backed report" and that
+`backend-testing.md` step 7 already points back to, so it inherits this
+by reference.
+
+## 1.41.7 — 2026-10-23
+`check-playbooks.py` gained a check for markdown-style `[text](path.md)`
+links, which bypassed both of its existing backtick-link checks entirely.
+Found live in the premium repo's own copy of this lint: its one playbook
+linked across to this repo's `requirements-store.md` that way, assuming a
+fixed relative path between two separate repos that was never actually
+true for a real install, and it passed every run silently since neither
+regex looks at markdown link syntax. No playbook here currently does
+this, but nothing enforced the backtick convention until now — added a
+13th self-test case proving the new check actually fires.
+
+## 1.41.6 — 2026-10-23
+Rewrote `security-review.md`'s "out of scope, on purpose" note after
+checking its claim rather than assuming it: `incident-response.md` and
+`dependency-upgrades.md` don't actually name phishing/DDoS/ransomware/
+zero-day anywhere — they apply generically, and a zero-day needs both
+files depending on timing (contain now via incident-response.md, patch
+once one exists via dependency-upgrades.md), not just the one originally
+cited. Phishing has no matching playbook in this set at all and now says
+so plainly instead of implying one exists. Ransomware's aftermath
+(backup restore, credential rotation) is named as real work this repo
+doesn't currently cover, rather than glossed over.
+
+## 1.41.5 — 2026-10-23
+`security-review.md`'s checklist now explicitly names credential stuffing
+(folded into the existing rate-limiting/brute-force bullet — the same
+missing limit enables both) and adds a transport-enforcement bullet
+(plain HTTP on a sensitive endpoint, a cookie missing `Secure`, skipped
+cert validation, no HSTS — a working man-in-the-middle). Also adds an
+explicit "out of scope, on purpose" note for phishing, DDoS, ransomware,
+and zero-days, pointing to `incident-response.md`/`dependency-upgrades.md`
+where each actually belongs, rather than leaving them as a silent gap
+when someone checks this file against a standard attack-category list.
+
+## 1.41.4 — 2026-10-23
+A copy-feel audit of every playbook built from external-repo research
+(8 items, all "inspired by, not copied") found two that were closer to
+their source's actual wording than intended, not just conceptually
+similar: `feature-development.md` step 3's reuse ladder matched
+dietrichgebert/ponytail's own ordering and stop-rule phrasing almost
+word-for-word (reordered the checks and reworded the stop rule); and
+`design-review.md`'s flow diagram had a node reading "fix top-3 issues,
+max 3 rounds," near-verbatim to leonxlnx/taste-skill's "fixes the top
+three problems, up to three rounds" (the step's own prose was already
+fine — only the diagram node needed rewording, to match language the
+prose already used). The other 6 items (finish-work.md's deferred-work
+marker, code-review.md's two-stage step, the playwright-cli/caveman
+references in token-efficiency.md, and canary-verified-isolation.md plus
+security-review.md's STRIDE section against dark-factory) were checked
+against their actual source text and came back clean — no file changes
+needed there.
+
+## 1.41.3 — 2026-10-23
+`security-review.md` gained a "System-level threat mapping" section — a
+design-time pass distinct from the existing per-diff checklist: name the
+assets worth attacking, draw every trust boundary, work each boundary
+through six public attacker-capability categories (the STRIDE framework,
+cited the same way the checklist already cites OWASP/CWE), chain findings
+into realistic attack paths, then feed them into the design or into the
+checklist once code exists. Cross-referenced from `architecture-review.md`
+for new-service reviews. Surfaced by a deeper comparison pass against the
+~37 dark-factory skills not checked in 1.41.0/1.41.1's earlier pass — the
+only one of them that was a genuinely new angle rather than something
+already covered.
+
+## 1.41.2 — 2026-10-23
+`token-efficiency.md` gained a new step 2, inserted before the existing
+reuse-before-regenerating step: shape the command itself (`grep -c`,
+`tail -n`, `jq '.field'`) so verbose output never reaches the model,
+rather than reading it in full and summarizing afterward — the same
+keep-vs-carry judgment one step earlier, at the point the command is
+written. Also calls out preferring a ref-based/file-backed browser
+snapshot over a full inline DOM dump when the automation tool offers
+one, cross-referenced from `frontend-testing.md` step 12. Surfaced by
+comparing against `caveman`'s cost-reduction patterns and
+`playwright-cli`'s snapshot-to-file design.
+
+## 1.41.1 — 2026-10-23
+Linked `token-efficiency.md` from the 11 playbooks that actually read,
+grep, or carry forward large context — `bug-fix.md`, `feature-development.md`,
+`finish-work.md`, `mission-mode.md`, `codebase-mapping.md`,
+`database-mapping.md`, `project-audit.md`, `project-bootstrap.md`,
+`code-review.md`, `docs-sync.md`, `receiving-code-review.md` — at the exact
+step where that reading happens, the same footprint `writing-style.md`
+already has for its own concern. It was only reachable from
+`engineering-loop.md` before, which left every other playbook stating the
+discipline by reference in `AGENTS.md` alone, never at its own point of use.
+
 ## 1.41.0 — 2026-10-22
 Added `quality/token-efficiency.md` — a new, 43rd playbook, and a
 repo-wide discipline like `writing-style.md` rather than a task type: read

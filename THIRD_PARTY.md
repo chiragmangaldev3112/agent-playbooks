@@ -25,6 +25,7 @@ you redistribute anything or build on it commercially.
 | [playwright-cli](https://github.com/microsoft/playwright-cli) (`npm install -g @playwright/cli`) | Named as a concrete, low-setup option for driving a real browser when no project-specific browser automation exists yet | `quality/exploratory-qa.md` | Apache 2.0 |
 | [Google Chrome](https://www.google.com/chrome/) or [Chromium](https://www.chromium.org/) | Headless rendering/recording of the teaser's Canvas animation to mp4, driven directly over the Chrome DevTools Protocol | `teaser/record.mts`, `teaser/chrome.ts` | Chrome is proprietary freeware; Chromium is BSD-style |
 | [tsx](https://github.com/privatenumber/tsx) | Runs `record.mts` directly, no build step | `teaser/package.json`, `teaser/record.mts` | MIT |
+| [GitHub CLI](https://cli.github.com/) (`gh`) | Pulling a repo's own open Dependabot/security alerts directly | `quality/vulnerability-watch.md` | MIT |
 
 Because these run as separate programs, their licences do not apply to
 your project or to the playbooks. They would matter if you redistributed
@@ -38,10 +39,12 @@ commercial use. Check the voice model licence before publishing a demo.
 | [Supabase](https://supabase.com/) | Hosts the check-in endpoint and release store | A random install ID (a UUID generated on first install) and, optionally, the version you requested. No name, email or machine identifier |
 | [Cloudflare](https://www.cloudflare.com/) | Sits in front of Supabase | Standard network metadata such as your IP address, as with any HTTPS request |
 | [Google Fonts](https://fonts.google.com/) | Serves the Bricolage Grotesque and IBM Plex Mono webfonts the teaser's Canvas animation loads via `<link>` | Standard network metadata such as your IP address, as with any HTTPS request, whenever `teaser/agent-playbooks-source.html` is opened or rendered |
+| [OSV.dev](https://osv.dev/) | Open-source vulnerability database, queried for a specific disclosure not yet indexed by local scanners or Dependabot | The ecosystem, package name and version being checked — never anything else from your project — whenever `quality/vulnerability-watch.md` is run |
 
-Both act as processors for the check-in only (Google Fonts is a separate,
-unrelated request made only when the teaser page itself is opened).
-Nothing from your project is sent.
+Supabase and Cloudflare act as processors for the check-in only (Google
+Fonts and OSV.dev are each a separate, unrelated request made only when
+the teaser page or `vulnerability-watch.md` respectively is used).
+Nothing from your project beyond what's named per row above is sent.
 
 ## References and credits (not invoked)
 

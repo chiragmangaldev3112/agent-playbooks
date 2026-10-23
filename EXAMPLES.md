@@ -87,6 +87,16 @@ user's row back, rather than just flagging "looks risky." Once it's
 fixed, the same test is re-run and now fails to leak anything, then a
 second pass re-runs it independently.
 
+### `quality/vulnerability-watch.md`
+**Scenario:** a new CVE for a PHP library just made the news.
+**You say:** "Are we affected by this?"
+**What happens:** reads the lockfile's actually-resolved version of the
+library (not the manifest's loose range), checks the repo's own
+Dependabot alerts first, then queries OSV.dev directly for the specific
+advisory since it's too new to be indexed yet — finds the installed
+version is one patch behind the fixed release, reports it with the
+exact upgrade target, and hands the fix to `dependency-upgrades.md`.
+
 ### `quality/architecture-review.md`
 **Scenario:** a new shared event that three teams will consume.
 **You say:** "Review this design before we ship it."
