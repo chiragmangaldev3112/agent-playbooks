@@ -119,6 +119,7 @@ before proposing it back (see [Contributing](#contributing-and-security)).
 - [🧰 Playbook Catalog](#playbook-catalog)
 - [🧑‍🚀 Creating Your Own Bot (a Custom Persona)](#creating-your-own-bot-a-custom-persona-with-a-demo)
 - [📡 How This Is Distributed](#how-this-is-distributed)
+- [💎 Premium](#premium)
 - [🔢 Two Different Version Numbers](#two-different-version-numbers)
 - [🤝 Contributing and Security](#contributing-and-security)
 - [📄 License](#license)
@@ -706,6 +707,17 @@ removed — see `agent-playbooks/CHANGELOG.md` 1.19.0.
 > prints an error and exits without writing anything. Nothing about
 > `--version`/`--only`/tool selection changes that; every mode still
 > needs one successful round trip to fetch the release.
+
+<a id="premium"></a>
+## 💎 Premium
+
+Everything above is the free tier, and stays free. There's also a
+private, paid add-on for a specific gap the free playbooks don't cover:
+two roles working from the same spec in isolation from each other can
+structurally stop most cross-contamination between them, but there's no
+way to prove, on a given run, that the isolation actually held rather
+than just assuming it did. If that's a problem you have, mail
+chiragmangal3112@gmail.com to discuss access.
 
 <a id="two-different-version-numbers"></a>
 ## 🔢 Two Different Version Numbers
