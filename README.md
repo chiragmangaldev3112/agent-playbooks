@@ -12,7 +12,7 @@
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/network/members"><img src="https://img.shields.io/github/forks/chiragmangaldev3112/agent-playbooks?style=social" alt="Forks"></a>
   <br>
-  <img src="https://img.shields.io/badge/44_Playbooks-blueviolet" alt="44 Playbooks">
+  <img src="https://img.shields.io/badge/45_Playbooks-blueviolet" alt="45 Playbooks">
   <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
   <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
   <img src="https://img.shields.io/github/contributors/chiragmangaldev3112/agent-playbooks" alt="Contributors">
@@ -69,7 +69,7 @@ regression test, implement the fix, and verify the result."*
 
 <!-- Commented out, not deleted -- the older, longer narrated walkthrough. Un-comment to bring it back
 alongside or instead of the teaser above; its own file (docs/demo.html) and release asset are untouched.
-**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 44 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md`, `autonomy/test-case-tracker.md`, `quality/design-review.md`, `quality/token-efficiency.md`, and `quality/vulnerability-watch.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
+**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 45 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md`, `autonomy/test-case-tracker.md`, `quality/design-review.md`, `quality/token-efficiency.md`, `quality/vulnerability-watch.md`, and `mapping/website-ui-replication.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
 -->
 
 ---
@@ -459,7 +459,7 @@ own:
 | "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
 | 🚫 Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all 44 files before
+That's the whole interface. You don't need to read all 45 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
