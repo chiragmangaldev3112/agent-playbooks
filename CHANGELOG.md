@@ -8,6 +8,20 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.46.7 — 2026-10-24
+1.46.6's re-added "Product Owner/Blind Tester" mention in EXAMPLES.md used
+an unspaced slash; every other instance of the name in this repo (20+,
+including the dedicated 1.39.3 fix for this exact spacing) spells it
+"Product Owner / Blind Tester". Corrected to match.
+
+## 1.46.6 — 2026-10-24
+`EXAMPLES.md`'s model-tiering paragraph listed only Code Reviewer,
+Manual/Exploratory Tester, and Bug Hunter as verify-tier personas —
+Product Owner/Blind Tester, present since 1.39.3, was dropped by the
+1.41.0 model-tier-wiring rewrite of that paragraph and never restored.
+Caught by diffing against the public repo's mirrored copy of the same
+paragraph, which still had it. Re-added.
+
 ## 1.46.5 — 2026-10-23
 A systematic audit of every "step N"/"section N" cross-reference added
 in the 1.44.0–1.46.4 batch (`check-playbooks.py` only verifies that a
