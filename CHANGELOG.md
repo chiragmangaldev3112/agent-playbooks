@@ -8,6 +8,255 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.47.14 — 2026-10-26
+`mapping/website-ui-replication.md` stated the same WebGL/3D-model
+boundary (a standalone model file is an ordinary asset; live GPU buffer/
+texture/draw-call data is never extracted into one) near-verbatim in
+four places: Phase 1's "Mandatory 3D and WebGL Discovery", Phase 2's
+"3D assets" and "Standalone 3D assets" (themselves two overlapping
+paragraphs), and Phase 5's "3D model acquisition and integration" plus
+"Canvas and WebGL gap handling" -- padding any phase-scoped read with a
+rule it had already read in an earlier phase. Merged the two Phase 2
+paragraphs into one canonical statement, and trimmed Phase 1 and Phase 5
+to their actually-phase-specific instructions with a cross-reference
+back to it instead of restating it. File dropped from 260 to 239 lines
+with no requirement removed -- every field, format, and restriction is
+still there, just stated once.
+
+## 1.47.13 — 2026-10-26
+A hand-edit of `mapping/website-ui-replication.md` (condensing the file
+and adding mandatory 3D/WebGL discovery) dropped every citation of
+`../autonomy/roles.md`'s model-tier split and `../quality/token-
+efficiency.md`, along with the mermaid flow diagram — a real regression
+against `AGENTS.md` rules 8-9, which call that citation mandatory for
+any playbook mixing a high-volume capture phase with a separate judgment
+phase, which this file still clearly is (Phases 1-2 capture vs. Phase 4
+verification). Added a "Model Tier, Delegation, and Context Efficiency"
+section restoring that guidance per-phase, and a "Standalone 3D assets"
+paragraph in Phase 2 clarifying the real distinction the rewrite's new
+3D-discovery section needed spelled out: a model file served at its own
+URL (GLB/glTF/OBJ/FBX/STL) is an ordinary authorized asset like any
+image or video, while live WebGL buffer/texture/shader data from runtime
+GPU calls is never extracted or reconstructed into a model, regardless
+of how the buffers are reached.
+
+## 1.47.12 — 2026-10-26
+This repo's own `AGENTS.md` got a project-specific website-replication
+policy ("proceed to implementation once the request and reference are
+clear, don't require separate approval to begin") that directly
+contradicted `mapping/website-ui-replication.md` Phase 4 step 22's
+unconditional "nothing beyond this point happens without the human
+saying to proceed" — two files giving opposite instructions for the same
+situation, with whichever one an agent read first winning by accident.
+Step 22 now states the approval stop as the default but lets a project's
+own `AGENTS.md` override it explicitly for that project's repo, scoped
+narrowly: the override only ever skips the one approval checkpoint, never
+Phase 0's authorization/licensing decisions, the never-submit-a-real-form
+rule, or any publish/deploy confirmation requirement, and still doesn't
+bypass an open CRITICAL/HIGH gap without a documented fallback. The flow
+diagram and the Phase 5 heading were updated to match.
+
+## 1.47.11 — 2026-10-26
+`quality/docs-sync.md` has the same gap `vulnerability-watch.md` just
+had: a high-volume per-claim verification pass (steps 1-2) and a
+separate judgment pass (step 4's drifted/orphaned classification and its
+security-exception check, step 6's re-verification) with no citation of
+`../autonomy/roles.md`'s implement/verify model-tier split. Added the
+same style of paragraph before step 1.
+
+## 1.47.10 — 2026-10-26
+`quality/vulnerability-watch.md` has the exact shape
+`quality/token-efficiency.md`'s authoring requirement names — a
+high-volume sweep (every direct/transitive lockfile entry, every
+disclosure queried, every flagged package grepped for real usage) with a
+separate judgment pass (step 11's independent version/range re-check) —
+but never cited `../autonomy/roles.md`'s implement/verify model-tier
+split, unlike every comparable mapping/review playbook. Added a
+paragraph before step 1 naming which steps run on which tier, mirroring
+`mapping/website-ui-replication.md`'s reference wording rather than
+copying it verbatim.
+
+## 1.47.9 — 2026-10-26
+`website-ui-replication.md` Phase 2 step 18 told the agent to "write
+every spec as Markdown ... as each piece is confirmed," as if from
+nothing — but `npm run specs` (Phase 1) already generates real,
+evidence-backed Markdown for `route-inventory.md`, `design-tokens.md`,
+`assets-and-media.md`, `responsive-specifications.md`, and each page's
+content/sections/interactive-elements listing. Following the step
+literally meant recomposing those files' content a second time by hand,
+burning tokens on output that already existed with the same fidelity.
+Step 18 now splits the file list: the tool-generated files get opened,
+reconciled against real screenshots, and edited in place (not rewritten
+from scratch); only the files the tool doesn't generate at all
+(`interaction-matrix.md`, `motion-specifications.md`, `environment.md`,
+`page-inventory.md`, `requirement-ledger.md`) get composed from nothing,
+same as before. Where the tool wasn't used, every file is still written
+from scratch as the step previously said.
+
+## 1.47.8 — 2026-10-26
+A real build (a game-studio reference site's replica, from a real
+extraction run) landed
+an original substitute for a non-reproducible canvas/WebGL hero element
+(per standard section 9 — geometry/textures correctly never extracted,
+never copied) that was far smaller than the reference's real footprint
+and had no camera interaction at all, because Phase 5 only told the
+builder what content to implement, never what size or interaction an
+original substitute for a *captured but non-reproducible* element should
+carry. `mapping/website-ui-replication.md` Phase 5 gets a new step 26:
+an original substitute for a canvas/WebGL gap must still be sized to the
+reference's actual measured footprint per viewport (full-bleed width,
+real height/aspect ratio, never a small boxed placeholder) and given
+whatever camera/pointer interaction `specs/interaction-matrix.md` and
+the capture evidence show for that element (drag-to-rotate, scroll/
+pinch-to-zoom, hover/click hotspots), verified side by side with the
+reference capture the same as any other section. Items 26-34 renumbered
+to 27-35 to make room; one stale same-file cross-reference ("per step
+28" in the Phase 8 report step, pointing at the browser-coverage step)
+corrected to the new number 29.
+
+## 1.47.7 — 2026-10-26
+A second real defect from the same extraction run, found by Phase 4's
+independent verification pass: `browser-extract.ts`'s section-detection
+only fell back to scanning direct body children when a page declared
+*zero* landmark tags anywhere -- on a real framework-wrapped site
+(`<header>`/`<footer>` always present, body content sitting in plain
+`<div>`s between them with no landmark of its own), that fallback never
+fired, so the body content was silently dropped with nothing in
+`gaps.json` flagging it. Confirmed real losses on two pages: a
+23-person staff grid and a full legal privacy-policy page, both
+entirely missing from specs. Fixed with a recursive collector
+(`collectSections`) that treats any non-landmark element with no
+landmark descendant as its own content block, regardless of how deep
+it's nested under framework wrapper divs, while still skipping
+`<script>`/`<style>`/etc. and preserving the original outermost-landmark
+rule that avoids double-counting a `<main>` containing `<section>`s.
+Independently re-verified against a fresh extraction run before being
+called done, per `../core/engineering-loop.md` step 4.
+
+## 1.47.6 — 2026-10-26
+A real site run (a small corporate site: ~200 discovered
+routes, 189 of them near-duplicate blog/news/recruit entries) found that
+`scripts/website-extract`'s plain breadth-first crawl spends its whole
+`--max-pages` budget on whatever order the sitemap lists routes in --
+the run captured the homepage plus 19 copies of the same news-post
+template and never reached Works/Business/Company/Message/Contact at
+all. New `--only PATH[,PATH..]` flag (`cli.ts`, `run.ts`'s exported,
+unit-tested `resolveOnly`) captures an exact, caller-given list of
+routes in order instead, ignoring `--max-pages` unless a smaller value
+is passed explicitly; a route left out of the list is reported in
+`summary.md` as LOW "intentionally excluded by `--only`" rather than the
+MEDIUM "max-pages reached" gap a plain crawl gets, since it's a scope
+decision, not a capture limitation. `mapping/website-ui-replication.md`
+Phase 1 and the tool's own README now point at checking `sitemap.xml`
+first and using `--only` whenever discovered-route count is much larger
+than the real number of distinct templates.
+
+## 1.47.5 — 2026-10-24
+Two generalizable fixes from using `scripts/website-extract` on a real
+build-verification task, moved into the tool itself instead of staying
+as one-off debug scripts: `chrome.ts` now calls `proc.unref()` on the
+spawned Chrome process -- a referenced detached child process keeps
+Node's event loop alive until it exits on its own, which could hang a
+caller (a CI job, an agent) even after all the tool's own work and
+cleanup had already finished. And a new `npm run check-local -- <url>`
+command (`check-local.ts`/`check-cli.ts`) formalizes the
+navigate-a-local-URL/screenshot-it/report-real-console-and-runtime-errors
+pattern that kept getting hand-rolled during that session -- exits
+non-zero on any console error, uncaught exception, failed request, or
+HTTP >= 400, so it works as a real pass/fail gate for
+`mapping/website-ui-replication.md` Phase 6 ("verify the build against
+the reference"), not just a screenshot tool.
+
+## 1.47.4 — 2026-10-24
+`scripts/website-extract` adds a WebGL technical-fingerprint probe
+(`webgl-probe.ts`), injected before page load via
+`Page.addScriptToEvaluateOnNewDocument` so it patches
+`WebGLRenderingContext`'s prototype before a site's own scripts can grab
+an unpatched reference. Reports draw-call volume, instanced-draw-call
+count (a repeated-geometry/voxel-style signal), texture/buffer upload
+counts, canvas size, and an estimated frame rate -- deliberately never
+shader source, geometry, or texture pixel data; that line is
+intentional (see the tool's README "What it does NOT do"). Verified
+against a local fixture with a real WebGL draw loop (counts matched
+exactly: 1 buffer upload, 0 textures, ~59fps) and, read-only with no
+downloads, against a real production WebGL/3D site, which also
+surfaced an honest, disclosed limitation: a site using the
+`ANGLE_instanced_arrays` extension's instancing method rather than the
+core WebGL2 one reports 0 instanced draws, since only the core method
+is patched.
+
+Also: `mapping/website-ui-replication.md` Phase 1 now explicitly points
+to `scripts/website-extract` when present (`npm run extract` then
+`npm run specs`) -- it existed but was never actually linked from the
+playbook that describes using it, a gap caught by re-checking.
+
+## 1.47.3 — 2026-10-24
+`scripts/website-extract` now writes the actual Markdown specs
+(`specs/route-inventory.md`, `design-tokens.md`, `assets-and-media.md`,
+`responsive-specifications.md`, `extraction-gaps.md`,
+`specs/pages/<id>.md`) from a completed run's raw JSON, via a new
+`npm run specs -- <run-dir>` command -- the step
+`mapping/website-ui-replication.md` Phase 2 describes, now automated
+rather than left for an agent to write by hand every time. Every field
+traces to the run's own data; an unobserved value is written as
+"Unverified -- see gaps," never invented. Verified by generating specs
+from both the local fixture run and the two real-site runs from 1.47.2,
+which found and fixed one more real bug: nested landmarks (`<main>`
+containing `<section>`s) produced a section whose text duplicated every
+section nested inside it.
+
+## 1.47.2 — 2026-10-24
+Added `scripts/website-extract/`: the real extraction tool
+`mapping/website-ui-replication.md` Phase 1-2 describe, which the
+original ported skill pack assumed existed as a bespoke CLI but never
+shipped. Drives a local Chrome over raw CDP (reusing `teaser/`'s own
+proven `cdp.ts`/`chrome.ts`, not a new Playwright/Puppeteer dependency)
+to capture routes, multi-viewport + hi-DPI screenshots, design tokens
+(including 3D transform/perspective values), content, and every image/
+video/audio/icon it finds, with real asset probing and optional
+download. Verified against a local fixture and, read-only with no asset
+downloads, against two real production sites, which surfaced and fixed
+five real bugs: an esbuild `__name` helper crash, silently-empty asset
+downloads, a route queue that never advanced past the seed page, a
+WordPress sitemap-index file misread as if it listed pages, and an
+unhandled-rejection crash during write-blocking. Explicitly does not
+attempt WebGL/canvas 3D scene extraction (flagged as a gap instead --
+no generic tool can read that back from a running page) and does not
+yet write the Markdown specs itself; see its own README.md.
+
+## 1.47.1 — 2026-10-24
+A full re-read of all 15 ported source skill files against 1.47.0's
+`mapping/website-ui-replication.md` and its reference found six real
+gaps: no mention of taking a high-DPI capture alongside the normal
+screenshot per section; no optional cross-browser (Firefox/WebKit) QA
+pass; runtime/network and data/form/state edge-case testing named only
+as "ordinary project checks" instead of pointing at
+`quality/frontend-testing.md`/`quality/backend-testing.md`'s own
+checklists for those; the final report citing only `writing-style.md`
+for tone and not `quality/reference/qa-report-format.md` for its actual
+table shape; SVG-sprite `<use>` icons not named alongside inline SVG;
+and keyboard/focus specifics (tab order, scoped Escape, pointer-path
+timing) missing from the interaction matrix. Fixed all six.
+
+## 1.47.0 — 2026-10-24
+Added `mapping/website-ui-replication.md`: cloning, templating, or
+merging a website's UI from a URL into your own stack and theme, with a
+hard gate between evidence-backed Markdown extraction (routes, content,
+design tokens/fonts, assets/video, interactions, animation, responsive
+rules — tracked gaps, independently verified) and any application code,
+so a build never starts directly from a URL. Links out to
+`quality/token-efficiency.md` (large screenshot/JSON capture sets),
+`quality/reference/project-standards.md` and
+`quality/reference/test-code-standard.md` (the build still follows the
+project's one coding standard and theme/view layer, not a parallel
+styling system), `quality/security-review.md` and
+`safety/sensitive-data.md` (a faithful clone is still new application
+surface), and `quality/design-review.md` (the assembled whole, not just
+each borrowed piece, needs to read as one deliberate design — mainly for
+merged, multi-source builds). Supporting field reference in
+`quality/reference/website-replication-standard.md`. Routed from
+`core/engineering-loop.md` and listed in `AGENTS.md`/`README.md`.
+
 ## 1.46.7 — 2026-10-24
 1.46.6's re-added "Product Owner/Blind Tester" mention in EXAMPLES.md used
 an unspaced slash; every other instance of the name in this repo (20+,

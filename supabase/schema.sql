@@ -1,5 +1,8 @@
 -- Schema for the gated distribution backend. Run once in your Supabase
--- project's SQL editor.
+-- project's SQL editor. Split into `migrations/001..004_*.sql` (same
+-- SQL, one file per table/function, in dependency order) for anyone
+-- whose editor/client chokes on one large multi-statement paste --
+-- this file stays the canonical, single-paste copy.
 --
 -- Design: zero friction for the installer -- it sends only a random local
 -- ID it generated itself, nothing else, no signup step. That ID is logged
