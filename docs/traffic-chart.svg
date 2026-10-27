@@ -18,22 +18,22 @@
       .views-area { fill: #a78bfa; fill-opacity: 0.20; }
       .clones-area { fill: #34d399; fill-opacity: 0.15; }
     }
-    .views-line { fill: none; stroke-width: 2; stroke-dasharray: 926; stroke-dashoffset: 926; animation: draw 1.4s ease-out forwards; }
-    .clones-line { fill: none; stroke-width: 2; stroke-dasharray: 926; stroke-dashoffset: 926; animation: draw 1.4s ease-out 0.15s forwards; }
+    .views-line { fill: none; stroke-width: 2; stroke-dasharray: 929; stroke-dashoffset: 929; animation: draw 1.4s ease-out forwards; }
+    .clones-line { fill: none; stroke-width: 2; stroke-dasharray: 929; stroke-dashoffset: 929; animation: draw 1.4s ease-out 0.15s forwards; }
     @keyframes draw { to { stroke-dashoffset: 0; } }
     @keyframes fadein { to { opacity: 1; } }
     .dot { animation: pulse 2s ease-in-out infinite; }
     @keyframes pulse { 0%,100% { r: 3; opacity: 1; } 50% { r: 5; opacity: 0.6; } }
   </style>
   <rect class="bg" width="860" height="200" rx="8"/>
-  <text x="46" y="16" class="title">GitHub traffic — 2026-09-25 to 2026-10-25</text>
-  <text x="844" y="16" text-anchor="end" class="label"><tspan class="views-fg">● 434 views</tspan>   <tspan class="clones-fg">● 817 clones</tspan></text>
+  <text x="46" y="16" class="title">GitHub traffic — 2026-09-25 to 2026-10-26</text>
+  <text x="844" y="16" text-anchor="end" class="label"><tspan class="views-fg">● 444 views</tspan>   <tspan class="clones-fg">● 842 clones</tspan></text>
   <line class="grid" x1="46" y1="16.0" x2="844" y2="16.0"/><line class="grid" x1="46" y1="94.0" x2="844" y2="94.0"/><line class="grid" x1="46" y1="172.0" x2="844" y2="172.0"/>
-  <path class="views-area" d="M 46.0,172.0 L 72.6,172.0 L 99.2,172.0 L 125.8,172.0 L 152.4,127.1 L 179.0,128.2 L 205.6,139.5 L 232.2,115.9 L 258.8,139.5 L 285.4,163.0 L 312.0,158.5 L 338.6,159.7 L 365.2,161.9 L 391.8,165.3 L 418.4,163.0 L 445.0,122.6 L 471.6,156.3 L 498.2,152.9 L 524.8,163.0 L 551.4,149.6 L 578.0,159.7 L 604.6,164.1 L 631.2,169.8 L 657.8,169.8 L 684.4,161.9 L 711.0,163.0 L 737.6,163.0 L 764.2,170.9 L 790.8,163.0 L 817.4,138.3 L 844.0,167.5 L 844.0,172.0 L 46.0,172.0 Z"/>
-  <path class="clones-area" d="M 46.0,172.0 L 72.6,172.0 L 99.2,172.0 L 125.8,172.0 L 152.4,135.0 L 179.0,165.3 L 205.6,168.6 L 232.2,150.7 L 258.8,167.5 L 285.4,172.0 L 312.0,130.5 L 338.6,90.1 L 365.2,148.4 L 391.8,172.0 L 418.4,170.9 L 445.0,118.1 L 471.6,110.3 L 498.2,95.7 L 524.8,147.3 L 551.4,16.0 L 578.0,124.9 L 604.6,132.7 L 631.2,152.9 L 657.8,161.9 L 684.4,156.3 L 711.0,132.7 L 737.6,161.9 L 764.2,137.2 L 790.8,102.4 L 817.4,145.1 L 844.0,160.8 L 844.0,172.0 L 46.0,172.0 Z"/>
-  <path class="views-line views-fg" d="M 46.0,172.0 L 72.6,172.0 L 99.2,172.0 L 125.8,172.0 L 152.4,127.1 L 179.0,128.2 L 205.6,139.5 L 232.2,115.9 L 258.8,139.5 L 285.4,163.0 L 312.0,158.5 L 338.6,159.7 L 365.2,161.9 L 391.8,165.3 L 418.4,163.0 L 445.0,122.6 L 471.6,156.3 L 498.2,152.9 L 524.8,163.0 L 551.4,149.6 L 578.0,159.7 L 604.6,164.1 L 631.2,169.8 L 657.8,169.8 L 684.4,161.9 L 711.0,163.0 L 737.6,163.0 L 764.2,170.9 L 790.8,163.0 L 817.4,138.3 L 844.0,167.5"/>
-  <path class="clones-line clones-fg" d="M 46.0,172.0 L 72.6,172.0 L 99.2,172.0 L 125.8,172.0 L 152.4,135.0 L 179.0,165.3 L 205.6,168.6 L 232.2,150.7 L 258.8,167.5 L 285.4,172.0 L 312.0,130.5 L 338.6,90.1 L 365.2,148.4 L 391.8,172.0 L 418.4,170.9 L 445.0,118.1 L 471.6,110.3 L 498.2,95.7 L 524.8,147.3 L 551.4,16.0 L 578.0,124.9 L 604.6,132.7 L 631.2,152.9 L 657.8,161.9 L 684.4,156.3 L 711.0,132.7 L 737.6,161.9 L 764.2,137.2 L 790.8,102.4 L 817.4,145.1 L 844.0,160.8"/>
-  <circle class="dot views-fg" cx="844.0" cy="167.5" r="3"/>
-  <circle class="dot clones-fg" cx="844.0" cy="160.8" r="3"/>
-  <text x="46" y="192" class="label">31 day(s) retained · updates daily via .github/workflows/traffic.yml</text>
+  <path class="views-area" d="M 46.0,172.0 L 71.7,172.0 L 97.5,172.0 L 123.2,172.0 L 149.0,127.1 L 174.7,128.2 L 200.5,139.5 L 226.2,115.9 L 251.9,139.5 L 277.7,163.0 L 303.4,158.5 L 329.2,159.7 L 354.9,161.9 L 380.6,165.3 L 406.4,163.0 L 432.1,122.6 L 457.9,156.3 L 483.6,152.9 L 509.4,163.0 L 535.1,149.6 L 560.8,159.7 L 586.6,164.1 L 612.3,169.8 L 638.1,169.8 L 663.8,161.9 L 689.5,163.0 L 715.3,163.0 L 741.0,170.9 L 766.8,163.0 L 792.5,138.3 L 818.3,167.5 L 844.0,160.8 L 844.0,172.0 L 46.0,172.0 Z"/>
+  <path class="clones-area" d="M 46.0,172.0 L 71.7,172.0 L 97.5,172.0 L 123.2,172.0 L 149.0,135.0 L 174.7,165.3 L 200.5,168.6 L 226.2,150.7 L 251.9,167.5 L 277.7,172.0 L 303.4,130.5 L 329.2,90.1 L 354.9,148.4 L 380.6,172.0 L 406.4,170.9 L 432.1,118.1 L 457.9,110.3 L 483.6,95.7 L 509.4,147.3 L 535.1,16.0 L 560.8,124.9 L 586.6,132.7 L 612.3,152.9 L 638.1,161.9 L 663.8,156.3 L 689.5,132.7 L 715.3,161.9 L 741.0,137.2 L 766.8,102.4 L 792.5,145.1 L 818.3,160.8 L 844.0,143.9 L 844.0,172.0 L 46.0,172.0 Z"/>
+  <path class="views-line views-fg" d="M 46.0,172.0 L 71.7,172.0 L 97.5,172.0 L 123.2,172.0 L 149.0,127.1 L 174.7,128.2 L 200.5,139.5 L 226.2,115.9 L 251.9,139.5 L 277.7,163.0 L 303.4,158.5 L 329.2,159.7 L 354.9,161.9 L 380.6,165.3 L 406.4,163.0 L 432.1,122.6 L 457.9,156.3 L 483.6,152.9 L 509.4,163.0 L 535.1,149.6 L 560.8,159.7 L 586.6,164.1 L 612.3,169.8 L 638.1,169.8 L 663.8,161.9 L 689.5,163.0 L 715.3,163.0 L 741.0,170.9 L 766.8,163.0 L 792.5,138.3 L 818.3,167.5 L 844.0,160.8"/>
+  <path class="clones-line clones-fg" d="M 46.0,172.0 L 71.7,172.0 L 97.5,172.0 L 123.2,172.0 L 149.0,135.0 L 174.7,165.3 L 200.5,168.6 L 226.2,150.7 L 251.9,167.5 L 277.7,172.0 L 303.4,130.5 L 329.2,90.1 L 354.9,148.4 L 380.6,172.0 L 406.4,170.9 L 432.1,118.1 L 457.9,110.3 L 483.6,95.7 L 509.4,147.3 L 535.1,16.0 L 560.8,124.9 L 586.6,132.7 L 612.3,152.9 L 638.1,161.9 L 663.8,156.3 L 689.5,132.7 L 715.3,161.9 L 741.0,137.2 L 766.8,102.4 L 792.5,145.1 L 818.3,160.8 L 844.0,143.9"/>
+  <circle class="dot views-fg" cx="844.0" cy="160.8" r="3"/>
+  <circle class="dot clones-fg" cx="844.0" cy="143.9" r="3"/>
+  <text x="46" y="192" class="label">32 day(s) retained · updates daily via .github/workflows/traffic.yml</text>
 </svg>
