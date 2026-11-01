@@ -8,6 +8,72 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+## 1.47.17 — 2026-11-01
+Checked `autonomy/blind-build-verify.md` for the same sequencing gap
+1.47.16 fixed elsewhere and found none — its builder/tester split is
+isolation-dependent on purpose, already states that tradeoff in its own
+anti-patterns, and stays unchanged. Found a real gap in 1.47.16's own
+addition instead: `quality/reference/graph-orchestration.md` told
+playbooks to fan out into parallel passes without ever saying fan-out
+has a token cost. Added a "Cost" section stating that plainly (N
+independent branches generally spend more total tokens than one
+combined pass would — the payoff is wall-clock time and
+contamination-free findings, not a cheaper total), tying it to
+`project-audit.md`'s existing "each sub-pass is itself large" bar for
+when the overhead is worth paying, and to `token-efficiency.md` step
+8's condensed-summary-per-branch requirement so fan-out doesn't exempt
+any branch from reading narrow and summarizing before merging.
+
+## 1.47.16 — 2026-11-01
+Added `quality/reference/graph-orchestration.md`: a shared, tool-agnostic
+test for telling genuinely independent sub-tasks (no sub-task's input
+depends on another's output, none mutates shared state a sibling also
+reads, reporting order doesn't change any finding) apart from work that
+only looks parallel but is actually a sequential pipeline or a staged
+gate. Found by auditing every playbook in both this repo and the
+premium add-on for the gap directly: five real spots described
+independent sub-tasks as a single undifferentiated or implicitly-ordered
+pass, now pointed at the new reference and told to run as separate
+passes (parallel where the agent can) instead —
+`core/engineering-loop.md` (multiple matched playbooks), `quality/code-
+review.md` (correctness/security/convention checks), `project/project-
+audit.md` (the project-wide checklist sweep), `mapping/codebase-
+mapping.md` and `mapping/database-mapping.md` (per-module/per-table
+passes), and `quality/security-review.md` (the boundary ×
+attacker-capability matrix). The premium repo's one file,
+`canary-verified-isolation.md`, was checked and left unchanged — its
+builder/tester sequencing is isolation-dependent on purpose, not a gap.
+
+## 1.47.15 — 2026-10-26
+Dogfooded the full playbook set end to end against a real external
+codebase (NVIDIA's skillspector), including opening a real upstream PR
+(NVIDIA/SkillSpector#909) with two code fixes it surfaced there, and
+fixed eleven real gaps hit by actually following each playbook's own
+instructions rather than a hypothetical review: `backend-testing.md`/
+`frontend-testing.md` didn't state the multi-environment (local/staging/
+QA/production) testing requirement directly, and `backend-testing.md`'s
+own citation of `reference/test-code-standard.md` excluded section 6 --
+the section that actually states the settings-module/no-hardcoded-URL
+rule; `project-bootstrap.md`'s AI-tool-detection step couldn't tell
+"built with this tool" from "ships an integration for this tool," and
+its verify step had no branch for a manifest's version range being
+wider than CI's actual pin or for the package manager itself being
+missing; `bug-fix.md`/`feature-development.md` had no branch for "a
+dependency fails to install/build," distinct from "can't reproduce the
+symptom" or "suite ran and came back red"; `vulnerability-watch.md`/
+`dependency-upgrades.md` assumed an audit command (an npm-audit
+equivalent) always exists, with no fallback for a stack like uv/pip
+that has none, or for `gh api dependabot/alerts` 403ing on a repo you
+don't administer; `issue-triage.md` required a decision log but never
+said where it should live; `third-party-api-integration.md` had no path
+for auditing an already-integrated, credential-free API from source
+alone without the new-integration env-var/live-call machinery;
+`release.md` was written entirely for a live service with real traffic
+to stage and a dashboard to watch, with no translation for a versioned
+published artifact (exposure = a pre-release tag, rollback = yanking
+the version and cutting a patch, not a redeploy); and `writing-style.md`
+got a concrete example sharpening its hedge-vs-padding test.
+
 ## 1.47.14 — 2026-10-26
 `mapping/website-ui-replication.md` stated the same WebGL/3D-model
 boundary (a standalone model file is an ordinary asset; live GPU buffer/
