@@ -62,14 +62,20 @@ Nothing from your project beyond what's named per row above is sent.
 | [ee0pdt/godot-mcp](https://github.com/ee0pdt/godot-mcp), [coding-solo/godot-mcp](https://github.com/coding-solo/godot-mcp), `godot-mcp-server` (PyPI), and [Dokujaa/Godot-MCP](https://github.com/Dokujaa/Godot-MCP) | Named in `mapping/game-dev-ai-tooling-reference.md` as community MCP bridges for the Godot editor — not official Godot Foundation projects, none bundled here | Verify upstream per project; not redistributed |
 | [ChiR24/Unreal_mcp](https://github.com/chir24/unreal_mcp), `uemcp` (PyPI), `unrealmcp` (aadeshrao123/Unreal-MCP), and [runreal/unreal-mcp](https://github.com/runreal) | Named in `mapping/game-dev-ai-tooling-reference.md` as community MCP bridges for Unreal Engine — not official Epic Games projects, none bundled here | Verify upstream per project; not redistributed |
 | [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) | Named in `mapping/game-dev-ai-tooling-reference.md` as a community `.claude/` configuration template, not an Anthropic product | MIT |
-| [ACE-Step 1.5](https://ace-step.github.io/ace-step-v1.5.github.io) | Named in `mapping/game-dev-ai-tooling-reference.md` as an open-source text-to-music model | Sources disagree (MIT vs. Apache-2.0 cited across pages) — confirm upstream before commercial use |
-| [NVIDIA Audio2Face-3D](https://huggingface.co/nvidia/Audio2Face-3D-v3.0) | Named in `mapping/game-dev-ai-tooling-reference.md` for audio-driven 3D facial animation | NVIDIA Open Model License (models); separate NVIDIA Software License Agreement / Product-Specific Terms for the SDK and NIM microservice — verify before commercial use |
 
 ## Not used
 
 [TypeSafe AI Jev](https://typesafe.ai/) is discussed as an optional
 experiment in `safety/safety-guardrail.md`. It is not a dependency and
 nothing here calls it.
+
+An open-source music-generation model and an NVIDIA audio-driven
+facial-animation SDK were considered for
+`mapping/game-dev-ai-tooling-reference.md` and deliberately left out:
+live research found sources actively disagreeing on which license
+applied to each, with no official page settling it. A tool whose
+license can't be confirmed from its own sources isn't listed here with
+a caveat — it's left out entirely.
 
 ## Keeping this file honest
 

@@ -574,7 +574,7 @@ you'd say, here's what happens" example for every single one, see
 | `mapping/codebase-mapping.md` | Document a codebase module by module from real dependency structure, then optionally generate a skill/agent per module |
 | `mapping/database-mapping.md` | Document a database table by table from the real schema and code usage, then optionally generate a skill/agent per table |
 | `mapping/third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
-| `mapping/game-dev-ai-tooling-reference.md` | Evaluate AI-assisted game-dev tooling before installing it — credited, license- and risk-checked reference to community MCP bridges for Godot and Unreal Engine, the Claude Code Game Studios template, the ACE-Step 1.5 music model, and NVIDIA Audio2Face-3D; none bundled, none endorsed as official or secure by default |
+| `mapping/game-dev-ai-tooling-reference.md` | Evaluate AI-assisted game-dev tooling before installing it — credited, license- and risk-checked reference to community MCP bridges for Godot and Unreal Engine, and the Claude Code Game Studios template; none bundled, none endorsed as official or secure by default. Two other tools considered for this file were deliberately left out over unresolved license status |
 
 </details>
 

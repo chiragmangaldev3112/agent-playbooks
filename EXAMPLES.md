@@ -189,6 +189,18 @@ gets pruned, and a tool result never ends up separated from the call
 that produced it — if something genuinely can't be kept, that's said
 explicitly rather than silently dropped.
 
+### `quality/marketing-content-audit.md`
+**Scenario:** a founder asking for "an SEO audit" before a content push.
+**You say:** "Run an SEO audit on our marketing site."
+**What happens:** confirms it means all five sections (SEO, technical
+SEO, schema, copywriting, GEO) rather than guessing, fetches the real
+page with a plain HTTP client (catching, for example, a page that
+renders fine in a browser but returns an empty shell to a non-JS
+crawler), validates every structured-data block against both Google's
+Rich Results Test and the Schema.org Validator rather than eyeballing
+the JSON-LD, and flags a GEO benchmark one of the sources cited as an
+unverified vendor claim instead of recommending it as settled fact.
+
 ## Change types
 
 ### `change-types/refactoring.md`
@@ -272,10 +284,11 @@ Hunter (it also fixes, but it's the persona named for independently
 re-confirming someone else's fix) default to the strongest model; Feature
 Builder, Test Writer, and Project Bootstrapper default to a lighter one,
 since a verify-tagged pass independently re-checks their work anyway.
-Override one persona (`AGENT_PLAYBOOKS_MODEL_CODE_REVIEWER=haiku`), a
-whole tier (`AGENT_PLAYBOOKS_MODEL_VERIFY`/`AGENT_PLAYBOOKS_MODEL_IMPLEMENT`),
-or set both tier variables to the same value for one model everywhere —
-set at install time, not something to configure after the fact.
+Override one persona
+(`AGENT_PLAYBOOKS_MODEL_CODE_REVIEWER=haiku`), a whole tier
+(`AGENT_PLAYBOOKS_MODEL_VERIFY`/`AGENT_PLAYBOOKS_MODEL_IMPLEMENT`), or set
+both tier variables to the same value for one model everywhere — set at
+install time, not something to configure after the fact.
 
 ### `autonomy/standing-permission.md`
 **Scenario:** tired of re-approving test runs and feature-branch commits.
@@ -411,6 +424,20 @@ mechanism rather than asking you to guess, tests read-only endpoints in
 one batch, asks once (not per-endpoint) before touching anything that
 creates or charges something real, and writes the verified findings to
 a doc you can actually implement against.
+
+### `mapping/game-dev-ai-tooling-reference.md`
+**Scenario:** wiring Claude into a Godot project before the team starts
+using it day to day.
+**You say:** "Set up an MCP server so Claude can drive the Godot editor."
+**What happens:** names the real, currently-maintained options (not one
+remembered from training data) with their actual licenses and
+maintenance state, flags that the fastest-looking option's
+code-execution tools are gated behind an environment variable that
+shouldn't be left on by default, and leaves out two tools originally
+considered for a different ask (AI-generated game music and facial
+animation) because their license status couldn't be confirmed from
+their own sources — a caveat wasn't treated as good enough to include
+them anyway.
 
 ## Media
 

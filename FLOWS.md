@@ -750,12 +750,8 @@ Evaluate AI-assisted game-dev tooling before installing it, credited to each ups
 flowchart TD
     A[Game-dev AI tooling requested] --> B{Which tool/engine?}
     B -->|Engine bridge\nGodot/Unreal| C[Find current MCP server\nfor that engine]
-    B -->|Audio/music gen| D[ACE-Step 1.5]
-    B -->|Facial animation| E[NVIDIA Audio2Face-3D]
     B -->|Full agent-studio setup| F[Claude Code Game Studios template]
     C --> G[Read the real repo:\nlicense, last commit,\nwhat it actually executes]
-    D --> G
-    E --> G
     F --> G
     G --> H{Safe to run locally\nand license fits the project?}
     H -->|No| I[Say why, stop here]

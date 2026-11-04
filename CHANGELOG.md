@@ -10,6 +10,23 @@ now prints the version it installed.
 
 Entries before 1.9.0 (2026-09-09) are kept in `CHANGELOG-archive.md` so this file stays under the skill importer's 200,000-byte limit.
 
+## 1.48.1 — 2026-11-04
+Dropped ACE-Step 1.5 and NVIDIA Audio2Face-3D from
+`mapping/game-dev-ai-tooling-reference.md`, its AGENTS.md row,
+`core/engineering-loop.md`'s routing bullet, and `README.md`'s catalog
+entry — both had a license status that live search left genuinely
+unresolved (conflicting MIT/Apache-2.0 claims for ACE-Step 1.5; a model
+license plus a separately-cited, possibly more restrictive NIM/SDK
+license for Audio2Face-3D, with a third-party claim of MIT that
+couldn't be confirmed against NVIDIA's own pages). A caveat noting the
+disagreement isn't a substitute for actually knowing the license applies
+— on explicit instruction, a tool whose license can't be pinned down
+from its own sources doesn't go in this file at all, not even flagged.
+The file's Rule section now states this as a standing requirement
+rather than leaving it implicit. The Godot/Unreal MCP bridges and
+Claude Code Game Studios (all clearly MIT or license-free local tools)
+are unaffected and stay in.
+
 ## 1.48.0 — 2026-11-04
 Added two new playbooks and one new top-level category.
 `quality/marketing-content-audit.md` covers five related audit types
