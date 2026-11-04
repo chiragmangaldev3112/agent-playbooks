@@ -10,6 +10,14 @@ now prints the version it installed.
 
 Entries before 1.9.0 (2026-09-09) are kept in `CHANGELOG-archive.md` so this file stays under the skill importer's 200,000-byte limit.
 
+## 1.48.2 — 2026-11-04
+Added `EXAMPLES.md` worked examples for `quality/marketing-content-audit.md`
+and `mapping/game-dev-ai-tooling-reference.md` (both added in 1.48.0,
+the latter corrected in 1.48.1) — every other playbook already has one,
+and these two shipped without it. The game-dev example also calls out
+the 1.48.1 license removal directly, so the example itself documents
+why two tools originally considered for that file aren't in it.
+
 ## 1.48.1 — 2026-11-04
 Dropped ACE-Step 1.5 and NVIDIA Audio2Face-3D from
 `mapping/game-dev-ai-tooling-reference.md`, its AGENTS.md row,
