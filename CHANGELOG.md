@@ -8,6 +8,35 @@ same content this repo publishes it from, kept here for browsing before
 you install); a fresh `install.sh` run always fetches the latest, and
 now prints the version it installed.
 
+Entries before 1.9.0 (2026-09-09) are kept in `CHANGELOG-archive.md` so this file stays under the skill importer's 200,000-byte limit.
+
+## 1.48.0 — 2026-11-04
+Added two new playbooks and one new top-level category.
+`quality/marketing-content-audit.md` covers five related audit types
+asked for together in practice (SEO, technical SEO, schema/structured-data,
+copywriting, and GEO/generative-engine visibility) as numbered sections
+in one file, each tied to a real, checkable source (Google's Rich
+Results Test, the Schema.org Validator, Lighthouse CI/PageSpeed
+Insights, Google Search Console) rather than a generic best-practices
+list — GEO specifically is flagged as an immature field with mostly
+vendor-sourced benchmarks, so its section requires treating any numeric
+claim as someone's benchmark, not a fact, and only recommends tactics
+that are also good practice on their own terms. Added a new `game-dev/`
+category with `game-dev/ai-tooling-reference.md`, a credited reference
+for AI-assisted game-dev tooling found by live web search rather than
+from memory: community MCP bridges for Godot (ee0pdt/godot-mcp,
+coding-solo/godot-mcp, godot-mcp-server, Dokujaa/Godot-MCP) and Unreal
+Engine (ChiR24/Unreal_mcp, uemcp, aadeshrao123/Unreal-MCP,
+runreal/unreal-mcp), the Donchitos/Claude-Code-Game-Studios MIT
+template, the ACE-Step 1.5 open-source music model, and NVIDIA
+Audio2Face-3D — each with its actual license status (including two
+places where sources disagreed on the license and that disagreement is
+stated rather than resolved by picking the more permissive reading) and
+the local-execution risk of running a third-party MCP server against a
+running game-engine editor. Both files wired into `AGENTS.md`'s routing
+table (root and the `~/.claude` copy, which had drifted out of sync
+with this repo's `AGENTS.md` and is now identical again).
+
 ## 1.47.17 — 2026-11-01
 Checked `autonomy/blind-build-verify.md` for the same sequencing gap
 1.47.16 fixed elsewhere and found none — its builder/tester split is
@@ -683,7 +712,6 @@ reads as an actionable task list (what to fix, where, and the exact
 condition that means it's finished) rather than a passive record,
 matching the same tool's separate developer-task-list deliverable.
 
-
 ## 1.42.7 — 2026-10-23
 `vulnerability-watch.md`'s handoff to `dependency-upgrades.md` named only
 a version number, dropping step 6's own reachability grep on the floor —
@@ -1035,6 +1063,134 @@ stripping tool) was reviewed and explicitly not adopted: its core function
 raises real copyright-management-information and provenance-regulation
 risk, and it is not referenced anywhere in this repo.
 
+## 1.39.9 — 2026-10-21
+A repo-wide audit for the same gap 1.39.7 fixed in the testing and
+security/architecture-review playbooks — a finding reported with no
+concrete suggested fix, or with no re-verify/independent-check/fix-handoff
+chain — turned up three more real instances:
+- `code-review.md` had the biggest gap of the three: a "Blocking" finding
+  required only a problem description, no suggested fix; there was no
+  re-verify-before-reporting step, no tie to `engineering-loop.md` step 4
+  for checking the review itself, and no stated path for routing a
+  Blocking finding to an actual fix. Added all four: step 6 now requires
+  a fix per Blocking item and re-verifies it before it's written in; a
+  new step 9 covers the independent check and fix handoff; flowchart and
+  anti-patterns updated to match.
+- `project-audit.md` step 3's required finding fields had no suggested
+  fix; added, along with a corrected note that step 2's ad-hoc
+  code-review-style pass borrows only `code-review.md`'s correctness/
+  convention checks, not its re-verify step, so that one needs applying
+  separately.
+- `database-mapping.md` step 10 reported naming/enforcement mismatches
+  and data-integrity risks with no requirement to say what the fix would
+  actually be. Added.
+
+Independent review of this change caught a real structural bug:
+`code-review.md`, `security-review.md`, and `architecture-review.md` are
+each a playbook `engineering-loop.md` step 4 can dispatch to as the
+independent check for someone else's change — and each said
+unconditionally "get this checked independently too," which, run as the
+step-4 pass itself, calls itself forever. `security-review.md` and
+`architecture-review.md` have carried this wording since 1.29.0;
+`code-review.md`'s new step 9 would have shipped with the same flaw.
+Review then found the same exposure in `reference/test-code-standard.md`
+section 8, which `frontend-testing.md` step 13 and `backend-testing.md`
+step 7 both hand off to — `engineering-loop.md` step 4 names both of
+those playbooks as independent-check targets too. All four now stop when
+the review/report in progress already *is* that step-4 check, instead of
+spawning another one. `exploratory-qa.md` step 10 carries the same
+unconditional wording but isn't currently a step-4 dispatch target, so
+it's not exposed yet — worth revisiting if that ever changes.
+
+Checked and left alone (the pattern either doesn't apply to what the
+playbook produces, or it's already covered): `docs-sync.md`,
+`observability.md`, `change-types/performance.md`, `core/issue-triage.md`,
+`core/bug-fix.md`, `safety/sensitive-data.md`,
+`mapping/codebase-mapping.md`, `mapping/third-party-api-integration.md`.
+
+## 1.39.8 — 2026-10-21
+`exploratory-qa.md` step 8 read as though automating a discovered journey
+was a separate skill the requester had to invoke by name after reading
+the report — in practice this meant a read/run-only exploration pass
+(correctly restricted from writing files) would just refuse when asked to
+also write the test code, with no path forward stated in the playbook
+itself. Reworded step 8: the handoff into `frontend-testing.md` step 14 /
+`backend-testing.md` step 8 is the next part of the same task, not a
+fresh request — only after step 10's independent check confirms the
+findings, and only the executing persona changes at that point (to a
+write-capable one, Test Writer rather than Feature Builder). This is a
+playbook-content fix; it doesn't by itself grant write access
+to a tool-level agent definition that restricts it (e.g. a `manual-exploratory-tester`
+agent scoped to read/run-only tools) — that boundary is deliberate (see
+`autonomy/roles.md`'s Reviewer row) and has to be crossed by dispatching
+step 8 to a different, write-capable persona, not by loosening the
+read-only one.
+
+Also pointed `reference/test-code-standard.md` section 5 (the senior-engineer
+bar for test code) at `project-standards.md`'s own precedence rule and its
+layering/shared-names sections (applying alongside its existing bullets,
+not replacing them), so test code is held to the project's actual dev
+coding standard where one exists, not a parallel, independently-maintained
+bar that can drift from it.
+
+## 1.39.7 — 2026-10-21
+`frontend-testing.md` step 13 and `backend-testing.md` step 7 required a
+suggested fix per bug but never actually tied a finding into
+`core/engineering-loop.md` the way `media/video-review.md` and
+`media/doc-review.md` already do for theirs, and neither had the
+re-verify-from-a-clean-start check `exploratory-qa.md` step 6 requires
+before a finding goes in the report. Added a new `reference/test-code-standard.md`
+section 8 (re-verify from a clean start before a bug goes in the report,
+get the finished report checked independently per `engineering-loop.md`
+step 4, hand any finding the requester wants fixed to `engineering-loop.md`
+as its own request) and pointed both testing playbooks at it — kept as a
+short pointer in each, same pattern 1.39.6 used for step 11's E2E detail,
+to stay inside `frontend-testing.md`'s size budget.
+
+Separately, `security-review.md` and `architecture-review.md` recorded a
+finding/gap without requiring a concrete suggested fix the way the two
+testing playbooks already do — a reader had to re-derive the remediation
+themselves. Both now require one per finding
+(the actual change for a security hole; the specific fix or the specific
+condition that would flip a tradeoff call, for an architecture gap), with
+a matching anti-pattern added to each.
+
+## 1.39.6 — 2026-10-21
+`frontend-testing.md` step 11's E2E evidence guidance was too thin to act
+on directly — "turn on video/screenshot/trace" with one video snippet, no
+actual config. Added the real Playwright config (`screenshot`/`video`/
+`trace` set to only capture on failure, the per-test output folder each
+failing run's artifacts land in, the HTML reporter auto-linking them,
+`show-trace` for opening the Trace Viewer) and recording the viewport/
+resolution a run executed at, since the same failure can be
+viewport-specific and the report previously had no way to pin that down.
+The detail lives in a new `reference/test-code-standard.md` section 7
+(step 11 keeps a short pointer) to stay inside this file's size budget.
+Caught and fixed two inaccuracies on reverify before this landed: a
+comment claiming screenshots get their own dedicated folder (they share
+the per-test folder with the video/trace, not a separate one), and a
+viewport-attachment snippet referencing `testInfo` with no binding shown.
+
+## 1.39.5 — 2026-10-14
+Audited every script in `scripts/` for which external tools it actually
+invokes (`command -v` checks and direct calls), cross-checked against
+`THIRD_PARTY.md`'s table. Everything was already credited except one
+naming gap: `render-doc-pages.sh` also calls `pdfinfo`, part of the same
+already-credited Poppler suite as `pdftotext`/`pdftoppm` — named it
+alongside them. No tool was found actually invoked by a script without
+a corresponding row; names mentioned only as generic examples inside
+playbook prose (e.g. ESLint, Jest) are correctly out of this file's
+scope, since nothing here calls them.
+
+## 1.39.4 — 2026-10-14
+`THIRD_PARTY.md`: credited the teaser's new dependencies, per this
+file's own rule that a new tool or service gets a row in the same
+change that introduces it — Chrome/Chromium (locally invoked by
+`teaser/record.mts` over the DevTools Protocol), tsx (runs it, no build
+step), and Google Fonts (fetched live whenever the teaser's HTML is
+actually opened — a hosted-service entry alongside Supabase/Cloudflare,
+not a local tool).
+
 ## 1.39.3 — 2026-10-14
 Fresh reverification pass: two more unspaced "Owner/Blind" instances of
 the Product Owner / Blind Tester persona name, introduced in the two
@@ -1042,7 +1198,6 @@ most recent rounds (`requirements-store.md`'s artifact-view section,
 `EXAMPLES.md`'s blind-build-verify entry) — the same naming-drift pattern
 from earlier in this persona's history, caught again by the same
 repo-wide grep this time rather than a manual read-through.
-
 
 ## 1.39.2 — 2026-10-14
 Audited all 41 playbooks for a report step with no `writing-style.md`
@@ -1161,7 +1316,6 @@ prevent.
   implement (`core/clarify-before-building.md`), script-enforced safety
   checks, and `media/demo-video.md` (narrates an already-verified
   feature) were checked and correctly don't need it.
-
 
 ## 1.38.1 — 2026-10-14
 `EXAMPLES.md` worked examples for the three new blind-build-verify
@@ -2851,484 +3005,3 @@ endpoint's own boundary header, producing 500s instead of the real
 statuses being tested for — removed, since a request library's own
 per-payload-type default was already correct.
 
-## 1.8.0 — 2026-09-08
-Extended `quality/frontend-testing.md`'s manual/exploratory-pass step
-(step 12) with three new steps and a code-quality bar, verified end to
-end against a real client's app (a fleet-management CMS) and its real
-staging environment — not reasoned about in the abstract:
-
-- **Step 12** now also captures network/API request-response evidence
-  (operation name, request, real response/error) alongside screenshots,
-  not screenshots alone.
-- **Step 13** turns a manual pass into an evidence-backed report (steps
-  followed, flow-by-flow results, API evidence, bugs with repro +
-  suggested fix, suggestions kept separate from bugs) — matching
-  `video-review.md`/`doc-review.md`'s existing report shape instead of
-  inventing a new one. Explicitly calls out checking the source for a
-  `TODO`/placeholder marker before reporting something as a bug.
-- **Step 14** codifies a manual pass into real automated test code:
-  ground locators/assertions in the actual source (query names,
-  validation rules, whether a stable identifier already exists) rather
-  than the rendered page alone; follow or propose a test structure;
-  design tests to create-and-clean-up their own data against a real
-  shared environment; don't let a known backend gap masquerade as a
-  passing green test; run it for real and capture actual pass/fail
-  output. Includes a concrete senior-engineer code-quality bar (strong
-  typing, no duplicated logic/magic strings, deliberate logging, no dead
-  scaffolding) cross-linked to `code-review.md`'s existing convention-
-  adherence check rather than duplicating it. Also codifies where new
-  test code should live: a black-box suite that never imports the target
-  app's own source has no real reason to be bolted onto that app's
-  `package.json`/dependency tree — decide and say so explicitly rather
-  than defaulting into the app repo unasked.
-- Two new anti-patterns (reporting a UI-only symptom when network
-  evidence was equally available; asserting a placeholder data layer as
-  "passing").
-- **Step 12** also now names four concrete categories to deliberately
-  check beyond the happy path — boundary values, error/failure states,
-  unusual sequences (double-submit, back-navigation, acting on a record
-  a different action just changed), and permission/role boundaries — and
-  **step 14** requires carrying whichever of those a manual pass actually
-  found into the automated suite as their own tests, not just into the
-  step-13 report where they'd otherwise evaporate once the report is
-  closed.
-- **Step 12** also names concrete responsive-testing breakpoints (mobile/
-  tablet/desktop) instead of "check it looks right," and calls out that a
-  non-functional mobile-nav toggle is a defect that only exists at a
-  narrow viewport and is invisible if every check runs at one default
-  width.
-- **Step 14** no longer assumes every flow is CRUD-shaped: it now names
-  six other flow shapes explicitly (multi-step wizards, read-only
-  dashboards, search/filter UIs, file upload/download, real-time/
-  streaming, background/async jobs, and largely static/CMS-templated
-  sites like WordPress) and says to model each on its own actual
-  interaction shape rather than forcing a create/delete template that
-  doesn't fit. It also now says to match the target app's *existing
-  build/lint toolchain* (Babel/SWC/tsconfig, linter, module system), not
-  just its test-runner/directory shape, when new test code lives inside
-  that app's own repo — cross-linked to `code-review.md`'s existing
-  "don't invent a new style" convention-adherence check rather than
-  restating it, and explicitly scoped to not apply to a separate
-  dedicated test repo (which shares no build step with the app at all).
-- **Step 4** now names animated/transitioning elements explicitly: a
-  "visible" DOM node mid-transition isn't the same as one at its resting
-  state, so wait for the real end-of-transition condition
-  (`transitionend`/`animationend`, or the driven property's final value)
-  before asserting or screenshotting — the same "presence isn't ready"
-  rule step 4 already applied to disabled→enabled transitions, extended
-  to animation.
-- **Step 12**'s edge-case list gained two more real, specific cases: a
-  filtered/searched/sorted listing's classic out-of-order-response race
-  (changing the filter twice quickly, where an earlier request resolves
-  *after* a newer one and silently overwrites its correct result with a
-  stale one); and, for a page with multiple independent listings/widgets
-  (a homepage with several panels, a multi-chart dashboard), checking
-  that acting on one panel actually stays scoped to it rather than
-  leaking into another's state or requests.
-- **Step 9** now covers CSS-effect-driven components (a horizontal-scroll
-  card carousel, a sticky/blurred nav bar, a glass/frosted panel) as
-  their own class: their pixel appearance is a visual-regression concern
-  like any other, but each also hides a real functional risk a
-  screenshot won't catch — a decorative blur/glass layer with no
-  `pointer-events: none` silently swallowing real clicks, a carousel's
-  boundary/scroll-snap correctness, and off-screen carousel content
-  staying keyboard-focusable when it shouldn't be.
-- **Step 8** now names the standard form controls concretely instead of
-  leaving "keyboard operability" abstract: text inputs (match the label-
-  derived accessible name, not placeholder text, which disappears on
-  input), dropdown/custom-combobox (real keyboard operability, and not
-  rendering the selected value twice in a way that's ambiguous to
-  select — the exact strict-mode collision this session's own worked
-  example hit on its first real run), radio groups (genuinely one
-  group, not independently-toggleable checkboxes styled as radios), a
-  "select all" checkbox's indeterminate state, and a submit button that
-  actually disables mid-request rather than just showing a spinner a
-  fast click can still get through.
-
-**Verified for real, not just written:** ran this updated process against
-that client's staging CMS end to end — logged in, exercised that app's
-core entity CRUD flows, captured real GraphQL request/response evidence
-(including catching and correcting two of the model's own first-pass
-conclusions once checked against the actual API payload and source: a
-misread status field that turned out to be an unrelated field, and a
-"missing section" that turned out to be role-conditional application
-code, not a bug), found and documented five real bugs (a
-delete-confirmation dialog naming the wrong entity, a role-conditional
-missing UI section, non-decrementing dashboard counts, misleading
-"permanent" delete copy, a missing Edit button), then built a Playwright
-suite covering those entities and a set of known-placeholder routes in a
-newly created, separate repo per the new step-14 guidance above. Two real
-bugs surfaced *in the test code itself* while running it for real — a
-hydration-race false negative on empty-form submission, and a strict-mode
-locator collision on a duplicated dropdown option — both fixed and
-re-verified by re-running, not assumed fixed from reading the diff. Final
-state: 20/20 tests passing, confirmed from the suite's final repo
-location (re-run after the move, not assumed to still work), with a
-clean `tsc --strict` pass and zero ESLint-equivalent dead code.
-
-## 1.7.0 — 2026-09-08
-Extended `quality/frontend-testing.md` and `quality/backend-testing.md`
-with lessons drawn directly from a real QA report review earlier in this
-project (via `doc-review.md` against a real mobile app and its real
-Katalon test suite) — codified as tech/platform-agnostic testing
-discipline, not tied to that framework.
-
-`frontend-testing.md`: three new steps plus anti-patterns —
-(1) wait for the actual interactable state (visible *and* enabled), not
-just presence, since a disabled→enabled transition can rebuild the
-underlying element and invalidate an earlier reference; (2) prefer a
-stable, purpose-built locator (a real accessibility identifier/
-`data-testid`) over a positional/structural one, on web *or* native
-mobile (Appium/Katalon) — a testability gap to raise with development,
-not to route around; (3) don't assume a screen/list looks the same after
-an action as before it (a redeemed/removed/reordered item), and watch for
-an accidentally duplicated step targeting the same just-navigated-away
-element. Also fixed a pre-existing, unrelated bug in this same file: the
-"Who uses this" section referenced step numbers that no longer matched
-the actual steps (calling out "step 4's accessibility check" when
-accessibility was actually step 5) — rewritten to describe the read/write
-split qualitatively instead of hardcoding step numbers that renumber
-easily.
-
-`quality/backend-testing.md`: two additions — (1) test the *second* call
-of an idempotent/one-time operation explicitly (a coupon redemption, a
-charge, a queue handler), not just the first, since only the repeat call
-proves whether a side effect double-applies; (2) wait on the real
-completion condition for anything asynchronous (poll status, wait on the
-real event) rather than a fixed sleep, and treat "passes standalone,
-fails as part of the full suite" as the specific, concrete symptom of
-test-order/state dependency rather than something to retry away.
-
-Prose-only additions (no scripts to run) — reviewed for consistency and
-correct internal step-number cross-references throughout both files
-after renumbering, not executed.
-
-## 1.6.3 — 2026-09-08
-Fixed `scripts/record-screen.sh` (`demo-video.md`'s screen-recording
-step): `-pix_fmt yuv420p` placed before the output path is read by
-avfoundation's demuxer as an *input* capture-format request on some
-hardware, and can fail outright there since avfoundation only offers
-uyvy422/yuyv422/nv12/0rgb/bgr0 as capture formats — found on real
-hardware by actually running it and getting a silently-empty output
-file, not assumed from the docs. Moved it to an explicit output-side
-`-vf format=yuv420p` filter instead, which can't be misread as an input
-request, in both the `start` and `timed` code paths.
-
-Verified: syntax-checked, then run for real on macOS (`timed` mode,
-`-f avfoundation`, real screen-capture hardware) — produced a valid
-h264 recording with real, non-blank screen content (confirmed by
-extracting and viewing a frame). Compared directly against the old
-`-pix_fmt`-before-output command on this same machine: both produced
-valid output here, so the specific failure this fixes did not reproduce
-on this hardware/ffmpeg build (avfoundation here already falls back to
-a supported pixel format gracefully regardless of placement) — this
-fix addresses a real, hardware-dependent failure mode observed
-elsewhere, confirmed not to regress anything on this machine, but not
-independently reproduced-then-fixed here the way the rest of this
-CHANGELOG's entries are.
-
-## 1.6.2 — 2026-09-08
-Sharpened `doc-review.md` step 2's guidance with a concrete trigger,
-found immediately after 1.6.1 shipped, on the same real 146-page QA
-report: a test case (`Redeem_by_activity`) reported overall status
-"ERROR" while every one of its visible steps read "PASSED," with the
-trail simply stopping. Following 1.6.1's new guidance (render the whole
-page range, don't trust `sparse` alone) surfaced the real cause: two
-uncaptioned screenshots showing the same voucher code first successfully
-redeemed, then — about a minute later, same test run — hit again and
-met with an "Already redeemed" screen. Correct app behavior (you can't
-redeem the same voucher twice); wrong test behavior (re-selecting the
-same voucher instead of moving to the next one, likely because the list
-re-renders after a redemption and the test's item-selection locator isn't
-robust to that). Added the specific trigger to step 2: a section's
-overall status not matching what its visible steps show is itself the
-signal to render that section's full page range, not a dead end.
-
-## 1.6.1 — 2026-09-08
-Fixed a real gap in `doc-review.md`'s step 2, found during actual
-production use (not synthetic testing this time): reviewing a real
-146-page third-party QA/test-run PDF against a real Flutter codebase, a
-specific failure's evidence turned out to be two embedded screenshots
-with **no caption text next to them at all** — common in QA reports,
-where some screenshots are captured automatically (on failure, or at a
-teardown/listener point) rather than via a scripted step that prints
-"Screenshot is taken." The `sparse` page-image heuristic (average
-non-space characters per page) never flagged these pages, because the
-page still had plenty of *other* text (running headers, table column
-labels) — `sparse` measures page-level text density, not "does this
-specific screenshot have a caption," so it can't and shouldn't be
-expected to catch this case. Fixed by changing the guidance, not the
-scripts (both were working correctly): once investigating a specific
-finding in depth, always render every page across that finding's entire
-page range explicitly, rather than trusting `sparse`'s verdict alone to
-decide whether an image is worth seeing.
-
-## 1.6.0 — 2026-09-08
-Added `doc-review.md` + `scripts/extract-doc-text.sh`,
-`scripts/render-doc-pages.sh`, `scripts/doc-page-index.sh` — the same
-pipeline as `video-review.md` applied to a document instead of a
-recording: extract text (`pdftotext` for PDF, `pandoc` for DOCX/ODT/RTF/
-HTML/etc.), optionally render scanned/visual pages as images, draft
-findings (summary/key points/queries raised/action items split fix-vs-
-build), re-verify each one against the actual text/page evidence, then
-optionally route each action item to `core/engineering-loop.md` one at a
-time. Also added **token-bounded processing for large inputs, on both
-playbooks**: `extract-media.sh`'s frame interval now defaults to `auto`
-(duration ÷ 120 frames, floored at 3s) instead of a fixed 5s, so a 4-hour
-recording and a 12-second one both land around ~120 frames instead of
-however many a fixed interval happens to produce; `doc-page-index.sh`
-gives line-number-per-page boundaries so a several-hundred-page document
-can be read in ~20-page chunks (matching a common hard limit on how much
-a single file-read call will return for a PDF) instead of loading it
-whole. Both playbooks' "read the evidence" step now explicitly describes
-processing long input in bounded batches with compact per-batch notes
-carried forward, not the raw batches themselves.
-
-Tested directly on macOS. `extract-doc-text.sh` against: a real PDF (via
-`cupsfilter`), a real `.docx` and `.rtf` (via macOS `textutil` → `pandoc`,
-extraction matched the source exactly modulo whitespace), a real `.md`
-copy-through (byte-identical), and a **real 146-page, 10MB third-party
-PDF** (a Katalon mobile-app test report, not synthetic) — extracted
-cleanly in under a second. Two real bugs were found and fixed during this
-pass: the sparse-page-warning math was off by one (assumed pdftotext's
-per-page form-feed meant "N feeds ⇒ N+1 pages"; direct byte inspection of
-both the 146-page doc and a real scanned 1-page PDF showed it's already
-one feed per page including the last, so no +1 — fixed and re-confirmed
-on both); and `render-doc-pages.sh` produced double-suffixed filenames
-(`page_0001-001.png`) because `pdftoppm` appends its own page number even
-for a single-page render — fixed with `-singlefile`, re-confirmed across
-its explicit-list/`all`/`sparse` modes. `doc-page-index.sh`'s page→line
-mapping was checked directly against real file content, not eyeballed.
-`render-doc-pages.sh`'s `sparse` mode correctly rendered zero pages
-against the 146-page doc (verified via `pdfimages -list` that its
-screenshot pages all carry substantial surrounding text, a true negative,
-not a bug). Chunked reading of that same 146-page document was performed
-for real (not just designed): read in 20-page chunks from
-`doc-page-index.sh`'s own output, surfacing a real finding (the report's
-own pass/fail summary and specific failing/erroring test case names) with
-a targeted re-read later in the document landing exactly where the index
-said it would. No content from this real third-party document is quoted
-at length or committed anywhere in this repo — only the structural facts
-needed to demonstrate the mechanism works. A full run through
-`core/engineering-loop.md` was also done, real not simulated: the same
-`add_tax` throwaway-repo scenario from `video-review.md`'s own
-verification, this time driven by a synthetic PDF — reproduce → fix →
-verify, with a real failing-then-passing pytest run and a real diff.
-`extract-media.sh`'s new `auto` interval was verified against a genuinely
-4-hour-long synthetic video (tiny resolution/frame rate, so fast to
-generate): correctly computed a 120s interval and extracted exactly 120
-frames, confirmed by counting the actual files, with both audio and frame
-extraction finishing in under 30 seconds — transcribing that much audio
-was not attempted (whisper's own runtime scales with duration regardless
-of this script, and the synthetic audio had no real speech to transcribe
-anyway), which is now stated explicitly rather than left implied. Not run
-on Linux/Windows directly (no such environment available); all three new
-scripts are the same plain POSIX-bash + real-CLI-tool shape already
-exercised cross-platform-honestly elsewhere in this repo.
-
-A further re-verification pass (prompted by user request, after the
-above had already shipped in this same working state) found two more
-real bugs, fixed before anything was committed. In `extract-media.sh`:
-`frame_last.png` could silently fail to be written at all while the
-script still reported success — `ffmpeg` seeking to `duration - 0.15s`
-for one frame can produce zero output and no file while still exiting 0,
-confirmed on real clips as short as 3s and as long as 60s, not an exotic
-case. Fixed with a bounded retry at increasing margins (0.5/1/2/4s) and
-an explicit file-existence check instead of trusting the exit code;
-re-confirmed on the exact clips that exposed it, plus the
-"interval-divides-duration-exactly" arithmetic shape the earlier 4-hour
-test also hits (checked with a 30s/10s-interval equivalent, since
-re-running the full 4-hour generation again wasn't warranted for this).
-In `extract-doc-text.sh`: the file extension was detected from the full
-path instead of the basename, so a dotted parent directory (e.g. a
-`v2.0/` version folder) corrupted detection for any extensionless file
-inside it — confirmed directly (`v2.0/README` misread as extension
-`0/readme`) and fixed by extracting from `basename` instead.
-
-## 1.5.0 — 2026-09-08
-Added `video-review.md` + `scripts/extract-media.sh`, `scripts/transcribe.sh`
-— the reverse pipeline of `demo-video.md`: extract audio/frames from any
-recording ffmpeg can read, transcribe locally (whisper/whisper.cpp, with a
-documented graceful degrade when neither is installed), draft findings
-(summary/key points/bugs/asks), then re-verify each one against the actual
-transcript/frame evidence before handing it to the user, with asks
-optionally routed to `core/engineering-loop.md` one at a time.
-
-Tested directly on macOS, including a full synthetic run through
-`core/engineering-loop.md`: built a real bug-report video (genuine spoken
-narration via `say` describing a defect, plus rendered on-screen frames
-showing the buggy code and a failing test), ran it through
-`extract-media.sh` → `transcribe.sh` (no STT engine installed, degraded
-exactly as documented) → read the extracted frames directly → drafted and
-re-verified findings from that frame evidence alone → handed the resulting
-"fix" ask to `core/bug-fix.md`'s reproduce → fix → verify sequence in a
-throwaway repo, independently re-reproducing the failing test before
-touching code, then confirming both the targeted test and the full suite
-passed after the fix. A re-verification pass over the scripts themselves
-(prompted by user request) also caught and fixed two real bugs before any
-of this shipped: `extract-media.sh` didn't clear `frames/` before
-re-extracting, so a re-run with a different interval (or a swapped-in
-audio-only input) left stale frames from the previous run mixed in
-silently; `transcribe.sh`'s `whisper` (openai-whisper) branch swallowed
-both stdout and stderr, so a real failure there (bad audio, a failed model
-download) would have died with zero explanation, contradicting this repo's
-own no-silent-failure convention. Both are fixed and re-tested (including
-a forced-failure case proving the error now surfaces, and a stand-in
-success case proving the output-file move logic still matches the real
-CLI's documented naming).
-
-The real `openai-whisper` transcription output has since been confirmed
-too. The first pip install attempt failed as above (`llvmlite` tried
-building from source, no wheel for the version pip picked); forcing
-wheel-only resolution (`pip install --only-binary=llvmlite,numba -U
-openai-whisper`) got past it, and a follow-on NumPy 1.x/2.x ABI crash on
-first run was fixed with `pip install 'numpy<2'` — both now documented as
-Prerequisites in `video-review.md` so the next install doesn't rediscover
-them. With a working install, `transcribe.sh` was run unmodified against
-real spoken narration (macOS `say`, not a synthetic tone) both directly
-and through the full `extract-media.sh` → `transcribe.sh` chain, with both
-the `tiny` and default `base` models, and produced an accurate transcript
-each time. `whisper.cpp` remains genuinely unverified (no local build
-available) — same caveat this repo already gives Piper in
-`demo-video.md`. Not run on Linux/Windows directly (no such environment
-available); same ffmpeg-only POSIX-bash design as the already-multi-OS
-`demo-video.md` scripts.
-
-A second re-verification pass found one more real bug: `extract-media.sh`
-extracted audio unconditionally, so a video with no audio stream at all
-(mic off, a muted screen capture — a realistic input, not a corrupt one)
-made the whole script die on that step with a cryptic ffmpeg error,
-never reaching frame extraction. Fixed the same way as the earlier
-audio-only case (check for the stream first, skip and say so if it's
-missing, keep going) and re-tested against a real silent clip alongside
-the existing normal/audio-only/missing-file cases to confirm no
-regression.
-
-## 1.4.2 — 2026-09-04
-`install.sh` can now install a specific past release instead of always
-latest: `--version 1.3.0` or `AGENT_PLAYBOOKS_VERSION=1.3.0`. The check-in
-backend gained an optional `p_requested_version` parameter (omitted =
-unchanged latest-serving behavior). Also republished every version from
-1.0.0 onward in the current archive format — versions before 1.1.6 had
-been stored in an old tar.gz format from before the JSON-file-map format
-existed, which this version's install.sh couldn't have read; found this
-by actually testing a specific-version install against production, not by
-inspection. Production was also caught up to this release itself (nothing
-past 1.2.0 had actually been published before now).
-
-## 1.4.1 — 2026-09-04
-`install.sh` now prints the actual version it installed ("Installed
-agent-playbooks vX.Y.Z"), reading it from the fetched archive's own
-`agent-playbooks/VERSION` rather than leaving it invisible. Added this file,
-and a git pre-commit hook (`maintainer/check-version-bump.sh`) that blocks
-committing a playbook-content change unless `VERSION` and this file are
-both bumped in the same commit — enforced, not just a habit to remember.
-
-## 1.4.0 — 2026-09-04
-Added `quality/writing-style.md` (commit messages, PR descriptions, and
-reports should read like someone who understands the change — cut padding,
-back claims with what was checked, bullet only genuine lists) and a bounded
-escalate-when-stuck rule in `bug-fix.md`/`engineering-loop.md`: after
-repeated attempts that don't narrow the cause, stop and report what's ruled
-out instead of continuing to guess.
-
-## 1.3.0 — 2026-09-04
-Added `safety/secret-scan.md` — a real, enforced block on committing secrets
-(AWS/GitHub/Slack/Stripe/Google tokens, private keys), primarily via a
-tool-agnostic git pre-commit hook, with an optional Claude Code hook layer.
-
-## 1.2.2 — 2026-09-04
-Added spec-traceability (every case in an external test plan needs an
-accounted-for test, automated or explicitly marked not-automatable) and
-test-healing discipline (diagnose against the contract before changing a
-failing test, never weaken an assertion to force it green) to
-`backend-testing.md`/`frontend-testing.md`.
-
-## 1.2.1 — 2026-09-03
-`demo-video.md`: burned-in captions timed against real narration audio, and
-a Piper neural-TTS option for a non-robotic voice on any platform.
-
-## 1.2.0 — 2026-09-03
-Added `EXAMPLES.md` — one real, worked example per playbook.
-
-## 1.1.9 — 2026-09-03
-`architecture-review.md`: scale review depth to blast radius, and check for
-a recorded past decision before flagging a fresh gap.
-
-## 1.1.8 — 2026-09-02
-Replaced an external tool reference with three playbook-native
-improvements to `codebase-mapping.md`/`engineering-loop.md`, closing the
-same token-efficient-repeated-context problem without depending on
-anything outside this project.
-
-## 1.1.7 — 2026-09-01
-Published, but no changelog entry was recorded at the time and the
-original content isn't reliably distinguishable from 1.1.6/1.1.8 now —
-noted here for an honest record rather than guessing at what changed.
-
-## 1.1.6 — 2026-09-01
-Added per-install watermarking — a deterministic, traceable token woven into
-`AGENTS.md`'s content on each install.
-
-## 1.1.5 — 2026-09-01
-`third-party-api-integration.md`: batch-test all read-only endpoints without
-per-endpoint asks, single combined confirmation for side-effecting ones, and
-an optional OpenAPI/Postman export.
-
-## 1.1.4 — 2026-09-01
-`third-party-api-integration.md`: handle a catalog/index as its own scope
-decision, and sort endpoints read-only vs. side-effecting before calling any.
-
-## 1.1.3 — 2026-09-01
-Fixed two real gaps found through live use: inspect an auth gate directly
-instead of asking the human to guess it, and never leave an optional step
-silent — say what was skipped and why.
-
-## 1.1.2 — 2026-09-01
-Corrected Antigravity's and Copilot's AGENTS.md-support claims after direct
-verification against each tool's current docs.
-
-## 1.1.1 — 2026-09-01
-Routed the four whole-project playbooks (`codebase-mapping.md`,
-`database-mapping.md`, `third-party-api-integration.md`, `project-audit.md`)
-through `engineering-loop.md`.
-
-## 1.1.0 — 2026-09-01
-Added `project-audit.md`, and a Mermaid flow diagram for every playbook.
-
-## 1.0.9 — 2026-09-01
-Added `codebase-mapping.md`, `database-mapping.md`, and
-`third-party-api-integration.md`.
-
-## 1.0.8 — 2026-09-01
-Wired a standing-permission grant offer into `project-bootstrap.md`.
-
-## 1.0.7 — 2026-09-01
-Added first-time execution guidance across playbooks, and
-`autonomy/standing-permission.md`.
-
-## 1.0.6 — 2026-08-31
-Added `release.md`, `performance.md`, `observability.md`, and
-`sensitive-data.md`.
-
-## 1.0.5 — 2026-08-31
-`demo-video.md`'s voice pipeline made cross-platform, with honest
-voice-quality notes per platform.
-
-## 1.0.4 — 2026-08-31
-Added response-shape (not just status-code) assertions to
-`backend-testing.md`, and a cross-reference to `security-review.md`.
-
-## 1.0.3 — 2026-08-31
-`backend-testing.md`: derive the test matrix from the real request/DB
-schema, not memory or assumption.
-
-## 1.0.2 — 2026-08-31
-`frontend-testing.md`: documented a real browser-driven check plus
-video/screenshot evidence capture.
-
-## 1.0.1 — 2026-08-31
-Added an explicit planning step to `engineering-loop.md`.
-
-## 1.0.0 — 2026-08-31
-First tracked release.

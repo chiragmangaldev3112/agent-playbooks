@@ -323,6 +323,31 @@ flowchart TD
     E --> F[Read it aloud—cut what\nyou wouldn't actually say]
 ```
 
+### `quality/marketing-content-audit.md`
+
+SEO, technical SEO, schema, copywriting, and GEO audit, each backed by a real fetch or tool output
+
+```mermaid
+flowchart TD
+    A[Audit requested] --> B{Which audit type(s)?}
+    B -->|Unstated| C[Ask, or default to\nthe full set for one page]
+    B -->|Named| D[Fetch the real page(s)]
+    C --> D
+    D --> E[SEO—on-page\n+ indexability]
+    D --> F[Technical SEO—crawl,\nspeed, CWV, mobile]
+    D --> G[Schema—validate\nstructured data]
+    D --> H[Copywriting—clarity,\ntone, AI-tell check]
+    D --> I[GEO—extractability,\ncitations]
+    E --> J[Consolidate one report:\nfinding, evidence, fix]
+    F --> J
+    G --> J
+    H --> J
+    I --> J
+    J --> K{Fixes are code/content\nchanges in this repo?}
+    K -->|Yes| L[Route each through\nengineering-loop.md]
+    K -->|No, external only| M[Report as-is]
+```
+
 ## Change types
 
 ### `change-types/refactoring.md`
@@ -715,6 +740,28 @@ flowchart TD
     I -->|No| J[Done—tested,\ndocumented, understood]
     I -->|Yes| K[Phase 3: map fields\nvs database-mapping.md]
     K --> L[Propose migration—\nnever apply directly]
+```
+
+### `mapping/game-dev-ai-tooling-reference.md`
+
+Evaluate AI-assisted game-dev tooling before installing it, credited to each upstream project
+
+```mermaid
+flowchart TD
+    A[Game-dev AI tooling requested] --> B{Which tool/engine?}
+    B -->|Engine bridge\nGodot/Unreal| C[Find current MCP server\nfor that engine]
+    B -->|Audio/music gen| D[ACE-Step 1.5]
+    B -->|Facial animation| E[NVIDIA Audio2Face-3D]
+    B -->|Full agent-studio setup| F[Claude Code Game Studios template]
+    C --> G[Read the real repo:\nlicense, last commit,\nwhat it actually executes]
+    D --> G
+    E --> G
+    F --> G
+    G --> H{Safe to run locally\nand license fits the project?}
+    H -->|No| I[Say why, stop here]
+    H -->|Yes| J[Install per that project's\nown current instructions]
+    J --> K[Bind any local server\nto localhost; keep its\nconfig out of version control]
+    K --> L[Credit the upstream\nproject]
 ```
 
 ### `project/project-audit.md`

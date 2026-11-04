@@ -54,9 +54,16 @@ Nothing from your project beyond what's named per row above is sent.
 
 | Item | How it is used | Licence |
 |---|---|---|
-| [blader/humanizer](https://github.com/blader/humanizer) | Linked from `quality/writing-style.md`, `README.md` and `EXAMPLES.md` as an optional deeper reference for AI writing tells. Not a dependency | MIT |
+| [blader/humanizer](https://github.com/blader/humanizer) | Linked from `quality/writing-style.md`, `quality/marketing-content-audit.md`, `README.md` and `EXAMPLES.md` as an optional deeper reference for AI writing tells. Not a dependency | MIT |
 | [Contributor Covenant 2.1](https://www.contributor-covenant.org/) and [Mozilla's diversity guidelines](https://github.com/mozilla/diversity) | Basis of the public repo's `CODE_OF_CONDUCT.md` | Covenant text is CC BY 4.0 |
 | [agents.md](https://agents.md) | The `AGENTS.md` convention this project follows | Not applicable |
+| [Google's Rich Results Test](https://search.google.com/test/rich-results) and the [Schema.org Validator](https://validator.schema.org/) | Named in `quality/marketing-content-audit.md`'s schema section as the two tools a structured-data audit validates against | Free hosted tools; Schema.org's vocabulary itself is CC BY-SA 3.0 |
+| [PageSpeed Insights](https://pagespeed.web.dev/) and [Google Search Console](https://search.google.com/search-console) | Named in `quality/marketing-content-audit.md`'s technical-SEO section as the authoritative source for Core Web Vitals and crawl/indexation data | Free hosted Google tools |
+| [ee0pdt/godot-mcp](https://github.com/ee0pdt/godot-mcp), [coding-solo/godot-mcp](https://github.com/coding-solo/godot-mcp), `godot-mcp-server` (PyPI), and [Dokujaa/Godot-MCP](https://github.com/Dokujaa/Godot-MCP) | Named in `mapping/game-dev-ai-tooling-reference.md` as community MCP bridges for the Godot editor — not official Godot Foundation projects, none bundled here | Verify upstream per project; not redistributed |
+| [ChiR24/Unreal_mcp](https://github.com/chir24/unreal_mcp), `uemcp` (PyPI), `unrealmcp` (aadeshrao123/Unreal-MCP), and [runreal/unreal-mcp](https://github.com/runreal) | Named in `mapping/game-dev-ai-tooling-reference.md` as community MCP bridges for Unreal Engine — not official Epic Games projects, none bundled here | Verify upstream per project; not redistributed |
+| [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) | Named in `mapping/game-dev-ai-tooling-reference.md` as a community `.claude/` configuration template, not an Anthropic product | MIT |
+| [ACE-Step 1.5](https://ace-step.github.io/ace-step-v1.5.github.io) | Named in `mapping/game-dev-ai-tooling-reference.md` as an open-source text-to-music model | Sources disagree (MIT vs. Apache-2.0 cited across pages) — confirm upstream before commercial use |
+| [NVIDIA Audio2Face-3D](https://huggingface.co/nvidia/Audio2Face-3D-v3.0) | Named in `mapping/game-dev-ai-tooling-reference.md` for audio-driven 3D facial animation | NVIDIA Open Model License (models); separate NVIDIA Software License Agreement / Product-Specific Terms for the SDK and NIM microservice — verify before commercial use |
 
 ## Not used
 

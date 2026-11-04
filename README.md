@@ -12,7 +12,7 @@
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/stargazers"><img src="https://img.shields.io/github/stars/chiragmangaldev3112/agent-playbooks?style=social" alt="Stars"></a>
   <a href="https://github.com/chiragmangaldev3112/agent-playbooks/network/members"><img src="https://img.shields.io/github/forks/chiragmangaldev3112/agent-playbooks?style=social" alt="Forks"></a>
   <br>
-  <img src="https://img.shields.io/badge/47_Playbooks-blueviolet" alt="47 Playbooks">
+  <img src="https://img.shields.io/badge/49_Playbooks-blueviolet" alt="49 Playbooks">
   <img src="https://img.shields.io/badge/Releases-Ed25519_Signed-success" alt="Ed25519 Signed Releases">
   <img src="https://img.shields.io/badge/Setup-No_Account_Needed-informational" alt="No Account Needed">
   <img src="https://img.shields.io/github/contributors/chiragmangaldev3112/agent-playbooks" alt="Contributors">
@@ -69,7 +69,7 @@ regression test, implement the fix, and verify the result."*
 
 <!-- Commented out, not deleted -- the older, longer narrated walkthrough. Un-comment to bring it back
 alongside or instead of the teaser above; its own file (docs/demo.html) and release asset are untouched.
-**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 47 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md`, `autonomy/test-case-tracker.md`, `quality/design-review.md`, `quality/token-efficiency.md`, `quality/vulnerability-watch.md`, `mapping/website-ui-replication.md`, `media/doc-review-verification-log.md`, and `media/video-review-verification-log.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
+**[▶ Watch the 7.5-minute demo](https://chiragmangaldev3112.github.io/agent-playbooks/demo.html)** — 36 of the 49 playbooks (all but `safety/config-protection.md`, `core/finish-work.md`, `autonomy/blind-build-verify.md`, `autonomy/requirements-store.md`, `autonomy/test-case-tracker.md`, `quality/design-review.md`, `quality/token-efficiency.md`, `quality/vulnerability-watch.md`, `mapping/website-ui-replication.md`, `media/doc-review-verification-log.md`, `media/video-review-verification-log.md`, `quality/marketing-content-audit.md`, and `mapping/game-dev-ai-tooling-reference.md`, added after it was recorded), narrated, with a real terminal run each. Not a slideshow.
 -->
 
 ---
@@ -459,7 +459,7 @@ own:
 | "Here's the spec/report" (PDF, Word doc, any format) | Extracts the text (and page images if it's scanned), reads a 600-page document the same way as a 6-page one via bounded chunks, re-verifies every finding, then routes each action item through the engineering loop if you want it acted on |
 | 🚫 Anything destructive (force-push, dropping a table) | Hard-blocked, not just discouraged |
 
-That's the whole interface. You don't need to read all 47 files before
+That's the whole interface. You don't need to read all 49 files before
 getting value from any one of them — the router finds the right one, and
 each file is self-contained if you ever want to read the one that just
 fired.
@@ -510,6 +510,7 @@ you'd say, here's what happens" example for every single one, see
 | `quality/docs-sync.md` | Verify doc claims against real code, run the project's real linter |
 | `quality/observability.md` | Instrument a feature so its failures surface before a user reports them |
 | `quality/writing-style.md` | Commit messages, PR descriptions, and reports that read like someone who understands the change; links to [github.com/blader/humanizer](https://github.com/blader/humanizer) for a deeper catalog of the same patterns, as an optional follow-up, not a dependency |
+| `quality/marketing-content-audit.md` | SEO, technical SEO, schema/structured-data, copywriting, and GEO (generative-engine/AI-search visibility) audit of a site or piece of content — five sections of one file, each tied to a real fetch or an official tool's output (Google's Rich Results Test, the Schema.org Validator, Lighthouse CI, Search Console), not a generic checklist |
 | `quality/token-efficiency.md` | A repo-wide discipline, not a task type: read narrow, reuse before regenerating, summarize before carrying forward, and the invariants for shrinking a long session without losing evidence |
 
 </details>
@@ -573,6 +574,7 @@ you'd say, here's what happens" example for every single one, see
 | `mapping/codebase-mapping.md` | Document a codebase module by module from real dependency structure, then optionally generate a skill/agent per module |
 | `mapping/database-mapping.md` | Document a database table by table from the real schema and code usage, then optionally generate a skill/agent per table |
 | `mapping/third-party-api-integration.md` | Analyze and test a third-party API for real (env-var credentials only, never handled or logged), then optionally map it onto your own schema |
+| `mapping/game-dev-ai-tooling-reference.md` | Evaluate AI-assisted game-dev tooling before installing it — credited, license- and risk-checked reference to community MCP bridges for Godot and Unreal Engine, the Claude Code Game Studios template, the ACE-Step 1.5 music model, and NVIDIA Audio2Face-3D; none bundled, none endorsed as official or secure by default |
 
 </details>
 
