@@ -714,13 +714,24 @@ removed — see `agent-playbooks/CHANGELOG.md` 1.19.0.
 <a id="premium"></a>
 ## 💎 Premium
 
-Everything above is the free tier, and stays free. There's also a
-private, paid add-on for a specific gap the free playbooks don't cover:
-two roles working from the same spec in isolation from each other can
-structurally stop most cross-contamination between them, but there's no
-way to prove, on a given run, that the isolation actually held rather
-than just assuming it did. If that's a problem you have, mail
-chiragmangal3112@gmail.com to discuss access.
+Premium is a separate, private add-on with playbooks that go beyond the
+set above. They are plain markdown like the rest, so they work with any AI
+coding tool that can read a file (Claude Code, Cursor, Codex, Copilot,
+Gemini CLI and others), and Claude Code users can also install each one as
+a skill:
+
+- **Roblox game development:** server-authoritative design, validated
+  remotes, safe saved data, and a separate hostile-input verification.
+- **Browser game build:** a playable slice first, then chapter by chapter,
+  each proved by playthrough tests and a measured frame rate.
+- **Character from photo:** an approximate game character from a supplied
+  photo, with consent and privacy checked first.
+- **Character rig pipeline:** a character spec turned into a rigged,
+  animatable model, checked in motion.
+- **Canary-verified isolation:** proof that a builder/tester split actually
+  stayed isolated on a given run.
+
+Mail chiragmangal3112@gmail.com for access.
 
 <a id="two-different-version-numbers"></a>
 ## 🔢 Two Different Version Numbers
