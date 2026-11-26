@@ -425,5 +425,12 @@
     "clones": 6,
     "views_uniques": 1,
     "clones_uniques": 4
+  },
+  {
+    "date": "2026-11-25",
+    "views": 9,
+    "clones": 12,
+    "views_uniques": 4,
+    "clones_uniques": 9
   }
 ]
